@@ -22,19 +22,19 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 .recipegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.recipe{background:#f5f7f4;border-radius:14px;padding:12px}.recipe b{display:block}.recipe button{margin-top:8px;width:100%}
 @media(max-width:720px){.hero{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.suggestions,.recipegrid{grid-template-columns:1fr}.week{grid-template-columns:repeat(4,1fr)}}
 </style></head><body><div class="app">
-<div class="head"><div><h1>Mi Dieta</h1><div class="muted">Diario inteligente · Nacho & Lucía</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button></div></div>
+<div class="head"><div><h1>Mi Dieta</h1><div class="muted">Diario inteligente · Nacho & Lucía</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
 <div class="nav"><button data-tab="today" class="active">Hoy</button><button data-tab="ideas">¿Qué puedo comer?</button><button data-tab="week">Semana</button><button data-tab="progress">Progreso</button><button data-tab="foods">Alimentos</button></div>
 
 <section id="today" class="section show">
 <div class="card row"><div class="field"><label>Fecha</label><input id="date" type="date"></div><div class="field"><label>Objetivo kcal</label><input id="goal" type="number"></div><div class="field"><label>Peso kg</label><input id="weight" type="number" step=".1"></div><div class="field"><label>Cintura cm</label><input id="waist" type="number" step=".1"></div></div>
 <div class="card hero"><div class="ring" id="ring"><div class="ringtext"><b id="used">0</b><span>de <i id="goalText">1100</i> kcal</span></div></div>
-<div class="stats"><div class="stat"><b id="left">0</b><span>kcal restantes</span></div><div class="stat"><b id="prot">0 g</b><span>proteína</span></div><div class="stat"><b id="carbs">0 g</b><span>hidratos</span></div><div class="stat"><b id="fat">0 g</b><span>grasas</span></div></div></div>
+<div class="stats"><div class="stat"><b id="left">0</b><span>kcal restantes</span></div><div class="stat"><b id="prot">0 g</b><span id="protLabel">proteína</span></div><div class="stat"><b id="carbs">0 g</b><span>hidratos</span></div><div class="stat"><b id="fat">0 g</b><span>grasas</span></div></div></div>
 <div class="card"><h2>Añadir comida</h2><div class="row"><div class="field"><label>Momento</label><select id="meal"><option>Desayuno</option><option>Media mañana</option><option>Comida</option><option>Merienda</option><option>Cena</option><option>Extra</option></select></div><div class="field" style="flex:2"><label>Alimento</label><select id="food"></select></div><div class="field"><label>Gramos</label><input id="grams" type="number" value="100"></div><div class="field"><button id="add">Añadir</button></div></div></div>
 <div class="card"><h2>Registro del día</h2><div id="log"></div></div>
 <div class="card"><h2>Recetas rápidas</h2><div class="recipegrid" id="recipes"></div></div>
 </section>
 
-<section id="ideas" class="section"><div class="card"><h2>¿Qué puedo comer?</h2><p class="muted">Propuestas que caben aproximadamente en las calorías que te quedan hoy. Pulsa para añadir la receta completa.</p><div class="suggestions" id="suggestions"></div></div>
+<section id="ideas" class="section"><div class="card"><h2>¿Qué puedo comer?</h2><p class="muted" id="ideasIntro">Propuestas que caben aproximadamente en las calorías que te quedan hoy.</p><div id="javiStatus"></div><div class="suggestions" id="suggestions"></div></div>
 <div class="card"><h2>Completar con un alimento</h2><div class="row"><div class="field"><label>Alimento</label><select id="fillFood"></select></div><div class="field"><label>Máximo que cabe hoy</label><input id="maxGrams" readonly></div></div><p class="small muted">Cálculo matemático según las kcal/100 g del alimento; no es una recomendación de ración.</p></div></section>
 
 <section id="week" class="section"><div class="card"><h2>Últimos 7 días</h2><div class="week" id="weekGrid"></div><p id="weekAvg"></p></div></section>
@@ -58,7 +58,7 @@ const recipes=[
 {name:"Rape con arroz",meal:"Comida",items:[["Rape",200],["Arroz cocido",130],["Ensalada/hojas",120],["AOVE",10]]},
 {name:"Pavo y patata",meal:"Comida",items:[["Pavo",180],["Patata",200],["Tomate",150],["AOVE",10]]}
 ];
-const profiles={Nacho:1100,Lucía:1300}; let profile=localStorage.profile||"Nacho", custom=JSON.parse(localStorage.customFoods||"[]");
+const profiles={Nacho:1100,Lucía:1300,Javi:2150}; const proteinGoals={Nacho:100,Lucía:80,Javi:100}; const profileModes={Nacho:"Pérdida de grasa",Lucía:"Mantenimiento",Javi:"Ganancia muscular"}; let profile=localStorage.profile||"Nacho", custom=JSON.parse(localStorage.customFoods||"[]");
 const $=x=>document.getElementById(x), foods=()=>[...base,...custom], iso=d=>d.toISOString().slice(0,10), k=()=>`diet:${profile}:${$("date").value}`;
 function get(){return JSON.parse(localStorage.getItem(k())||'{"items":[],"weight":"","waist":""}')} function save(d){localStorage.setItem(k(),JSON.stringify(d));render()}
 function food(n){return foods().find(x=>x.name===n)}
@@ -69,7 +69,7 @@ function totals(){let a=get().items;return ["kcal","p","c","f"].reduce((o,q)=>(o
 function render(){
  let d=get(),t=totals(),g=+$("goal").value||profiles[profile],left=g-t.kcal,pct=t.kcal/g;
  $("used").textContent=Math.round(t.kcal);$("goalText").textContent=g;$("left").textContent=Math.round(left);$("left").className=left<0?"over":"ok";
- $("prot").textContent=Math.round(t.p)+" g";$("carbs").textContent=Math.round(t.c)+" g";$("fat").textContent=Math.round(t.f)+" g";
+ $("prot").textContent=Math.round(t.p)+" / "+proteinGoals[profile]+" g";$("protLabel").textContent="proteína · "+profileModes[profile];$("carbs").textContent=Math.round(t.c)+" g";$("fat").textContent=Math.round(t.f)+" g";
  $("ring").style.background=`conic-gradient(${pct>1?"#b42318":"#286749"} ${Math.min(pct,1)*360}deg,#e4e9e4 0)`;
  const ord=["Desayuno","Media mañana","Comida","Merienda","Cena","Extra"];
  $("log").innerHTML=ord.map(m=>{let a=d.items.map((x,i)=>({...x,i})).filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal</span><button class="x" onclick="del(${x.i})">×</button></div>`).join("")}</div>`}).join("")||'<p class="muted">Aún no has registrado nada.</p>';
@@ -78,17 +78,57 @@ function render(){
 }
 function del(i){let d=get();d.items.splice(i,1);save(d)}
 function addRecipe(i){let r=recipes[i],d=get();recipeData(r).items.forEach(x=>d.items.push({...x,meal:r.meal}));save(d)}
-function renderIdeas(){let left=(+$("goal").value||profiles[profile])-totals().kcal, fits=recipes.map((r,i)=>({...recipeData(r),r,i})).filter(x=>x.kcal<=left+10).sort((a,b)=>b.kcal-a.kcal);
- $("suggestions").innerHTML=left<=0?'<p>Ya has alcanzado el objetivo de hoy.</p>':(fits.length?fits.map(x=>`<div class="suggest"><h3>${x.r.name}</h3><div>${Math.round(x.kcal)} kcal · ${Math.round(x.p)} g proteína</div><div class="small muted">${x.r.items.map(y=>y[1]+" g "+y[0]).join(" · ")}</div><button onclick="addRecipe(${x.i})">Añadir esta opción</button></div>`).join(""):'<p>No hay una receta completa precargada que quepa. Prueba “Completar con un alimento”.</p>')}
+function renderIdeas(){
+ let t=totals(), goal=+$("goal").value||profiles[profile], left=goal-t.kcal;
+ let proteinLeft=Math.max(0,proteinGoals[profile]-t.p);
+ let candidates=recipes.map((r,i)=>({...recipeData(r),r,i})).filter(x=>x.kcal<=left+10);
+ if(profile==="Javi"){
+   $("ideasIntro").textContent="Para Javi priorizamos llegar tanto al objetivo de calorías como al de proteína para apoyar la ganancia muscular.";
+   $("javiStatus").innerHTML=`<div class="stats" style="margin-bottom:12px">
+     <div class="stat"><b>${Math.max(0,Math.round(left))}</b><span>kcal que faltan</span></div>
+     <div class="stat"><b>${Math.round(t.p)} / ${proteinGoals.Javi} g</b><span>proteína de hoy</span></div>
+     <div class="stat"><b>${Math.round(proteinLeft)} g</b><span>proteína que falta</span></div>
+     <div class="stat"><b>${Math.round(t.kcal)} / ${goal}</b><span>kcal de hoy</span></div>
+   </div>`;
+   // Score recipes by how much of remaining protein they cover, then how closely calories fit.
+   candidates.forEach(x=>{
+      let proteinNeed=Math.max(proteinLeft,1), calorieNeed=Math.max(left,1);
+      let proteinCoverage=Math.min(x.p/proteinNeed,1.25);
+      let calorieFit=1-Math.min(Math.abs(calorieNeed-x.kcal)/calorieNeed,1);
+      let density=x.p/Math.max(x.kcal,1)*100;
+      x.score=proteinCoverage*0.60+calorieFit*0.25+Math.min(density/12,1)*0.15;
+   });
+   candidates.sort((a,b)=>b.score-a.score);
+ } else {
+   $("ideasIntro").textContent="Propuestas que caben aproximadamente en las calorías que te quedan hoy. Pulsa para añadir la receta completa.";
+   $("javiStatus").innerHTML="";
+   candidates.sort((a,b)=>b.kcal-a.kcal);
+ }
+ if(left<=0){
+   $("suggestions").innerHTML=profile==="Javi"
+    ? `<p>Ya has alcanzado el objetivo calórico de hoy. Proteína: <b>${Math.round(t.p)} / ${proteinGoals.Javi} g</b>.</p>`
+    : '<p>Ya has alcanzado el objetivo de hoy.</p>';
+   return;
+ }
+ if(!candidates.length){$("suggestions").innerHTML='<p>No hay una receta completa precargada que encaje. Prueba “Completar con un alimento”.</p>';return}
+ $("suggestions").innerHTML=candidates.map((x,pos)=>{
+   let tag=profile==="Javi" && pos===0?'<div class="small ok"><b>Mejor ajuste ahora</b></div>':'';
+   let afterP=Math.round(t.p+x.p), afterK=Math.round(t.kcal+x.kcal);
+   let detail=profile==="Javi"
+      ? `<div class="small muted">Después: ${afterK}/${goal} kcal · ${afterP}/${proteinGoals.Javi} g proteína</div>`
+      : '';
+   return `<div class="suggest">${tag}<h3>${x.r.name}</h3><div>${Math.round(x.kcal)} kcal · ${Math.round(x.p)} g proteína</div>${detail}<div class="small muted">${x.r.items.map(y=>y[1]+" g "+y[0]).join(" · ")}</div><button onclick="addRecipe(${x.i})">Añadir esta opción</button></div>`
+ }).join("")
+}
 function updateFill(){let f=foods()[+$("fillFood").value||0],left=(+$("goal").value||profiles[profile])-totals().kcal;$("maxGrams").value=f&&left>0?Math.floor(left*100/f.kcal)+" g":"0 g"}
 function renderWeek(){let baseD=new Date($("date").value+"T12:00:00"),sum=0,n=0,h="";for(let i=6;i>=0;i--){let dt=new Date(baseD);dt.setDate(dt.getDate()-i);let ds=iso(dt),d=JSON.parse(localStorage.getItem(`diet:${profile}:${ds}`)||'{"items":[]}'),q=Math.round(d.items.reduce((s,x)=>s+x.kcal,0));if(q){sum+=q;n++}h+=`<div class="day"><span>${dt.toLocaleDateString("es",{weekday:"short"})}</span><b class="${q>profiles[profile]?"over":"ok"}">${q||"—"}</b><span>kcal</span></div>`}$("weekGrid").innerHTML=h;$("weekAvg").textContent=n?`Media de los ${n} días registrados: ${Math.round(sum/n)} kcal/día`:"Sin datos todavía."}
 function records(field){let a=[];for(let i=0;i<localStorage.length;i++){let key=localStorage.key(i);if(key.startsWith("diet:"+profile+":")){let d=JSON.parse(localStorage.getItem(key));if(d[field])a.push({date:key.split(":")[2],v:+d[field]})}}return a.sort((a,b)=>a.date.localeCompare(b.date)).slice(-10)}
 function chart(id,field){let a=records(field),el=$(id);if(!a.length){el.innerHTML='<p class="muted">Añade registros para ver la gráfica.</p>';return}let min=Math.min(...a.map(x=>x.v)),max=Math.max(...a.map(x=>x.v));el.innerHTML=a.map(x=>{let h=35+(x.v-min)/(max-min||1)*145;return `<div class="col"><b class="small">${x.v}</b><div class="bar" style="height:${h}px"></div><span>${x.date.slice(5)}</span></div>`}).join("")}
 function renderCharts(){chart("weightChart","weight");chart("waistChart","waist")}
-function setP(p){profile=p;localStorage.profile=p;$("goal").value=profiles[p];$("bn").classList.toggle("active",p==="Nacho");$("bl").classList.toggle("active",p==="Lucía");load()}
+function setP(p){profile=p;localStorage.profile=p;$("goal").value=profiles[p];$("bn").classList.toggle("active",p==="Nacho");$("bl").classList.toggle("active",p==="Lucía");$("bj").classList.toggle("active",p==="Javi");load()}
 function load(){let d=get();$("weight").value=d.weight||"";$("waist").value=d.waist||"";render()}
 $("add").onclick=()=>{let f=foods()[+$("food").value],g=+$("grams").value;if(!f||g<=0)return;let d=get();d.items.push({...calcItem(f,g),meal:$("meal").value});save(d)}
-$("bn").onclick=()=>setP("Nacho");$("bl").onclick=()=>setP("Lucía");$("date").onchange=load;$("goal").onchange=render;$("fillFood").onchange=updateFill;
+$("bn").onclick=()=>setP("Nacho");$("bl").onclick=()=>setP("Lucía");$("bj").onclick=()=>setP("Javi");$("date").onchange=load;$("goal").onchange=render;$("fillFood").onchange=updateFill;
 ["weight","waist"].forEach(id=>$(id).onchange=()=>{let d=get();d[id]=$(id).value;save(d)})
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".section").forEach(x=>x.classList.remove("show"));$(b.dataset.tab).classList.add("show");render()})
 $("saveFood").onclick=()=>{let n=$("fn").value.trim(),kk=+$("fk").value;if(!n||!kk)return;custom.push({name:n,kcal:kk,p:+$("fp").value||0,c:+$("fc").value||0,f:+$("ff").value||0});localStorage.customFoods=JSON.stringify(custom);populate();render();["fn","fk","fp","fc","ff"].forEach(x=>$(x).value="")}
