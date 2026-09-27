@@ -1,121 +1,98 @@
 <!doctype html>
-<html lang="es">
-<head>
+<html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#f6f7f3">
-<title>Mi Dieta · Nacho & Lucía</title>
+<meta name="theme-color" content="#183f2d"><title>Mi Dieta V3</title>
 <link rel="manifest" href="manifest.json">
 <style>
-:root{--bg:#f6f7f3;--card:#fff;--ink:#17201a;--muted:#68716b;--line:#e2e7e1;--accent:#2f6f4e;--warn:#a65b00;--bad:#b42318}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
-.wrap{max-width:1000px;margin:auto;padding:20px}.top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-h1{margin:0;font-size:28px}h2{font-size:18px;margin:0 0 12px}.sub{color:var(--muted);margin:4px 0 0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:14px;box-shadow:0 3px 16px #00000008}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:13px;border-radius:14px;background:#f2f5f1}.stat b{font-size:22px;display:block}.stat span{font-size:12px;color:var(--muted)}
-.row{display:flex;gap:9px;align-items:end;flex-wrap:wrap}.field{flex:1;min-width:120px}label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}
-select,input,button{width:100%;padding:10px;border-radius:10px;border:1px solid #ccd4cd;background:white;font:inherit}
-button{cursor:pointer;background:var(--accent);color:white;border:none;font-weight:650}.secondary{background:#edf2ee;color:var(--ink);border:1px solid var(--line)}
-.danger{background:#fff0ee;color:var(--bad);border:1px solid #f3cbc6;width:auto;padding:7px 10px}
-.progress{height:13px;background:#e7ebe7;border-radius:20px;overflow:hidden;margin-top:12px}.bar{height:100%;background:var(--accent);width:0;transition:.2s}
-.meal{border-top:1px solid var(--line);padding:12px 0}.meal:first-child{border-top:0}.mealhead{display:flex;justify-content:space-between;font-weight:700}
-.item{display:grid;grid-template-columns:1fr 80px 90px 40px;gap:8px;align-items:center;padding:7px 0;font-size:14px}.muted{color:var(--muted)}
-.tabs{display:flex;gap:6px;flex-wrap:wrap}.tab{width:auto;background:#edf2ee;color:var(--ink)}.tab.active{background:var(--accent);color:white}
-.history{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.day{padding:10px 5px;text-align:center;background:#f2f5f1;border-radius:12px;font-size:12px}.day b{display:block;font-size:14px}
-.ok{color:var(--accent)}.over{color:var(--bad)}.note{font-size:12px;color:var(--muted)}
-@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.item{grid-template-columns:1fr 65px 75px 36px}.history{grid-template-columns:repeat(4,1fr)}}
-</style>
-</head>
-<body><div class="wrap">
-<div class="top"><div><h1>Mi Dieta</h1><p class="sub">Nacho & Lucía · diario de comidas</p></div>
-<div class="tabs"><button class="tab" id="nachoBtn">Nacho</button><button class="tab" id="luciaBtn">Lucía</button></div></div>
+:root{--bg:#f4f6f2;--card:#fff;--ink:#18211b;--muted:#69736c;--green:#286749;--green2:#dcece2;--line:#e1e6e1;--red:#b42318;--amber:#a05a00}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+.app{max-width:1050px;margin:auto;padding:18px}.head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+h1{margin:0;font-size:27px}.muted{color:var(--muted)}.small{font-size:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:14px;box-shadow:0 4px 18px #00000008}
+.tabs,.nav{display:flex;gap:7px;flex-wrap:wrap}.nav{margin-top:15px}.pill,.nav button{width:auto;border:0;border-radius:99px;padding:9px 14px;background:#e9eeea;color:var(--ink);font-weight:700}.active{background:var(--green)!important;color:#fff!important}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--green);color:#fff;font-weight:700}input,select{width:100%;padding:10px;border:1px solid #ccd5ce;border-radius:10px;background:#fff;font:inherit}
+.row{display:flex;gap:9px;align-items:end;flex-wrap:wrap}.field{flex:1;min-width:120px}label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}
+.hero{display:grid;grid-template-columns:220px 1fr;gap:18px;align-items:center}.ring{width:190px;height:190px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--green) 0deg,#e4e9e4 0);position:relative;margin:auto}
+.ring:after{content:"";position:absolute;width:145px;height:145px;background:#fff;border-radius:50%}.ringtext{z-index:1;text-align:center}.ringtext b{font-size:31px}.ringtext span{display:block;color:var(--muted);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stat{background:#f1f5f1;padding:13px;border-radius:14px}.stat b{display:block;font-size:21px}.stat span{font-size:11px;color:var(--muted)}
+.section{display:none}.section.show{display:block}.meal{border-top:1px solid var(--line);padding:12px 0}.meal:first-child{border:0}.mealhead{display:flex;justify-content:space-between;font-weight:800}
+.item{display:grid;grid-template-columns:1fr 75px 85px 38px;gap:7px;align-items:center;padding:6px 0;font-size:14px}.x{background:#fff0ee;color:var(--red);padding:7px}
+.suggestions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.suggest{border:1px solid var(--line);border-radius:15px;padding:14px}.suggest h3{margin:0 0 5px}.suggest button{margin-top:8px}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.day{background:#f1f5f1;border-radius:13px;padding:10px 5px;text-align:center;font-size:12px}.day b{display:block;font-size:15px}.ok{color:var(--green)}.over{color:var(--red)}
+.chart{height:220px;display:flex;align-items:end;gap:8px;border-bottom:1px solid var(--line);padding-top:20px}.col{flex:1;text-align:center}.bar{background:var(--green);border-radius:6px 6px 0 0;min-height:2px}.col span{font-size:10px;color:var(--muted)}
+.recipegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.recipe{background:#f5f7f4;border-radius:14px;padding:12px}.recipe b{display:block}.recipe button{margin-top:8px;width:100%}
+@media(max-width:720px){.hero{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.suggestions,.recipegrid{grid-template-columns:1fr}.week{grid-template-columns:repeat(4,1fr)}}
+</style></head><body><div class="app">
+<div class="head"><div><h1>Mi Dieta</h1><div class="muted">Diario inteligente · Nacho & Lucía</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button></div></div>
+<div class="nav"><button data-tab="today" class="active">Hoy</button><button data-tab="ideas">¿Qué puedo comer?</button><button data-tab="week">Semana</button><button data-tab="progress">Progreso</button><button data-tab="foods">Alimentos</button></div>
 
-<div class="card">
-<div class="row">
- <div class="field"><label>Fecha</label><input type="date" id="date"></div>
- <div class="field"><label>Objetivo diario</label><input type="number" id="goal"></div>
- <div class="field"><label>Peso (opcional)</label><input type="number" step=".1" id="weight" placeholder="kg"></div>
- <div class="field"><label>Cintura (opcional)</label><input type="number" step=".1" id="waist" placeholder="cm"></div>
-</div>
-</div>
+<section id="today" class="section show">
+<div class="card row"><div class="field"><label>Fecha</label><input id="date" type="date"></div><div class="field"><label>Objetivo kcal</label><input id="goal" type="number"></div><div class="field"><label>Peso kg</label><input id="weight" type="number" step=".1"></div><div class="field"><label>Cintura cm</label><input id="waist" type="number" step=".1"></div></div>
+<div class="card hero"><div class="ring" id="ring"><div class="ringtext"><b id="used">0</b><span>de <i id="goalText">1100</i> kcal</span></div></div>
+<div class="stats"><div class="stat"><b id="left">0</b><span>kcal restantes</span></div><div class="stat"><b id="prot">0 g</b><span>proteína</span></div><div class="stat"><b id="carbs">0 g</b><span>hidratos</span></div><div class="stat"><b id="fat">0 g</b><span>grasas</span></div></div></div>
+<div class="card"><h2>Añadir comida</h2><div class="row"><div class="field"><label>Momento</label><select id="meal"><option>Desayuno</option><option>Media mañana</option><option>Comida</option><option>Merienda</option><option>Cena</option><option>Extra</option></select></div><div class="field" style="flex:2"><label>Alimento</label><select id="food"></select></div><div class="field"><label>Gramos</label><input id="grams" type="number" value="100"></div><div class="field"><button id="add">Añadir</button></div></div></div>
+<div class="card"><h2>Registro del día</h2><div id="log"></div></div>
+<div class="card"><h2>Recetas rápidas</h2><div class="recipegrid" id="recipes"></div></div>
+</section>
 
-<div class="grid">
-<div class="stat"><b id="used">0</b><span>kcal consumidas</span></div>
-<div class="stat"><b id="left">0</b><span>kcal disponibles</span></div>
-<div class="stat"><b id="protein">0 g</b><span>proteína</span></div>
-<div class="stat"><b id="pct">0%</b><span>del objetivo</span></div>
-</div>
-<div class="progress"><div class="bar" id="bar"></div></div>
+<section id="ideas" class="section"><div class="card"><h2>¿Qué puedo comer?</h2><p class="muted">Propuestas que caben aproximadamente en las calorías que te quedan hoy. Pulsa para añadir la receta completa.</p><div class="suggestions" id="suggestions"></div></div>
+<div class="card"><h2>Completar con un alimento</h2><div class="row"><div class="field"><label>Alimento</label><select id="fillFood"></select></div><div class="field"><label>Máximo que cabe hoy</label><input id="maxGrams" readonly></div></div><p class="small muted">Cálculo matemático según las kcal/100 g del alimento; no es una recomendación de ración.</p></div></section>
 
-<div class="card">
-<h2>Añadir lo que hemos comido</h2>
-<div class="row">
- <div class="field"><label>Comida del día</label><select id="meal"><option>Desayuno</option><option>Media mañana</option><option>Comida</option><option>Merienda</option><option>Cena</option><option>Extra</option></select></div>
- <div class="field" style="flex:2"><label>Alimento</label><select id="food"></select></div>
- <div class="field"><label>Cantidad (g)</label><input type="number" id="grams" value="100" min="1"></div>
- <div class="field"><button id="add">Añadir</button></div>
-</div>
-<p class="note">Las kcal son orientativas. Para alimentos envasados, puedes crear tu alimento con los valores de la etiqueta.</p>
-</div>
-
-<div class="card"><h2>Hoy</h2><div id="meals"></div></div>
-
-<div class="card">
-<h2>Crear alimento</h2>
-<div class="row">
- <div class="field"><label>Nombre</label><input id="newName" placeholder="Ej. queso fresco"></div>
- <div class="field"><label>kcal / 100 g</label><input id="newKcal" type="number"></div>
- <div class="field"><label>Proteína / 100 g</label><input id="newProt" type="number" step=".1"></div>
- <div class="field"><button id="newFood">Guardar alimento</button></div>
-</div></div>
-
-<div class="card"><h2>Últimos 7 días</h2><div class="history" id="history"></div></div>
-<div class="card"><h2>Copias de seguridad</h2><div class="row">
-<div class="field"><button class="secondary" id="export">Exportar datos</button></div>
-<div class="field"><label>Importar copia</label><input type="file" id="import" accept=".json"></div>
-</div><p class="note">Los datos se guardan solo en este navegador. Exporta una copia si vas a cambiar de móvil/ordenador.</p></div>
+<section id="week" class="section"><div class="card"><h2>Últimos 7 días</h2><div class="week" id="weekGrid"></div><p id="weekAvg"></p></div></section>
+<section id="progress" class="section"><div class="card"><h2>Peso · últimos registros</h2><div class="chart" id="weightChart"></div></div><div class="card"><h2>Cintura · últimos registros</h2><div class="chart" id="waistChart"></div></div></section>
+<section id="foods" class="section"><div class="card"><h2>Añadir alimento personalizado</h2><div class="row"><div class="field"><label>Nombre</label><input id="fn"></div><div class="field"><label>kcal / 100 g</label><input id="fk" type="number"></div><div class="field"><label>Proteína</label><input id="fp" type="number" step=".1"></div><div class="field"><label>Hidratos</label><input id="fc" type="number" step=".1"></div><div class="field"><label>Grasas</label><input id="ff" type="number" step=".1"></div><div class="field"><button id="saveFood">Guardar</button></div></div></div>
+<div class="card"><h2>Copia de seguridad</h2><div class="row"><div class="field"><button id="export">Exportar datos</button></div><div class="field"><label>Importar JSON</label><input id="import" type="file" accept=".json"></div></div></div></section>
 </div>
 <script>
-const baseFoods=[
-["Huevo",143,12.6],["Claras",48,10.5],["Pollo",120,23],["Pavo",115,24],["Ternera magra",150,22],
-["Solomillo cerdo",135,22],["Merluza",86,18],["Rape",76,17],["Dorada/Lubina",110,20],["Gambones",95,20],
-["Jamón serrano",240,31],["Yogur proteico",65,10],["Patata",77,2],["Arroz cocido",130,2.7],["Pan",250,8.5],
-["Avena",370,13],["Aguacate",160,2],["AOVE",884,0],["Tomate",18,.9],["Ensalada/hojas",18,1.5],
-["Alcachofa",47,3.3],["Plátano",89,1.1],["Naranja/Mandarina",47,.9],["Fresas",32,.7],["Almendras",579,21]
-].map(x=>({name:x[0],kcal:x[1],protein:x[2]}));
-const profiles={Nacho:{goal:1100},Lucía:{goal:1300}};
-let profile=localStorage.profile||"Nacho";
-let custom=JSON.parse(localStorage.customFoods||"[]");
-const $=id=>document.getElementById(id);
-function key(){return "diet:"+profile+":"+$("date").value}
-function getDay(){return JSON.parse(localStorage.getItem(key())||'{"items":[],"weight":"","waist":""}')}
-function saveDay(d){localStorage.setItem(key(),JSON.stringify(d));render()}
-function foods(){return [...baseFoods,...custom]}
-function populate(){ $("food").innerHTML=foods().map((f,i)=>`<option value="${i}">${f.name} · ${f.kcal} kcal/100g</option>`).join("")}
-function setProfile(p){profile=p;localStorage.profile=p;$("goal").value=profiles[p].goal;$("nachoBtn").classList.toggle("active",p==="Nacho");$("luciaBtn").classList.toggle("active",p==="Lucía");loadDay()}
-function loadDay(){let d=getDay();$("weight").value=d.weight||"";$("waist").value=d.waist||"";render()}
+const base=[
+["Huevo",143,12.6,.7,9.5],["Claras",48,10.5,.7,.2],["Pollo",120,23,0,2.6],["Pavo",115,24,0,1.5],["Ternera magra",150,22,0,6],
+["Solomillo cerdo",135,22,0,5],["Merluza",86,18,0,1.8],["Rape",76,17,0,1],["Dorada/Lubina",110,20,0,3],["Gambones",95,20,.5,1.2],
+["Jamón serrano",240,31,.5,12],["Yogur proteico",65,10,4,1],["Patata",77,2,17,.1],["Arroz cocido",130,2.7,28,.3],["Pan",250,8.5,49,2],
+["Avena",370,13,60,7],["Aguacate",160,2,8.5,14.7],["AOVE",884,0,0,100],["Tomate",18,.9,3.9,.2],["Ensalada/hojas",18,1.5,3,.2],
+["Alcachofa",47,3.3,10,.2],["Plátano",89,1.1,23,.3],["Naranja/Mandarina",47,.9,12,.1],["Fresas",32,.7,7.7,.3],["Almendras",579,21,22,50]
+].map(x=>({name:x[0],kcal:x[1],p:x[2],c:x[3],f:x[4]}));
+const recipes=[
+{name:"Tortilla con tomate",meal:"Cena",items:[["Huevo",120],["Claras",120],["Tomate",200],["AOVE",5]]},
+{name:"Merluza con patata",meal:"Cena",items:[["Merluza",200],["Patata",150],["Ensalada/hojas",100],["AOVE",5]]},
+{name:"Gambones y aguacate",meal:"Cena",items:[["Gambones",200],["Tomate",200],["Aguacate",40],["AOVE",5]]},
+{name:"Pollo con patata",meal:"Comida",items:[["Pollo",180],["Patata",180],["Ensalada/hojas",120],["AOVE",10]]},
+{name:"Rape con arroz",meal:"Comida",items:[["Rape",200],["Arroz cocido",130],["Ensalada/hojas",120],["AOVE",10]]},
+{name:"Pavo y patata",meal:"Comida",items:[["Pavo",180],["Patata",200],["Tomate",150],["AOVE",10]]}
+];
+const profiles={Nacho:1100,Lucía:1300}; let profile=localStorage.profile||"Nacho", custom=JSON.parse(localStorage.customFoods||"[]");
+const $=x=>document.getElementById(x), foods=()=>[...base,...custom], iso=d=>d.toISOString().slice(0,10), k=()=>`diet:${profile}:${$("date").value}`;
+function get(){return JSON.parse(localStorage.getItem(k())||'{"items":[],"weight":"","waist":""}')} function save(d){localStorage.setItem(k(),JSON.stringify(d));render()}
+function food(n){return foods().find(x=>x.name===n)}
+function calcItem(f,g){return {name:f.name,grams:g,kcal:f.kcal*g/100,p:f.p*g/100,c:f.c*g/100,f:f.f*g/100}}
+function recipeData(r){let a=r.items.map(([n,g])=>calcItem(food(n),g));return {kcal:a.reduce((s,x)=>s+x.kcal,0),p:a.reduce((s,x)=>s+x.p,0),items:a}}
+function populate(){let o=foods().map((f,i)=>`<option value="${i}">${f.name} · ${f.kcal} kcal/100g</option>`).join("");$("food").innerHTML=o;$("fillFood").innerHTML=o}
+function totals(){let a=get().items;return ["kcal","p","c","f"].reduce((o,q)=>(o[q]=a.reduce((s,x)=>s+(x[q]||0),0),o),{})}
 function render(){
- let d=getDay(), goal=+$("goal").value||profiles[profile].goal;
- let kcal=d.items.reduce((s,x)=>s+x.kcal,0), prot=d.items.reduce((s,x)=>s+x.protein,0), left=goal-kcal, pct=Math.round(kcal/goal*100);
- $("used").textContent=Math.round(kcal);$("left").textContent=Math.round(left);$("left").className=left<0?"over":"ok";
- $("protein").textContent=Math.round(prot)+" g";$("pct").textContent=pct+"%";$("bar").style.width=Math.min(pct,100)+"%";$("bar").style.background=pct>100?"var(--bad)":"var(--accent)";
- const order=["Desayuno","Media mañana","Comida","Merienda","Cena","Extra"];
- $("meals").innerHTML=order.map(m=>{
-   let a=d.items.map((x,i)=>({...x,i})).filter(x=>x.meal===m), sum=a.reduce((s,x)=>s+x.kcal,0);
-   if(!a.length)return "";
-   return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(sum)} kcal</span></div>`+
-   a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal</span><button class="danger" onclick="delItem(${x.i})">×</button></div>`).join("")+"</div>"
- }).join("") || '<p class="muted">Todavía no has registrado nada.</p>';
- renderHistory()
+ let d=get(),t=totals(),g=+$("goal").value||profiles[profile],left=g-t.kcal,pct=t.kcal/g;
+ $("used").textContent=Math.round(t.kcal);$("goalText").textContent=g;$("left").textContent=Math.round(left);$("left").className=left<0?"over":"ok";
+ $("prot").textContent=Math.round(t.p)+" g";$("carbs").textContent=Math.round(t.c)+" g";$("fat").textContent=Math.round(t.f)+" g";
+ $("ring").style.background=`conic-gradient(${pct>1?"#b42318":"#286749"} ${Math.min(pct,1)*360}deg,#e4e9e4 0)`;
+ const ord=["Desayuno","Media mañana","Comida","Merienda","Cena","Extra"];
+ $("log").innerHTML=ord.map(m=>{let a=d.items.map((x,i)=>({...x,i})).filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal</span><button class="x" onclick="del(${x.i})">×</button></div>`).join("")}</div>`}).join("")||'<p class="muted">Aún no has registrado nada.</p>';
+ $("recipes").innerHTML=recipes.map((r,i)=>{let q=recipeData(r);return `<div class="recipe"><b>${r.name}</b><span class="small muted">${Math.round(q.kcal)} kcal · ${Math.round(q.p)} g proteína</span><button onclick="addRecipe(${i})">Añadir</button></div>`}).join("");
+ renderIdeas();renderWeek();renderCharts();updateFill()
 }
-function delItem(i){let d=getDay();d.items.splice(i,1);saveDay(d)}
-$("add").onclick=()=>{let f=foods()[+$("food").value],g=+$("grams").value;if(!f||g<=0)return;let d=getDay();d.items.push({meal:$("meal").value,name:f.name,grams:g,kcal:f.kcal*g/100,protein:f.protein*g/100});saveDay(d)}
-$("newFood").onclick=()=>{let n=$("newName").value.trim(),k=+$("newKcal").value,p=+$("newProt").value;if(!n||!k)return;custom.push({name:n,kcal:k,protein:p||0});localStorage.customFoods=JSON.stringify(custom);populate();$("newName").value=$("newKcal").value=$("newProt").value=""}
-$("date").onchange=loadDay;$("goal").onchange=render;
-["weight","waist"].forEach(id=>$(id).onchange=()=>{let d=getDay();d[id]=$(id).value;saveDay(d)})
-$("nachoBtn").onclick=()=>setProfile("Nacho");$("luciaBtn").onclick=()=>setProfile("Lucía");
-function iso(d){return d.toISOString().slice(0,10)}
-function renderHistory(){let base=new Date($("date").value+"T12:00:00"),html="";for(let i=6;i>=0;i--){let dt=new Date(base);dt.setDate(dt.getDate()-i);let ds=iso(dt),d=JSON.parse(localStorage.getItem("diet:"+profile+":"+ds)||'{"items":[]}');let k=Math.round(d.items.reduce((s,x)=>s+x.kcal,0));let g=profiles[profile].goal;html+=`<div class="day"><span>${dt.toLocaleDateString("es",{weekday:"short"})}</span><b class="${k>g?"over":"ok"}">${k}</b><span>kcal</span></div>`}$("history").innerHTML=html}
-$("export").onclick=()=>{let data={};for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(k.startsWith("diet:")||k==="customFoods")data[k]=localStorage.getItem(k)}let b=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="mi-dieta-backup.json";a.click()}
-$("import").onchange=e=>{let r=new FileReader();r.onload=()=>{try{let o=JSON.parse(r.result);Object.entries(o).forEach(([k,v])=>localStorage.setItem(k,v));custom=JSON.parse(localStorage.customFoods||"[]");populate();loadDay();alert("Datos importados")}catch{alert("Archivo no válido")}};r.readAsText(e.target.files[0])}
-$("date").value=iso(new Date());populate();setProfile(profile);
+function del(i){let d=get();d.items.splice(i,1);save(d)}
+function addRecipe(i){let r=recipes[i],d=get();recipeData(r).items.forEach(x=>d.items.push({...x,meal:r.meal}));save(d)}
+function renderIdeas(){let left=(+$("goal").value||profiles[profile])-totals().kcal, fits=recipes.map((r,i)=>({...recipeData(r),r,i})).filter(x=>x.kcal<=left+10).sort((a,b)=>b.kcal-a.kcal);
+ $("suggestions").innerHTML=left<=0?'<p>Ya has alcanzado el objetivo de hoy.</p>':(fits.length?fits.map(x=>`<div class="suggest"><h3>${x.r.name}</h3><div>${Math.round(x.kcal)} kcal · ${Math.round(x.p)} g proteína</div><div class="small muted">${x.r.items.map(y=>y[1]+" g "+y[0]).join(" · ")}</div><button onclick="addRecipe(${x.i})">Añadir esta opción</button></div>`).join(""):'<p>No hay una receta completa precargada que quepa. Prueba “Completar con un alimento”.</p>')}
+function updateFill(){let f=foods()[+$("fillFood").value||0],left=(+$("goal").value||profiles[profile])-totals().kcal;$("maxGrams").value=f&&left>0?Math.floor(left*100/f.kcal)+" g":"0 g"}
+function renderWeek(){let baseD=new Date($("date").value+"T12:00:00"),sum=0,n=0,h="";for(let i=6;i>=0;i--){let dt=new Date(baseD);dt.setDate(dt.getDate()-i);let ds=iso(dt),d=JSON.parse(localStorage.getItem(`diet:${profile}:${ds}`)||'{"items":[]}'),q=Math.round(d.items.reduce((s,x)=>s+x.kcal,0));if(q){sum+=q;n++}h+=`<div class="day"><span>${dt.toLocaleDateString("es",{weekday:"short"})}</span><b class="${q>profiles[profile]?"over":"ok"}">${q||"—"}</b><span>kcal</span></div>`}$("weekGrid").innerHTML=h;$("weekAvg").textContent=n?`Media de los ${n} días registrados: ${Math.round(sum/n)} kcal/día`:"Sin datos todavía."}
+function records(field){let a=[];for(let i=0;i<localStorage.length;i++){let key=localStorage.key(i);if(key.startsWith("diet:"+profile+":")){let d=JSON.parse(localStorage.getItem(key));if(d[field])a.push({date:key.split(":")[2],v:+d[field]})}}return a.sort((a,b)=>a.date.localeCompare(b.date)).slice(-10)}
+function chart(id,field){let a=records(field),el=$(id);if(!a.length){el.innerHTML='<p class="muted">Añade registros para ver la gráfica.</p>';return}let min=Math.min(...a.map(x=>x.v)),max=Math.max(...a.map(x=>x.v));el.innerHTML=a.map(x=>{let h=35+(x.v-min)/(max-min||1)*145;return `<div class="col"><b class="small">${x.v}</b><div class="bar" style="height:${h}px"></div><span>${x.date.slice(5)}</span></div>`}).join("")}
+function renderCharts(){chart("weightChart","weight");chart("waistChart","waist")}
+function setP(p){profile=p;localStorage.profile=p;$("goal").value=profiles[p];$("bn").classList.toggle("active",p==="Nacho");$("bl").classList.toggle("active",p==="Lucía");load()}
+function load(){let d=get();$("weight").value=d.weight||"";$("waist").value=d.waist||"";render()}
+$("add").onclick=()=>{let f=foods()[+$("food").value],g=+$("grams").value;if(!f||g<=0)return;let d=get();d.items.push({...calcItem(f,g),meal:$("meal").value});save(d)}
+$("bn").onclick=()=>setP("Nacho");$("bl").onclick=()=>setP("Lucía");$("date").onchange=load;$("goal").onchange=render;$("fillFood").onchange=updateFill;
+["weight","waist"].forEach(id=>$(id).onchange=()=>{let d=get();d[id]=$(id).value;save(d)})
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".section").forEach(x=>x.classList.remove("show"));$(b.dataset.tab).classList.add("show");render()})
+$("saveFood").onclick=()=>{let n=$("fn").value.trim(),kk=+$("fk").value;if(!n||!kk)return;custom.push({name:n,kcal:kk,p:+$("fp").value||0,c:+$("fc").value||0,f:+$("ff").value||0});localStorage.customFoods=JSON.stringify(custom);populate();render();["fn","fk","fp","fc","ff"].forEach(x=>$(x).value="")}
+$("export").onclick=()=>{let o={};for(let i=0;i<localStorage.length;i++){let q=localStorage.key(i);if(q.startsWith("diet:")||q==="customFoods")o[q]=localStorage.getItem(q)}let b=new Blob([JSON.stringify(o,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="mi-dieta-backup.json";a.click()}
+$("import").onchange=e=>{let r=new FileReader();r.onload=()=>{try{Object.entries(JSON.parse(r.result)).forEach(([a,b])=>localStorage.setItem(a,b));custom=JSON.parse(localStorage.customFoods||"[]");populate();load();alert("Datos importados")}catch{alert("Archivo no válido")}};r.readAsText(e.target.files[0])}
+$("date").value=iso(new Date());populate();setP(profile);
 </script></body></html>

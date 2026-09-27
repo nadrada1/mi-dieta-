@@ -1,25 +1,18 @@
-# Mi Dieta v2 — Nacho & Lucía
+# Mi Dieta V3
+Actualización de la app de Nacho y Lucía.
 
-Aplicación estática para registrar cada día lo comido y ver al instante las calorías consumidas y restantes.
+## Novedades
+- Panel visual con kcal restantes y macros.
+- Recetas rápidas.
+- “¿Qué puedo comer?” según las kcal que quedan.
+- Cálculo de gramos máximos que caben de un alimento.
+- Vista semanal y media de días registrados.
+- Gráficas simples de peso y cintura.
+- Perfiles independientes.
+- Alimentos personalizados.
+- Exportación/importación de datos.
 
-## Incluye
-- Perfiles independientes: Nacho (1.100 kcal) y Lucía (1.300 kcal).
-- Registro por fecha y por comida.
-- kcal consumidas/restantes y proteína.
-- Historial de los últimos 7 días.
-- Peso y cintura opcionales.
-- Alimentos precargados + alimentos personalizados.
-- Exportar/importar copia de seguridad.
-- Funciona sin servidor: los datos quedan en `localStorage`.
+## Actualizar GitHub Pages
+Sustituye los tres archivos del repositorio por estos. GitHub Pages se redesplegará automáticamente.
 
-## Publicar gratis en GitHub Pages
-1. Crea un repositorio, por ejemplo `mi-dieta`.
-2. Sube `index.html` y `manifest.json` a la raíz.
-3. En GitHub: Settings → Pages.
-4. Source: Deploy from a branch.
-5. Selecciona `main` y `/root`.
-6. Guarda. GitHub mostrará la dirección pública.
-
-## Importante
-Las kcal son aproximadas. En productos envasados conviene crear el alimento con los datos de su etiqueta.
-Al estar alojada como web estática, cada navegador conserva sus propios datos. Usa Exportar/Importar para moverlos entre dispositivos.
+Los datos continúan almacenándose en localStorage, y las claves son compatibles con V2.

@@ -1,9 +1,9 @@
 {
-  "name": "Mi Dieta · Nacho & Lucía",
+  "name": "Mi Dieta V3",
   "short_name": "Mi Dieta",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f6f7f3",
-  "theme_color": "#f6f7f3",
+  "background_color": "#f4f6f2",
+  "theme_color": "#183f2d",
   "icons": []
 }
