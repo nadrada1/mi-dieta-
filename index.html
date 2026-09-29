@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#183f2d"><title>Mi Dieta V3</title>
+<meta name="theme-color" content="#183f2d"><title>Mi Dieta V4</title>
 <link rel="manifest" href="manifest.json">
 <style>
 :root{--bg:#f4f6f2;--card:#fff;--ink:#18211b;--muted:#69736c;--green:#286749;--green2:#dcece2;--line:#e1e6e1;--red:#b42318;--amber:#a05a00}
@@ -22,8 +22,8 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 .recipegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.recipe{background:#f5f7f4;border-radius:14px;padding:12px}.recipe b{display:block}.recipe button{margin-top:8px;width:100%}
 @media(max-width:720px){.hero{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.suggestions,.recipegrid{grid-template-columns:1fr}.week{grid-template-columns:repeat(4,1fr)}}
 </style></head><body><div class="app">
-<div class="head"><div><h1>Mi Dieta</h1><div class="muted">Diario inteligente · Nacho & Lucía</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
-<div class="nav"><button data-tab="today" class="active">Hoy</button><button data-tab="ideas">¿Qué puedo comer?</button><button data-tab="week">Semana</button><button data-tab="progress">Progreso</button><button data-tab="foods">Alimentos</button></div>
+<div class="head"><div><h1>Mi Dieta</h1><div class="muted">Diario y biblioteca familiar · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
+<div class="nav"><button data-tab="today" class="active">Hoy</button><button data-tab="menu">Menú diario</button><button data-tab="ideas">¿Qué puedo comer?</button><button data-tab="week">Semana</button><button data-tab="progress">Progreso</button><button data-tab="foods">Alimentos</button></div>
 
 <section id="today" class="section show">
 <div class="card row"><div class="field"><label>Fecha</label><input id="date" type="date"></div><div class="field"><label>Objetivo kcal</label><input id="goal" type="number"></div><div class="field"><label>Peso kg</label><input id="weight" type="number" step=".1"></div><div class="field"><label>Cintura cm</label><input id="waist" type="number" step=".1"></div></div>
@@ -34,12 +34,20 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 <div class="card"><h2>Recetas rápidas</h2><div class="recipegrid" id="recipes"></div></div>
 </section>
 
+<section id="menu" class="section">
+<div class="card"><h2>Ideas de menú diario</h2><p class="muted" id="menuIntro">Genera un día completo adaptado al perfil seleccionado.</p>
+<div class="row"><div class="field"><button id="genMenu">🎲 Generar otro menú</button></div><div class="field"><button id="addMenu">＋ Añadir menú completo al día</button></div></div>
+<div id="dailyMenu" style="margin-top:12px"></div></div></section>
+
 <section id="ideas" class="section"><div class="card"><h2>¿Qué puedo comer?</h2><p class="muted" id="ideasIntro">Propuestas que caben aproximadamente en las calorías que te quedan hoy.</p><div id="javiStatus"></div><div class="suggestions" id="suggestions"></div></div>
 <div class="card"><h2>Completar con un alimento</h2><div class="row"><div class="field"><label>Alimento</label><select id="fillFood"></select></div><div class="field"><label>Máximo que cabe hoy</label><input id="maxGrams" readonly></div></div><p class="small muted">Cálculo matemático según las kcal/100 g del alimento; no es una recomendación de ración.</p></div></section>
 
 <section id="week" class="section"><div class="card"><h2>Últimos 7 días</h2><div class="week" id="weekGrid"></div><p id="weekAvg"></p></div></section>
 <section id="progress" class="section"><div class="card"><h2>Peso · últimos registros</h2><div class="chart" id="weightChart"></div></div><div class="card"><h2>Cintura · últimos registros</h2><div class="chart" id="waistChart"></div></div></section>
-<section id="foods" class="section"><div class="card"><h2>Añadir alimento personalizado</h2><div class="row"><div class="field"><label>Nombre</label><input id="fn"></div><div class="field"><label>kcal / 100 g</label><input id="fk" type="number"></div><div class="field"><label>Proteína</label><input id="fp" type="number" step=".1"></div><div class="field"><label>Hidratos</label><input id="fc" type="number" step=".1"></div><div class="field"><label>Grasas</label><input id="ff" type="number" step=".1"></div><div class="field"><button id="saveFood">Guardar</button></div></div></div>
+<section id="foods" class="section"><div class="card"><h2>Biblioteca familiar de alimentos</h2><p class="muted">Común para Nacho, Lucía y Javi en este navegador. Busca primero aquí; si no existe, puedes buscar un producto online o crearlo manualmente.</p>
+<div class="row"><div class="field" style="flex:2"><label>Buscar en la biblioteca</label><input id="libSearch" placeholder="Ej. salmón, yogur, pasta..."></div><div class="field"><label>&nbsp;</label><button id="clearSearch">Ver todos</button></div></div><div id="libraryResults" class="recipegrid" style="margin-top:12px"></div></div>
+<div class="card"><h2>Buscar producto online</h2><p class="muted">Útil especialmente para productos envasados. Los resultados proceden de Open Food Facts y puedes guardarlos en la biblioteca familiar.</p><div class="row"><div class="field" style="flex:2"><label>Nombre o marca</label><input id="onlineQuery" placeholder="Ej. Skyr natural, queso fresco..."></div><div class="field"><label>&nbsp;</label><button id="onlineSearch">Buscar online</button></div></div><div id="onlineResults" style="margin-top:12px"></div></div>
+<div class="card"><h2>Añadir alimento manualmente</h2><div class="row"><div class="field"><label>Nombre</label><input id="fn"></div><div class="field"><label>kcal / 100 g</label><input id="fk" type="number"></div><div class="field"><label>Proteína</label><input id="fp" type="number" step=".1"></div><div class="field"><label>Hidratos</label><input id="fc" type="number" step=".1"></div><div class="field"><label>Grasas</label><input id="ff" type="number" step=".1"></div><div class="field"><button id="saveFood">Guardar</button></div></div></div>
 <div class="card"><h2>Copia de seguridad</h2><div class="row"><div class="field"><button id="export">Exportar datos</button></div><div class="field"><label>Importar JSON</label><input id="import" type="file" accept=".json"></div></div></div></section>
 </div>
 <script>
@@ -48,7 +56,17 @@ const base=[
 ["Solomillo cerdo",135,22,0,5],["Merluza",86,18,0,1.8],["Rape",76,17,0,1],["Dorada/Lubina",110,20,0,3],["Gambones",95,20,.5,1.2],
 ["Jamón serrano",240,31,.5,12],["Yogur proteico",65,10,4,1],["Patata",77,2,17,.1],["Arroz cocido",130,2.7,28,.3],["Pan",250,8.5,49,2],
 ["Avena",370,13,60,7],["Aguacate",160,2,8.5,14.7],["AOVE",884,0,0,100],["Tomate",18,.9,3.9,.2],["Ensalada/hojas",18,1.5,3,.2],
-["Alcachofa",47,3.3,10,.2],["Plátano",89,1.1,23,.3],["Naranja/Mandarina",47,.9,12,.1],["Fresas",32,.7,7.7,.3],["Almendras",579,21,22,50]
+["Alcachofa",47,3.3,10,.2],["Plátano",89,1.1,23,.3],["Naranja/Mandarina",47,.9,12,.1],["Fresas",32,.7,7.7,.3],["Almendras",579,21,22,50],
+["Salmón fresco",208,20,0,13],["Salmón ahumado",117,18,0,4],["Atún fresco",132,29,0,1],["Atún al natural",116,26,0,1],["Bacalao",82,18,0,.7],
+["Sardinas",208,25,0,11],["Pulpo",82,15,2.2,1],["Calamar",92,16,3.1,1.4],["Sepia",79,16,1,1],["Mejillones",86,12,3.7,2.2],
+["Conejo",136,21,0,5],["Lomo de cerdo",143,22,0,6],["Secreto ibérico",280,19,0,23],["Entrecot ternera",210,25,0,12],["Carne picada 5% grasa",137,21,0,5],
+["Jamón cocido",110,19,2,3],["Pechuga pavo lonchas",105,20,2,2],["Queso fresco",170,12,3,12],["Queso cottage",98,11,3.4,4.3],["Skyr natural",63,11,4,.2],
+["Yogur natural",63,3.5,4.7,3.3],["Leche semidesnatada",46,3.2,4.8,1.6],["Mozzarella",250,18,2,19],["Parmesano",431,38,4,29],["Manchego",410,25,1,34],
+["Pasta cocida",157,5.8,31,.9],["Cuscús cocido",112,3.8,23,.2],["Quinoa cocida",120,4.4,21,1.9],["Tortilla trigo",312,8,52,8],["Pan integral",247,9,41,4],
+["Boniato",86,1.6,20,.1],["Calabacín",17,1.2,3.1,.3],["Berenjena",25,1,6,.2],["Pimiento",31,1,6,.3],["Cebolla",40,1.1,9.3,.1],
+["Pepino",15,.7,3.6,.1],["Brócoli",34,2.8,7,.4],["Espárragos",20,2.2,3.9,.1],["Judías verdes",31,1.8,7,.2],["Champiñón",22,3.1,3.3,.3],
+["Manzana",52,.3,14,.2],["Pera",57,.4,15,.1],["Kiwi",61,1.1,15,.5],["Uvas",69,.7,18,.2],["Piña",50,.5,13,.1],
+["Melón",34,.8,8.2,.2],["Sandía",30,.6,7.6,.2],["Arándanos",57,.7,14,.3],["Nueces",654,15,14,65],["Pistachos",562,20,28,45]
 ].map(x=>({name:x[0],kcal:x[1],p:x[2],c:x[3],f:x[4]}));
 const recipes=[
 {name:"Tortilla con tomate",meal:"Cena",items:[["Huevo",120],["Claras",120],["Tomate",200],["AOVE",5]]},
@@ -58,7 +76,9 @@ const recipes=[
 {name:"Rape con arroz",meal:"Comida",items:[["Rape",200],["Arroz cocido",130],["Ensalada/hojas",120],["AOVE",10]]},
 {name:"Pavo y patata",meal:"Comida",items:[["Pavo",180],["Patata",200],["Tomate",150],["AOVE",10]]}
 ];
-const profiles={Nacho:1100,Lucía:1300,Javi:2150}; const proteinGoals={Nacho:100,Lucía:80,Javi:100}; const profileModes={Nacho:"Pérdida de grasa",Lucía:"Mantenimiento",Javi:"Ganancia muscular"}; let profile=localStorage.profile||"Nacho", custom=JSON.parse(localStorage.customFoods||"[]");
+const profiles={Nacho:1100,Lucía:1300,Javi:2150}; const proteinGoals={Nacho:100,Lucía:80,Javi:100}; const profileModes={Nacho:"Pérdida de grasa",Lucía:"Mantenimiento",Javi:"Ganancia muscular"}; let profile=localStorage.profile||"Nacho";
+if(!localStorage.familyFoods && localStorage.customFoods) localStorage.familyFoods=localStorage.customFoods;
+let custom=JSON.parse(localStorage.familyFoods||"[]"), currentMenu=[];
 const $=x=>document.getElementById(x), foods=()=>[...base,...custom], iso=d=>d.toISOString().slice(0,10), k=()=>`diet:${profile}:${$("date").value}`;
 function get(){return JSON.parse(localStorage.getItem(k())||'{"items":[],"weight":"","waist":""}')} function save(d){localStorage.setItem(k(),JSON.stringify(d));render()}
 function food(n){return foods().find(x=>x.name===n)}
@@ -74,7 +94,7 @@ function render(){
  const ord=["Desayuno","Media mañana","Comida","Merienda","Cena","Extra"];
  $("log").innerHTML=ord.map(m=>{let a=d.items.map((x,i)=>({...x,i})).filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal</span><button class="x" onclick="del(${x.i})">×</button></div>`).join("")}</div>`}).join("")||'<p class="muted">Aún no has registrado nada.</p>';
  $("recipes").innerHTML=recipes.map((r,i)=>{let q=recipeData(r);return `<div class="recipe"><b>${r.name}</b><span class="small muted">${Math.round(q.kcal)} kcal · ${Math.round(q.p)} g proteína</span><button onclick="addRecipe(${i})">Añadir</button></div>`}).join("");
- renderIdeas();renderWeek();renderCharts();updateFill()
+ renderIdeas();renderWeek();renderCharts();updateFill();if($("menu").classList.contains("show"))renderMenu()
 }
 function del(i){let d=get();d.items.splice(i,1);save(d)}
 function addRecipe(i){let r=recipes[i],d=get();recipeData(r).items.forEach(x=>d.items.push({...x,meal:r.meal}));save(d)}
@@ -120,19 +140,73 @@ function renderIdeas(){
    return `<div class="suggest">${tag}<h3>${x.r.name}</h3><div>${Math.round(x.kcal)} kcal · ${Math.round(x.p)} g proteína</div>${detail}<div class="small muted">${x.r.items.map(y=>y[1]+" g "+y[0]).join(" · ")}</div><button onclick="addRecipe(${x.i})">Añadir esta opción</button></div>`
  }).join("")
 }
+
+const menuTemplates={
+ Nacho:[
+  [["Desayuno","Yogur proteico",150],["Media mañana","Huevo",100],["Comida","Pollo",180],["Comida","Patata",160],["Comida","Ensalada/hojas",120],["Comida","AOVE",5],["Merienda","Fresas",200],["Cena","Merluza",200],["Cena","Tomate",200],["Cena","Aguacate",40],["Cena","AOVE",5]],
+  [["Desayuno","Skyr natural",170],["Media mañana","Jamón serrano",35],["Comida","Rape",200],["Comida","Arroz cocido",120],["Comida","Ensalada/hojas",150],["Comida","AOVE",5],["Merienda","Naranja/Mandarina",180],["Cena","Huevo",120],["Cena","Claras",150],["Cena","Tomate",200],["Cena","AOVE",5]]
+ ],
+ Lucía:[
+  [["Desayuno","Yogur natural",150],["Desayuno","Fresas",150],["Media mañana","Huevo",60],["Comida","Salmón fresco",140],["Comida","Patata",180],["Comida","Ensalada/hojas",150],["Comida","AOVE",8],["Merienda","Manzana",150],["Cena","Pavo",150],["Cena","Tomate",200],["Cena","Aguacate",50],["Cena","Pan",35]],
+  [["Desayuno","Skyr natural",170],["Desayuno","Plátano",80],["Comida","Ternera magra",150],["Comida","Arroz cocido",140],["Comida","Pimiento",150],["Comida","AOVE",8],["Merienda","Yogur proteico",125],["Cena","Dorada/Lubina",180],["Cena","Patata",140],["Cena","Ensalada/hojas",150],["Cena","AOVE",6]]
+ ],
+ Javi:[
+  [["Desayuno","Avena",70],["Desayuno","Skyr natural",200],["Desayuno","Plátano",120],["Media mañana","Pan integral",80],["Media mañana","Pechuga pavo lonchas",80],["Comida","Pollo",220],["Comida","Arroz cocido",250],["Comida","AOVE",10],["Merienda","Yogur proteico",200],["Merienda","Almendras",25],["Cena","Salmón fresco",180],["Cena","Patata",250],["Cena","Ensalada/hojas",150],["Cena","AOVE",5]],
+  [["Desayuno","Huevo",120],["Desayuno","Pan integral",100],["Desayuno","Aguacate",50],["Media mañana","Skyr natural",200],["Media mañana","Plátano",120],["Comida","Ternera magra",220],["Comida","Pasta cocida",250],["Comida","AOVE",10],["Merienda","Yogur proteico",200],["Merienda","Nueces",20],["Cena","Merluza",250],["Cena","Arroz cocido",180],["Cena","Ensalada/hojas",150],["Cena","AOVE",8]]
+ ]
+};
+function menuStats(arr){let items=arr.map(([meal,n,g])=>({...calcItem(food(n),g),meal}));return {items,kcal:items.reduce((s,x)=>s+x.kcal,0),p:items.reduce((s,x)=>s+x.p,0)}}
+function generateMenu(){
+ let opts=menuTemplates[profile], pick=opts[Math.floor(Math.random()*opts.length)];
+ currentMenu=menuStats(pick).items; renderMenu();
+}
+function renderMenu(){
+ if(!currentMenu.length) generateMenu();
+ let kcal=currentMenu.reduce((s,x)=>s+x.kcal,0),p=currentMenu.reduce((s,x)=>s+x.p,0), goal=profiles[profile];
+ $("menuIntro").textContent=profile==="Javi"?"Menú orientativo para ganancia muscular: busca aproximarse a kcal y proteína del día.":"Menú orientativo adaptado al objetivo diario de "+profile+".";
+ let ord=["Desayuno","Media mañana","Comida","Merienda","Cena"];
+ $("dailyMenu").innerHTML=`<div class="stats" style="margin-bottom:12px"><div class="stat"><b>${Math.round(kcal)}</b><span>kcal del menú</span></div><div class="stat"><b>${Math.round(p)} g</b><span>proteína</span></div><div class="stat"><b>${goal}</b><span>objetivo kcal</span></div><div class="stat"><b>${proteinGoals[profile]} g</b><span>objetivo proteína</span></div></div>`+
+ ord.map(m=>{let a=currentMenu.filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal</span><span></span></div>`).join("")}</div>`}).join("");
+}
+function addCurrentMenu(){if(!currentMenu.length)return;let d=get();currentMenu.forEach(x=>d.items.push({...x}));save(d);alert("Menú añadido al día de "+profile)}
+function renderLibrary(q=""){
+ let term=q.trim().toLowerCase(), arr=foods().filter(x=>x.name.toLowerCase().includes(term)).slice(0,60);
+ $("libraryResults").innerHTML=arr.map(x=>`<div class="recipe"><b>${x.name}</b><span class="small muted">${x.kcal} kcal · ${x.p} g proteína · ${x.c} g HC · ${x.f} g grasa /100 g</span></div>`).join("")||'<p class="muted">No encontrado. Prueba la búsqueda online.</p>';
+}
+function saveOnlineFood(name,n){
+ let item={name,kcal:+n["energy-kcal_100g"]||0,p:+n.proteins_100g||0,c:+n.carbohydrates_100g||0,f:+n.fat_100g||0};
+ if(!item.kcal){alert("Ese producto no tiene kcal/100 g completas.");return}
+ if(!custom.some(x=>x.name.toLowerCase()===name.toLowerCase())) custom.push(item);
+ localStorage.familyFoods=JSON.stringify(custom);populate();renderLibrary($("libSearch").value);alert(name+" guardado en la biblioteca familiar");
+}
+async function searchOnline(){
+ let q=$("onlineQuery").value.trim(); if(!q)return;
+ $("onlineResults").innerHTML='<p class="muted">Buscando…</p>';
+ try{
+   let u="https://world.openfoodfacts.org/cgi/search.pl?search_terms="+encodeURIComponent(q)+"&search_simple=1&action=process&json=1&page_size=10&fields=product_name,brands,nutriments";
+   let r=await fetch(u),j=await r.json(), ps=(j.products||[]).filter(x=>x.product_name&&x.nutriments&&x.nutriments["energy-kcal_100g"]);
+   window.offResults=ps;
+   $("onlineResults").innerHTML=ps.length?ps.map((x,i)=>{let n=x.nutriments,nm=(x.product_name+(x.brands?" · "+x.brands:"")).replace(/"/g,"&quot;");return `<div class="suggest" style="margin-bottom:8px"><b>${nm}</b><div class="small muted">${Math.round(n["energy-kcal_100g"])} kcal · ${Math.round((n.proteins_100g||0)*10)/10} g proteína · ${Math.round((n.carbohydrates_100g||0)*10)/10} g HC · ${Math.round((n.fat_100g||0)*10)/10} g grasa /100 g</div><button onclick="saveOnlineFood(offResults[${i}].product_name+(offResults[${i}].brands?' · '+offResults[${i}].brands:''),offResults[${i}].nutriments)">Guardar en biblioteca</button></div>`}).join(""):'<p class="muted">No he encontrado resultados con datos nutricionales completos.</p>';
+ }catch(e){$("onlineResults").innerHTML='<p class="over">No se pudo consultar la base online. Puedes usar la biblioteca interna o añadirlo manualmente.</p>'}
+}
+
 function updateFill(){let f=foods()[+$("fillFood").value||0],left=(+$("goal").value||profiles[profile])-totals().kcal;$("maxGrams").value=f&&left>0?Math.floor(left*100/f.kcal)+" g":"0 g"}
 function renderWeek(){let baseD=new Date($("date").value+"T12:00:00"),sum=0,n=0,h="";for(let i=6;i>=0;i--){let dt=new Date(baseD);dt.setDate(dt.getDate()-i);let ds=iso(dt),d=JSON.parse(localStorage.getItem(`diet:${profile}:${ds}`)||'{"items":[]}'),q=Math.round(d.items.reduce((s,x)=>s+x.kcal,0));if(q){sum+=q;n++}h+=`<div class="day"><span>${dt.toLocaleDateString("es",{weekday:"short"})}</span><b class="${q>profiles[profile]?"over":"ok"}">${q||"—"}</b><span>kcal</span></div>`}$("weekGrid").innerHTML=h;$("weekAvg").textContent=n?`Media de los ${n} días registrados: ${Math.round(sum/n)} kcal/día`:"Sin datos todavía."}
 function records(field){let a=[];for(let i=0;i<localStorage.length;i++){let key=localStorage.key(i);if(key.startsWith("diet:"+profile+":")){let d=JSON.parse(localStorage.getItem(key));if(d[field])a.push({date:key.split(":")[2],v:+d[field]})}}return a.sort((a,b)=>a.date.localeCompare(b.date)).slice(-10)}
 function chart(id,field){let a=records(field),el=$(id);if(!a.length){el.innerHTML='<p class="muted">Añade registros para ver la gráfica.</p>';return}let min=Math.min(...a.map(x=>x.v)),max=Math.max(...a.map(x=>x.v));el.innerHTML=a.map(x=>{let h=35+(x.v-min)/(max-min||1)*145;return `<div class="col"><b class="small">${x.v}</b><div class="bar" style="height:${h}px"></div><span>${x.date.slice(5)}</span></div>`}).join("")}
 function renderCharts(){chart("weightChart","weight");chart("waistChart","waist")}
-function setP(p){profile=p;localStorage.profile=p;$("goal").value=profiles[p];$("bn").classList.toggle("active",p==="Nacho");$("bl").classList.toggle("active",p==="Lucía");$("bj").classList.toggle("active",p==="Javi");load()}
+function setP(p){profile=p;currentMenu=[];localStorage.profile=p;$("goal").value=profiles[p];$("bn").classList.toggle("active",p==="Nacho");$("bl").classList.toggle("active",p==="Lucía");$("bj").classList.toggle("active",p==="Javi");load()}
 function load(){let d=get();$("weight").value=d.weight||"";$("waist").value=d.waist||"";render()}
 $("add").onclick=()=>{let f=foods()[+$("food").value],g=+$("grams").value;if(!f||g<=0)return;let d=get();d.items.push({...calcItem(f,g),meal:$("meal").value});save(d)}
 $("bn").onclick=()=>setP("Nacho");$("bl").onclick=()=>setP("Lucía");$("bj").onclick=()=>setP("Javi");$("date").onchange=load;$("goal").onchange=render;$("fillFood").onchange=updateFill;
 ["weight","waist"].forEach(id=>$(id).onchange=()=>{let d=get();d[id]=$(id).value;save(d)})
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".section").forEach(x=>x.classList.remove("show"));$(b.dataset.tab).classList.add("show");render()})
-$("saveFood").onclick=()=>{let n=$("fn").value.trim(),kk=+$("fk").value;if(!n||!kk)return;custom.push({name:n,kcal:kk,p:+$("fp").value||0,c:+$("fc").value||0,f:+$("ff").value||0});localStorage.customFoods=JSON.stringify(custom);populate();render();["fn","fk","fp","fc","ff"].forEach(x=>$(x).value="")}
-$("export").onclick=()=>{let o={};for(let i=0;i<localStorage.length;i++){let q=localStorage.key(i);if(q.startsWith("diet:")||q==="customFoods")o[q]=localStorage.getItem(q)}let b=new Blob([JSON.stringify(o,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="mi-dieta-backup.json";a.click()}
-$("import").onchange=e=>{let r=new FileReader();r.onload=()=>{try{Object.entries(JSON.parse(r.result)).forEach(([a,b])=>localStorage.setItem(a,b));custom=JSON.parse(localStorage.customFoods||"[]");populate();load();alert("Datos importados")}catch{alert("Archivo no válido")}};r.readAsText(e.target.files[0])}
-$("date").value=iso(new Date());populate();setP(profile);
+$("saveFood").onclick=()=>{let n=$("fn").value.trim(),kk=+$("fk").value;if(!n||!kk)return;custom.push({name:n,kcal:kk,p:+$("fp").value||0,c:+$("fc").value||0,f:+$("ff").value||0});localStorage.familyFoods=JSON.stringify(custom);populate();renderLibrary();render();["fn","fk","fp","fc","ff"].forEach(x=>$(x).value="")}
+$("export").onclick=()=>{let o={};for(let i=0;i<localStorage.length;i++){let q=localStorage.key(i);if(q.startsWith("diet:")||(q==="customFoods"||q==="familyFoods"))o[q]=localStorage.getItem(q)}let b=new Blob([JSON.stringify(o,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="mi-dieta-backup.json";a.click()}
+$("import").onchange=e=>{let r=new FileReader();r.onload=()=>{try{Object.entries(JSON.parse(r.result)).forEach(([a,b])=>localStorage.setItem(a,b));custom=JSON.parse(localStorage.familyFoods||localStorage.customFoods||"[]");populate();load();alert("Datos importados")}catch{alert("Archivo no válido")}};r.readAsText(e.target.files[0])}
+
+$("genMenu").onclick=generateMenu;$("addMenu").onclick=addCurrentMenu;
+$("libSearch").oninput=e=>renderLibrary(e.target.value);$("clearSearch").onclick=()=>{$("libSearch").value="";renderLibrary()};
+$("onlineSearch").onclick=searchOnline;$("onlineQuery").onkeydown=e=>{if(e.key==="Enter")searchOnline()};
+$("date").value=iso(new Date());populate();renderLibrary();setP(profile);
 </script></body></html>
