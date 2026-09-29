@@ -44,9 +44,13 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 
 <section id="week" class="section"><div class="card"><h2>Últimos 7 días</h2><div class="week" id="weekGrid"></div><p id="weekAvg"></p></div></section>
 <section id="progress" class="section"><div class="card"><h2>Peso · últimos registros</h2><div class="chart" id="weightChart"></div></div><div class="card"><h2>Cintura · últimos registros</h2><div class="chart" id="waistChart"></div></div></section>
-<section id="foods" class="section"><div class="card"><h2>Biblioteca familiar de alimentos</h2><p class="muted">Común para Nacho, Lucía y Javi en este navegador. Busca primero aquí; si no existe, puedes buscar un producto online o crearlo manualmente.</p>
-<div class="row"><div class="field" style="flex:2"><label>Buscar en la biblioteca</label><input id="libSearch" placeholder="Ej. salmón, yogur, pasta..."></div><div class="field"><label>&nbsp;</label><button id="clearSearch">Ver todos</button></div></div><div id="libraryResults" class="recipegrid" style="margin-top:12px"></div></div>
-<div class="card"><h2>Buscar producto online</h2><p class="muted">Útil especialmente para productos envasados. Los resultados proceden de Open Food Facts y puedes guardarlos en la biblioteca familiar.</p><div class="row"><div class="field" style="flex:2"><label>Nombre o marca</label><input id="onlineQuery" placeholder="Ej. Skyr natural, queso fresco..."></div><div class="field"><label>&nbsp;</label><button id="onlineSearch">Buscar online</button></div></div><div id="onlineResults" style="margin-top:12px"></div></div>
+<section id="foods" class="section"><div class="card"><h2>🔎 Buscador único de alimentos</h2>
+<p class="muted">Escribe un alimento normal o un producto comercial. Primero verás vuestra biblioteca familiar; si quieres ampliar la búsqueda, consulta también USDA FoodData Central y Open Food Facts.</p>
+<div class="row"><div class="field" style="flex:2"><label>¿Qué alimento buscas?</label><input id="libSearch" placeholder="Ej. merluza, solomillo de cerdo, salmón, Skyr..."></div>
+<div class="field"><label>&nbsp;</label><button id="onlineSearch">🌐 Buscar también en Internet</button></div>
+<div class="field"><label>&nbsp;</label><button id="clearSearch">Limpiar</button></div></div>
+<h3 style="margin-top:16px">Nuestra biblioteca</h3><div id="libraryResults" class="recipegrid" style="margin-top:10px"></div>
+<div id="onlineResults" style="margin-top:16px"></div></div>
 <div class="card"><h2>Añadir alimento manualmente</h2><div class="row"><div class="field"><label>Nombre</label><input id="fn"></div><div class="field"><label>kcal / 100 g</label><input id="fk" type="number"></div><div class="field"><label>Proteína</label><input id="fp" type="number" step=".1"></div><div class="field"><label>Hidratos</label><input id="fc" type="number" step=".1"></div><div class="field"><label>Grasas</label><input id="ff" type="number" step=".1"></div><div class="field"><button id="saveFood">Guardar</button></div></div></div>
 <div class="card"><h2>Copia de seguridad</h2><div class="row"><div class="field"><button id="export">Exportar datos</button></div><div class="field"><label>Importar JSON</label><input id="import" type="file" accept=".json"></div></div></div></section>
 </div>
@@ -171,23 +175,63 @@ function renderMenu(){
 function addCurrentMenu(){if(!currentMenu.length)return;let d=get();currentMenu.forEach(x=>d.items.push({...x}));save(d);alert("Menú añadido al día de "+profile)}
 function renderLibrary(q=""){
  let term=q.trim().toLowerCase(), arr=foods().filter(x=>x.name.toLowerCase().includes(term)).slice(0,60);
- $("libraryResults").innerHTML=arr.map(x=>`<div class="recipe"><b>${x.name}</b><span class="small muted">${x.kcal} kcal · ${x.p} g proteína · ${x.c} g HC · ${x.f} g grasa /100 g</span></div>`).join("")||'<p class="muted">No encontrado. Prueba la búsqueda online.</p>';
+ $("libraryResults").innerHTML=arr.map(x=>`<div class="recipe"><b>${x.name}</b><span class="small muted">${x.kcal} kcal · ${x.p} g proteína · ${x.c} g HC · ${x.f} g grasa /100 g</span></div>`).join("")||'<p class="muted">No está todavía en vuestra biblioteca. Pulsa “Buscar también en Internet”.</p>';
 }
-function saveOnlineFood(name,n){
- let item={name,kcal:+n["energy-kcal_100g"]||0,p:+n.proteins_100g||0,c:+n.carbohydrates_100g||0,f:+n.fat_100g||0};
- if(!item.kcal){alert("Ese producto no tiene kcal/100 g completas.");return}
+function saveFoundFood(name,kcal,p,c,f,source){
+ let item={name,kcal:+kcal||0,p:+p||0,c:+c||0,f:+f||0};
+ if(!item.kcal){alert("Ese resultado no tiene kcal/100 g suficientes.");return}
  if(!custom.some(x=>x.name.toLowerCase()===name.toLowerCase())) custom.push(item);
- localStorage.familyFoods=JSON.stringify(custom);populate();renderLibrary($("libSearch").value);alert(name+" guardado en la biblioteca familiar");
+ localStorage.familyFoods=JSON.stringify(custom);populate();renderLibrary($("libSearch").value);
+ alert(name+" guardado en la biblioteca familiar ("+source+")");
+}
+const esToEn={
+ "merluza":"hake","rape":"monkfish","salmón":"salmon","salmon":"salmon","bacalao":"cod","atún":"tuna","atun":"tuna",
+ "sardina":"sardine","sardinas":"sardines","gambón":"shrimp","gambones":"shrimp","langostino":"shrimp","langostinos":"shrimp",
+ "pulpo":"octopus","calamar":"squid","sepia":"cuttlefish","mejillón":"mussel","mejillones":"mussels",
+ "pollo":"chicken","pavo":"turkey","ternera":"beef","cerdo":"pork","conejo":"rabbit","solomillo de cerdo":"pork tenderloin",
+ "solomillo":"tenderloin","entrecot":"beef steak","carne picada":"ground beef","jamón":"ham","jamon":"ham",
+ "huevo":"egg","huevos":"eggs","claras":"egg white","leche":"milk","queso":"cheese","yogur":"yogurt",
+ "patata":"potato","arroz":"rice","pasta":"pasta","pan":"bread","avena":"oats","quinoa":"quinoa","cuscús":"couscous",
+ "tomate":"tomato","aguacate":"avocado","alcachofa":"artichoke","lechuga":"lettuce","pepino":"cucumber","pimiento":"pepper",
+ "cebolla":"onion","calabacín":"zucchini","calabacin":"zucchini","berenjena":"eggplant","brócoli":"broccoli","brocoli":"broccoli",
+ "espinaca":"spinach","zanahoria":"carrot","plátano":"banana","platano":"banana","manzana":"apple","naranja":"orange",
+ "mandarina":"tangerine","fresas":"strawberries","fresa":"strawberry","pera":"pear","kiwi":"kiwi","uva":"grapes",
+ "almendras":"almonds","nueces":"walnuts","aceite de oliva":"olive oil"
+};
+function translateFood(q){
+ let low=q.toLowerCase().trim();
+ if(esToEn[low]) return esToEn[low];
+ let out=low;
+ Object.keys(esToEn).sort((a,b)=>b.length-a.length).forEach(k=>{out=out.replace(new RegExp("\\b"+k+"\\b","g"),esToEn[k])});
+ return out;
+}
+function nutrientUSDA(food,id){
+ let n=(food.foodNutrients||[]).find(x=>x.nutrientId===id || x.nutrientNumber===String(id));
+ return n?+n.value||0:0;
 }
 async function searchOnline(){
- let q=$("onlineQuery").value.trim(); if(!q)return;
- $("onlineResults").innerHTML='<p class="muted">Buscando…</p>';
+ let q=$("libSearch").value.trim(); if(!q)return;
+ renderLibrary(q);
+ $("onlineResults").innerHTML='<p class="muted">Buscando alimentos generales y productos comerciales…</p>';
+ let usda=[],off=[];
  try{
-   let u="https://world.openfoodfacts.org/cgi/search.pl?search_terms="+encodeURIComponent(q)+"&search_simple=1&action=process&json=1&page_size=10&fields=product_name,brands,nutriments";
-   let r=await fetch(u),j=await r.json(), ps=(j.products||[]).filter(x=>x.product_name&&x.nutriments&&x.nutriments["energy-kcal_100g"]);
-   window.offResults=ps;
-   $("onlineResults").innerHTML=ps.length?ps.map((x,i)=>{let n=x.nutriments,nm=(x.product_name+(x.brands?" · "+x.brands:"")).replace(/"/g,"&quot;");return `<div class="suggest" style="margin-bottom:8px"><b>${nm}</b><div class="small muted">${Math.round(n["energy-kcal_100g"])} kcal · ${Math.round((n.proteins_100g||0)*10)/10} g proteína · ${Math.round((n.carbohydrates_100g||0)*10)/10} g HC · ${Math.round((n.fat_100g||0)*10)/10} g grasa /100 g</div><button onclick="saveOnlineFood(offResults[${i}].product_name+(offResults[${i}].brands?' · '+offResults[${i}].brands:''),offResults[${i}].nutriments)">Guardar en biblioteca</button></div>`}).join(""):'<p class="muted">No he encontrado resultados con datos nutricionales completos.</p>';
- }catch(e){$("onlineResults").innerHTML='<p class="over">No se pudo consultar la base online. Puedes usar la biblioteca interna o añadirlo manualmente.</p>'}
+   let uq=translateFood(q);
+   let url="https://api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query="+encodeURIComponent(uq)+"&pageSize=12&dataType=Foundation,SR%20Legacy,Survey%20(FNDDS)";
+   let r=await fetch(url),j=await r.json();
+   usda=(j.foods||[]).map(x=>({name:x.description,kcal:nutrientUSDA(x,1008),p:nutrientUSDA(x,1003),c:nutrientUSDA(x,1005),f:nutrientUSDA(x,1004),type:x.dataType})).filter(x=>x.kcal>0).slice(0,8);
+ }catch(e){}
+ try{
+   let u="https://world.openfoodfacts.org/cgi/search.pl?search_terms="+encodeURIComponent(q)+"&search_simple=1&action=process&json=1&page_size=8&fields=product_name,brands,nutriments";
+   let r=await fetch(u),j=await r.json();
+   off=(j.products||[]).filter(x=>x.product_name&&x.nutriments&&x.nutriments["energy-kcal_100g"]).slice(0,6).map(x=>({
+     name:x.product_name+(x.brands?" · "+x.brands:""),kcal:+x.nutriments["energy-kcal_100g"]||0,p:+x.nutriments.proteins_100g||0,c:+x.nutriments.carbohydrates_100g||0,f:+x.nutriments.fat_100g||0
+   }));
+ }catch(e){}
+ let card=(x,src,i)=>`<div class="suggest" style="margin-bottom:8px"><b>${x.name}</b><div class="small muted">${Math.round(x.kcal)} kcal · ${Math.round(x.p*10)/10} g proteína · ${Math.round(x.c*10)/10} g HC · ${Math.round(x.f*10)/10} g grasa /100 g</div><div class="small muted">Fuente: ${src}</div><button onclick='saveFoundFood(${JSON.stringify(x.name)},${x.kcal},${x.p},${x.c},${x.f},${JSON.stringify(src)})'>Guardar en biblioteca</button></div>`;
+ let html="";
+ if(usda.length) html+=`<h3>🥕 Alimentos generales</h3><p class="small muted">Resultados de USDA FoodData Central para “${translateFood(q)}”.</p>`+usda.map((x,i)=>card(x,"USDA FoodData Central",i)).join("");
+ if(off.length) html+=`<h3 style="margin-top:18px">🛒 Productos comerciales</h3>`+off.map((x,i)=>card(x,"Open Food Facts",i)).join("");
+ $("onlineResults").innerHTML=html||'<p class="over">No he encontrado resultados online útiles. Prueba otro nombre o añádelo manualmente.</p>';
 }
 
 function updateFill(){let f=foods()[+$("fillFood").value||0],left=(+$("goal").value||profiles[profile])-totals().kcal;$("maxGrams").value=f&&left>0?Math.floor(left*100/f.kcal)+" g":"0 g"}
@@ -206,7 +250,7 @@ $("export").onclick=()=>{let o={};for(let i=0;i<localStorage.length;i++){let q=l
 $("import").onchange=e=>{let r=new FileReader();r.onload=()=>{try{Object.entries(JSON.parse(r.result)).forEach(([a,b])=>localStorage.setItem(a,b));custom=JSON.parse(localStorage.familyFoods||localStorage.customFoods||"[]");populate();load();alert("Datos importados")}catch{alert("Archivo no válido")}};r.readAsText(e.target.files[0])}
 
 $("genMenu").onclick=generateMenu;$("addMenu").onclick=addCurrentMenu;
-$("libSearch").oninput=e=>renderLibrary(e.target.value);$("clearSearch").onclick=()=>{$("libSearch").value="";renderLibrary()};
-$("onlineSearch").onclick=searchOnline;$("onlineQuery").onkeydown=e=>{if(e.key==="Enter")searchOnline()};
+$("libSearch").oninput=e=>renderLibrary(e.target.value);$("clearSearch").onclick=()=>{$("libSearch").value="";$("onlineResults").innerHTML="";renderLibrary()};
+$("onlineSearch").onclick=searchOnline;$("libSearch").onkeydown=e=>{if(e.key==="Enter")searchOnline()};
 $("date").value=iso(new Date());populate();renderLibrary();setP(profile);
 </script></body></html>
