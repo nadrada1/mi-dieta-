@@ -1,16 +1,14 @@
-# Mi Dieta V5.0
+# Mi Dieta V5.0.1
 
-Primera versión V5, construida sobre V4.2.1.
+Corrección crítica de V5.0.
 
-## Compatibilidad
-No cambia ni borra las claves de almacenamiento existentes de V4.x.
-Despensa y recetas usan claves nuevas separadas.
+La V5.0 tenía una colisión JavaScript entre la colección de recetas existente
+y una nueva función de recetas familiares. Eso detenía la inicialización de la app.
 
-## Novedades
-- Nueva sección "Tengo en casa", compartida por los perfiles del mismo navegador.
-- Búsqueda y marcado de alimentos disponibles.
-- Primera versión de "Menú con lo que tengo".
-- Recetas familiares: ingredientes, raciones, kcal/proteína por ración y añadir al diario.
-- Conserva diario, biblioteca, perfiles, peso/cintura, generador V4.2 y backup existentes.
-
-Esta V5.0 sigue siendo local: no sincroniza todavía entre dispositivos.
+V5.0.1:
+- corrige la colisión;
+- supera `node --check` sin errores de sintaxis;
+- conserva las mismas claves de datos de V4.x;
+- no contiene ninguna rutina para borrar localStorage;
+- mantiene perfiles, fecha, diario, biblioteca y datos históricos existentes;
+- añade despensa y recetas V5 en claves nuevas separadas.
