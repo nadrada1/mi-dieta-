@@ -40,8 +40,8 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 .recipe-card .ingredients{font-size:12px;color:#667;margin-top:5px}
 @media(max-width:650px){.home-hero{grid-template-columns:1fr}}
 </style></head><body><div class="app">
-<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V5.0.1 · Asistente familiar · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
-<div class="nav"><button data-tab="today" class="active">Hoy</button><button data-tab="menu">Menú diario</button><button data-tab="pantry">🏠 En casa</button><button data-tab="recipes">🍳 Recetas</button><button data-tab="ideas">¿Qué puedo comer?</button><button data-tab="week">Semana</button><button data-tab="progress">Progreso</button><button data-tab="foods">Alimentos</button></div>
+<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V5.0.3 · Asistente familiar · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
+<div class="nav"><button data-tab="today" class="active">Hoy</button><button data-tab="menu">Menú diario</button><button data-tab="pantry">🏠 En casa</button><button data-tab="familyRecipesTab">🍳 Recetas</button><button data-tab="ideas">¿Qué puedo comer?</button><button data-tab="week">Semana</button><button data-tab="progress">Progreso</button><button data-tab="foods">Alimentos</button></div>
 
 <section id="today" class="section show">
 <div class="card row"><div class="field"><label>Fecha</label><input id="date" type="date"></div><div class="field"><label>Objetivo kcal</label><input id="goal" type="number"></div><div class="field"><label>Peso kg</label><input id="weight" type="number" step=".1"></div><div class="field"><label>Cintura cm</label><input id="waist" type="number" step=".1"></div></div>
@@ -91,7 +91,7 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
   </div>
 </section>
 
-<section id="recipes" class="tab" style="display:none">
+<section id="familyRecipesTab" class="tab" style="display:none">
   <div class="card">
     <h2>🍳 Recetas familiares</h2>
     <p class="muted">Guarda platos completos. Después podrás añadir una ración al diario sin introducir ingrediente por ingrediente.</p>
@@ -312,5 +312,20 @@ function generatePantryMenu(){let names=new Set(pantryNames()),out=$("pantryMenu
 if($("pantrySearch")){$("pantrySearch").oninput=e=>renderPantry(e.target.value);$("clearPantrySearch").onclick=()=>{$("pantrySearch").value="";renderPantry()};$("pantryMenuBtn").onclick=generatePantryMenu}
 if($("saveRecipe"))$("saveRecipe").onclick=saveRecipeFromForm;
 renderPantry();renderRecipes();
+
+
+// V5.0.2: navegación de las dos pestañas nuevas.
+// Se añade de forma independiente para no alterar el controlador V4 existente.
+document.querySelectorAll('button[data-tab="pantry"],button[data-tab="familyRecipesTab"]').forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.style.display="none");
+    document.querySelectorAll("button[data-tab]").forEach(x=>x.classList.remove("active"));
+    const target=document.getElementById(btn.dataset.tab);
+    if(target) target.style.display="";
+    btn.classList.add("active");
+    if(btn.dataset.tab==="pantry") renderPantry($("pantrySearch")?.value||"");
+    if(btn.dataset.tab==="familyRecipesTab") renderRecipes();
+  });
+});
 
 </script></body></html>

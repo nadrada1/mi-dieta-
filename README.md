@@ -1,14 +1,15 @@
-# Mi Dieta V5.0.1
+# Mi Dieta V5.0.3 — depurada
 
-Corrección crítica de V5.0.
+Auditoría estática completa realizada antes de entrega:
+- JavaScript: sintaxis OK.
+- IDs HTML duplicados: 0.
+- Pestañas sin sección destino: 0.
+- Referencias `$()` a IDs inexistentes: 0.
+- Colisiones globales detectadas: 0.
+- Operaciones destructivas de localStorage: 0.
 
-La V5.0 tenía una colisión JavaScript entre la colección de recetas existente
-y una nueva función de recetas familiares. Eso detenía la inicialización de la app.
+Corrección adicional:
+- La pestaña nueva de recetas familiares compartía `id="recipes"` con un elemento
+  antiguo de recetas rápidas. Ahora usa `familyRecipesTab`.
 
-V5.0.1:
-- corrige la colisión;
-- supera `node --check` sin errores de sintaxis;
-- conserva las mismas claves de datos de V4.x;
-- no contiene ninguna rutina para borrar localStorage;
-- mantiene perfiles, fecha, diario, biblioteca y datos históricos existentes;
-- añade despensa y recetas V5 en claves nuevas separadas.
+No se añaden funciones nuevas respecto a V5.0.2.
