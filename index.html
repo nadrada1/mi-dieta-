@@ -21,15 +21,22 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 .chart{height:220px;display:flex;align-items:end;gap:8px;border-bottom:1px solid var(--line);padding-top:20px}.col{flex:1;text-align:center}.bar{background:var(--green);border-radius:6px 6px 0 0;min-height:2px}.col span{font-size:10px;color:var(--muted)}
 .recipegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.recipe{background:#f5f7f4;border-radius:14px;padding:12px}.recipe b{display:block}.recipe button{margin-top:8px;width:100%}
 @media(max-width:720px){.hero{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.suggestions,.recipegrid{grid-template-columns:1fr}.week{grid-template-columns:repeat(4,1fr)}}
+
+.food-picker{position:relative}
+.food-results{position:absolute;z-index:30;left:0;right:0;top:100%;max-height:280px;overflow:auto;background:#fff;border:1px solid #d7ddd8;border-radius:10px;box-shadow:0 10px 25px rgba(0,0,0,.12);display:none}
+.food-results.open{display:block}
+.food-option{padding:10px 12px;border-bottom:1px solid #edf0ed;cursor:pointer}
+.food-option:hover{background:#f2f6f3}
+.food-option b{display:block}.food-option span{font-size:12px;color:#667}
 </style></head><body><div class="app">
-<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V4.2 · Diario y biblioteca familiar · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
+<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V4.2.1 · Diario y biblioteca familiar · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
 <div class="nav"><button data-tab="today" class="active">Hoy</button><button data-tab="menu">Menú diario</button><button data-tab="ideas">¿Qué puedo comer?</button><button data-tab="week">Semana</button><button data-tab="progress">Progreso</button><button data-tab="foods">Alimentos</button></div>
 
 <section id="today" class="section show">
 <div class="card row"><div class="field"><label>Fecha</label><input id="date" type="date"></div><div class="field"><label>Objetivo kcal</label><input id="goal" type="number"></div><div class="field"><label>Peso kg</label><input id="weight" type="number" step=".1"></div><div class="field"><label>Cintura cm</label><input id="waist" type="number" step=".1"></div></div>
 <div class="card hero"><div class="ring" id="ring"><div class="ringtext"><b id="used">0</b><span>de <i id="goalText">1100</i> kcal</span></div></div>
 <div class="stats"><div class="stat"><b id="left">0</b><span>kcal restantes</span></div><div class="stat"><b id="prot">0 g</b><span id="protLabel">proteína</span></div><div class="stat"><b id="carbs">0 g</b><span>hidratos</span></div><div class="stat"><b id="fat">0 g</b><span>grasas</span></div></div></div>
-<div class="card"><h2>Añadir comida</h2><div class="row"><div class="field"><label>Momento</label><select id="meal"><option>Desayuno</option><option>Media mañana</option><option>Comida</option><option>Merienda</option><option>Cena</option><option>Extra</option></select></div><div class="field" style="flex:2"><label>Alimento</label><input id="food" list="foodList" placeholder="Escribe las primeras letras…"><datalist id="foodList"></datalist></div><div class="field"><label>Gramos</label><input id="grams" type="number" value="100"></div><div class="field"><button id="add">Añadir</button></div></div></div>
+<div class="card"><h2>Añadir comida</h2><div class="row"><div class="field"><label>Momento</label><select id="meal"><option>Desayuno</option><option>Media mañana</option><option>Comida</option><option>Merienda</option><option>Cena</option><option>Extra</option></select></div><div class="field food-picker" style="flex:2"><label>Alimento</label><input id="food" autocomplete="off" placeholder="Pulsa o escribe: mer, sal, pollo…"><div id="foodResults" class="food-results"></div></div><div class="field"><label>Gramos</label><input id="grams" type="number" value="100"></div><div class="field"><button id="add">Añadir</button></div></div></div>
 <div class="card"><h2>Registro del día</h2><div id="log"></div></div>
 <div class="card"><h2>Recetas rápidas</h2><div class="recipegrid" id="recipes"></div></div>
 </section>
@@ -40,7 +47,7 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 <div id="dailyMenu" style="margin-top:12px"></div></div></section>
 
 <section id="ideas" class="section"><div class="card"><h2>¿Qué puedo comer?</h2><p class="muted" id="ideasIntro">Propuestas que caben aproximadamente en las calorías que te quedan hoy.</p><div id="javiStatus"></div><div class="suggestions" id="suggestions"></div></div>
-<div class="card"><h2>Completar con un alimento</h2><div class="row"><div class="field"><label>Alimento</label><input id="fillFood" list="fillFoodList" placeholder="Escribe las primeras letras…"><datalist id="fillFoodList"></datalist></div><div class="field"><label>Máximo que cabe hoy</label><input id="maxGrams" readonly></div></div><p class="small muted">Cálculo matemático según las kcal/100 g del alimento; no es una recomendación de ración.</p></div></section>
+<div class="card"><h2>Completar con un alimento</h2><div class="row"><div class="field food-picker"><label>Alimento</label><input id="fillFood" autocomplete="off" placeholder="Pulsa o escribe…"><div id="fillFoodResults" class="food-results"></div></div><div class="field"><label>Máximo que cabe hoy</label><input id="maxGrams" readonly></div></div><p class="small muted">Cálculo matemático según las kcal/100 g del alimento; no es una recomendación de ración.</p></div></section>
 
 <section id="week" class="section"><div class="card"><h2>Últimos 7 días</h2><div class="week" id="weekGrid"></div><p id="weekAvg"></p></div></section>
 <section id="progress" class="section"><div class="card"><h2>Peso · últimos registros</h2><div class="chart" id="weightChart"></div></div><div class="card"><h2>Cintura · últimos registros</h2><div class="chart" id="waistChart"></div></div></section>
@@ -98,7 +105,10 @@ function food(n){return foods().find(x=>x.name===n)}
 function calcItem(f,g){return {name:f.name,grams:g,kcal:f.kcal*g/100,p:f.p*g/100,c:f.c*g/100,f:f.f*g/100}}
 function recipeData(r){let a=r.items.map(([n,g])=>calcItem(food(n),g));return {kcal:a.reduce((s,x)=>s+x.kcal,0),p:a.reduce((s,x)=>s+x.p,0),items:a}}
 function sortedFoods(){return foods().slice().sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:"base"}))}
-function populate(){let o=sortedFoods().map(f=>`<option value="${f.name}">${f.kcal} kcal/100 g</option>`).join("");$("foodList").innerHTML=o;$("fillFoodList").innerHTML=o}
+function populate(){renderFoodPicker("food","foodResults");renderFoodPicker("fillFood","fillFoodResults")}
+function pickerMatches(q){let t=(q||"").trim().toLocaleLowerCase("es"),arr=sortedFoods();if(!t)return arr.slice(0,60);return arr.filter(f=>f.name.toLocaleLowerCase("es").includes(t)).sort((a,b)=>{let al=a.name.toLocaleLowerCase("es"),bl=b.name.toLocaleLowerCase("es");return (al.startsWith(t)?0:1)-(bl.startsWith(t)?0:1)||a.name.localeCompare(b.name,"es")}).slice(0,60)}
+function renderFoodPicker(inputId,resultId){let input=$(inputId),box=$(resultId);if(!input||!box)return;let arr=pickerMatches(input.value);box.innerHTML=arr.map((f,i)=>`<div class="food-option" data-name="${f.name.replace(/"/g,"&quot;")}"><b>${f.name}</b><span>${f.kcal} kcal · ${f.p} g proteína /100 g</span></div>`).join("");box.querySelectorAll(".food-option").forEach(el=>el.onclick=()=>{input.value=el.dataset.name;box.classList.remove("open");if(inputId==="fillFood")updateFill()})}
+function setupFoodPicker(inputId,resultId){let input=$(inputId),box=$(resultId);input.addEventListener("focus",()=>{renderFoodPicker(inputId,resultId);box.classList.add("open")});input.addEventListener("input",()=>{renderFoodPicker(inputId,resultId);box.classList.add("open");if(inputId==="fillFood")updateFill()});document.addEventListener("click",e=>{if(!input.closest(".food-picker").contains(e.target))box.classList.remove("open")})}
 function findFoodByInput(id){let q=$(id).value.trim().toLocaleLowerCase("es");return foods().find(f=>f.name.toLocaleLowerCase("es")===q)}
 function totals(){let a=get().items;return ["kcal","p","c","f"].reduce((o,q)=>(o[q]=a.reduce((s,x)=>s+(x[q]||0),0),o),{})}
 function render(){
@@ -237,4 +247,5 @@ $("genMenu").onclick=generateMenu;$("addMenu").onclick=addCurrentMenu;
 $("libSearch").oninput=e=>renderLibrary(e.target.value);$("clearSearch").onclick=()=>{$("libSearch").value="";$("onlineResults").innerHTML="";renderLibrary()};
 $("onlineSearch").onclick=searchOnline;$("libSearch").onkeydown=e=>{if(e.key==="Enter")searchOnline()};
 $("date").value=iso(new Date());populate();renderLibrary();setP(profile);
+setupFoodPicker("food","foodResults");setupFoodPicker("fillFood","fillFoodResults");
 </script></body></html>

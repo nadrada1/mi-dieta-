@@ -1,7 +1,7 @@
-# Mi Dieta V4.2
-- Biblioteca interna en español mucho más amplia.
-- Alimentos ordenados alfabéticamente.
-- Autocompletado: escribe las primeras letras al registrar una comida.
-- Búsqueda online en español para productos comerciales.
-- Generador de menús completamente rehecho: combina muchas opciones por comida en lugar de alternar entre dos plantillas.
-- Conserva los datos locales de V4.1 y versiones anteriores.
+# Mi Dieta V4.2.1
+Corrección del selector de alimentos.
+- Al pulsar el campo se abre una lista visible y alfabética.
+- Al escribir letras, la lista se filtra inmediatamente.
+- Las coincidencias que empiezan por esas letras aparecen primero.
+- No depende del datalist/autocompletado del navegador.
+- Mantiene biblioteca ampliada, búsqueda online en español y generador de menús V4.2.
