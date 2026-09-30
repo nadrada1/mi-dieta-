@@ -1,13 +1,7 @@
-# Mi Dieta V4.1
-
-Actualización del buscador de alimentos.
-
-- Un único cuadro de búsqueda.
-- Biblioteca familiar primero.
-- USDA FoodData Central para alimentos generales.
-- Open Food Facts para productos comerciales.
-- Traducción automática básica español → inglés para búsquedas habituales en USDA.
-- Cualquier resultado puede guardarse en la biblioteca familiar.
-- Conserva perfiles, diarios, menús y datos locales de V4/V3.
-
-Nota: USDA se consulta inicialmente con DEMO_KEY (30 consultas/hora y 50/día por IP). Para uso intensivo conviene configurar posteriormente una clave gratuita propia.
+# Mi Dieta V4.2
+- Biblioteca interna en español mucho más amplia.
+- Alimentos ordenados alfabéticamente.
+- Autocompletado: escribe las primeras letras al registrar una comida.
+- Búsqueda online en español para productos comerciales.
+- Generador de menús completamente rehecho: combina muchas opciones por comida en lugar de alternar entre dos plantillas.
+- Conserva los datos locales de V4.1 y versiones anteriores.

@@ -22,14 +22,14 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 .recipegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.recipe{background:#f5f7f4;border-radius:14px;padding:12px}.recipe b{display:block}.recipe button{margin-top:8px;width:100%}
 @media(max-width:720px){.hero{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.suggestions,.recipegrid{grid-template-columns:1fr}.week{grid-template-columns:repeat(4,1fr)}}
 </style></head><body><div class="app">
-<div class="head"><div><h1>Mi Dieta</h1><div class="muted">Diario y biblioteca familiar · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
+<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V4.2 · Diario y biblioteca familiar · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
 <div class="nav"><button data-tab="today" class="active">Hoy</button><button data-tab="menu">Menú diario</button><button data-tab="ideas">¿Qué puedo comer?</button><button data-tab="week">Semana</button><button data-tab="progress">Progreso</button><button data-tab="foods">Alimentos</button></div>
 
 <section id="today" class="section show">
 <div class="card row"><div class="field"><label>Fecha</label><input id="date" type="date"></div><div class="field"><label>Objetivo kcal</label><input id="goal" type="number"></div><div class="field"><label>Peso kg</label><input id="weight" type="number" step=".1"></div><div class="field"><label>Cintura cm</label><input id="waist" type="number" step=".1"></div></div>
 <div class="card hero"><div class="ring" id="ring"><div class="ringtext"><b id="used">0</b><span>de <i id="goalText">1100</i> kcal</span></div></div>
 <div class="stats"><div class="stat"><b id="left">0</b><span>kcal restantes</span></div><div class="stat"><b id="prot">0 g</b><span id="protLabel">proteína</span></div><div class="stat"><b id="carbs">0 g</b><span>hidratos</span></div><div class="stat"><b id="fat">0 g</b><span>grasas</span></div></div></div>
-<div class="card"><h2>Añadir comida</h2><div class="row"><div class="field"><label>Momento</label><select id="meal"><option>Desayuno</option><option>Media mañana</option><option>Comida</option><option>Merienda</option><option>Cena</option><option>Extra</option></select></div><div class="field" style="flex:2"><label>Alimento</label><select id="food"></select></div><div class="field"><label>Gramos</label><input id="grams" type="number" value="100"></div><div class="field"><button id="add">Añadir</button></div></div></div>
+<div class="card"><h2>Añadir comida</h2><div class="row"><div class="field"><label>Momento</label><select id="meal"><option>Desayuno</option><option>Media mañana</option><option>Comida</option><option>Merienda</option><option>Cena</option><option>Extra</option></select></div><div class="field" style="flex:2"><label>Alimento</label><input id="food" list="foodList" placeholder="Escribe las primeras letras…"><datalist id="foodList"></datalist></div><div class="field"><label>Gramos</label><input id="grams" type="number" value="100"></div><div class="field"><button id="add">Añadir</button></div></div></div>
 <div class="card"><h2>Registro del día</h2><div id="log"></div></div>
 <div class="card"><h2>Recetas rápidas</h2><div class="recipegrid" id="recipes"></div></div>
 </section>
@@ -40,14 +40,14 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 <div id="dailyMenu" style="margin-top:12px"></div></div></section>
 
 <section id="ideas" class="section"><div class="card"><h2>¿Qué puedo comer?</h2><p class="muted" id="ideasIntro">Propuestas que caben aproximadamente en las calorías que te quedan hoy.</p><div id="javiStatus"></div><div class="suggestions" id="suggestions"></div></div>
-<div class="card"><h2>Completar con un alimento</h2><div class="row"><div class="field"><label>Alimento</label><select id="fillFood"></select></div><div class="field"><label>Máximo que cabe hoy</label><input id="maxGrams" readonly></div></div><p class="small muted">Cálculo matemático según las kcal/100 g del alimento; no es una recomendación de ración.</p></div></section>
+<div class="card"><h2>Completar con un alimento</h2><div class="row"><div class="field"><label>Alimento</label><input id="fillFood" list="fillFoodList" placeholder="Escribe las primeras letras…"><datalist id="fillFoodList"></datalist></div><div class="field"><label>Máximo que cabe hoy</label><input id="maxGrams" readonly></div></div><p class="small muted">Cálculo matemático según las kcal/100 g del alimento; no es una recomendación de ración.</p></div></section>
 
 <section id="week" class="section"><div class="card"><h2>Últimos 7 días</h2><div class="week" id="weekGrid"></div><p id="weekAvg"></p></div></section>
 <section id="progress" class="section"><div class="card"><h2>Peso · últimos registros</h2><div class="chart" id="weightChart"></div></div><div class="card"><h2>Cintura · últimos registros</h2><div class="chart" id="waistChart"></div></div></section>
 <section id="foods" class="section"><div class="card"><h2>🔎 Buscador único de alimentos</h2>
-<p class="muted">Escribe un alimento normal o un producto comercial. Primero verás vuestra biblioteca familiar; si quieres ampliar la búsqueda, consulta también USDA FoodData Central y Open Food Facts.</p>
+<p class="muted">Escribe las primeras letras. La biblioteca está ordenada alfabéticamente; para productos comerciales puedes ampliar la búsqueda online en español.</p>
 <div class="row"><div class="field" style="flex:2"><label>¿Qué alimento buscas?</label><input id="libSearch" placeholder="Ej. merluza, solomillo de cerdo, salmón, Skyr..."></div>
-<div class="field"><label>&nbsp;</label><button id="onlineSearch">🌐 Buscar también en Internet</button></div>
+<div class="field"><label>&nbsp;</label><button id="onlineSearch">🌐 Buscar productos online</button></div>
 <div class="field"><label>&nbsp;</label><button id="clearSearch">Limpiar</button></div></div>
 <h3 style="margin-top:16px">Nuestra biblioteca</h3><div id="libraryResults" class="recipegrid" style="margin-top:10px"></div>
 <div id="onlineResults" style="margin-top:16px"></div></div>
@@ -71,6 +71,15 @@ const base=[
 ["Pepino",15,.7,3.6,.1],["Brócoli",34,2.8,7,.4],["Espárragos",20,2.2,3.9,.1],["Judías verdes",31,1.8,7,.2],["Champiñón",22,3.1,3.3,.3],
 ["Manzana",52,.3,14,.2],["Pera",57,.4,15,.1],["Kiwi",61,1.1,15,.5],["Uvas",69,.7,18,.2],["Piña",50,.5,13,.1],
 ["Melón",34,.8,8.2,.2],["Sandía",30,.6,7.6,.2],["Arándanos",57,.7,14,.3],["Nueces",654,15,14,65],["Pistachos",562,20,28,45]
+,
+["Caballa",205,19,0,14],["Boquerón",131,20,0,5],["Lenguado",83,17,0,1.4],["Gallo",88,18,0,1.6],["Pez espada",172,24,0,8],["Trucha",148,21,0,6.5],["Corvina",96,20,0,1.5],["Rodaballo",122,20,0,4.7],["Vieiras",88,17,3.2,.8],["Almejas",74,13,2.6,1],["Berberechos",79,14,3,1],["Navajas",86,15,3.5,1.2],
+["Muslo pollo sin piel",135,20,0,6],["Contramuslo pollo sin piel",150,19,0,8],["Pechuga pollo cocida",165,31,0,3.6],["Pechuga pavo",114,24,0,1.2],["Chuleta cerdo",211,24,0,12],["Solomillo ternera",180,25,0,8],["Filete ternera",170,25,0,7],["Cordero pierna",190,25,0,10],["Jamón ibérico",335,31,0,23],["Lomo embuchado",290,50,1,9],["Cecina",250,40,1,10],["Fiambre pollo",105,20,2,2],
+["Huevo cocido",155,13,1.1,11],["Leche desnatada",35,3.4,5,.1],["Leche entera",61,3.2,4.8,3.3],["Kéfir natural",64,3.5,4.5,3.5],["Yogur griego 0%",59,10,3.6,.4],["Yogur griego natural",97,9,3.9,5],["Requesón",98,11,3.4,4.3],["Ricotta",174,11,3,13],["Feta",264,14,4,21],["Gouda",356,25,2,27],["Queso de cabra",364,22,2,30],
+["Arroz integral cocido",123,2.7,25.6,1],["Arroz basmati cocido",121,3.5,25.2,.4],["Pasta integral cocida",149,6,30,1.7],["Fideos cocidos",138,4.5,25,2.1],["Pan de centeno",259,8.5,48,3.3],["Pan pita",275,9,55,1.2],["Tostada crujiente",350,11,70,4],["Tortita de arroz",387,8,81,3],["Maíz dulce",86,3.2,19,1.2],
+["Garbanzos cocidos",164,8.9,27,2.6],["Lentejas cocidas",116,9,20,.4],["Alubias cocidas",127,8.7,23,.5],["Guisantes",81,5.4,14,.4],["Edamame",121,12,9,5],["Coliflor",25,1.9,5,.3],["Repollo",25,1.3,5.8,.1],["Espinacas",23,2.9,3.6,.4],["Acelgas",19,1.8,3.7,.2],["Zanahoria",41,.9,9.6,.2],["Puerro",61,1.5,14,.3],["Apio",16,.7,3,.2],["Rúcula",25,2.6,3.7,.7],["Canónigos",21,2,3.6,.4],["Lechuga romana",17,1.2,3.3,.3],["Cogollos",16,1.4,2.9,.2],["Remolacha",43,1.6,10,.2],["Calabaza",26,1,6.5,.1],["Menestra de verduras",55,3,9,.5],["Tomate cherry",18,.9,3.9,.2],["Tomate triturado",32,1.6,5.5,.3],["Setas",28,3,4,.4],
+["Melocotón",39,.9,9.5,.3],["Nectarina",44,1.1,10.6,.3],["Ciruela",46,.7,11,.3],["Mango",60,.8,15,.4],["Papaya",43,.5,11,.3],["Frambuesas",52,1.2,12,.7],["Moras",43,1.4,10,.5],["Granada",83,1.7,19,1.2],["Pomelo",42,.8,11,.1],["Dátiles",282,2.5,75,.4],["Avellanas",628,15,17,61],["Anacardos",553,18,30,44],["Cacahuetes",567,26,16,49],["Semillas chía",486,17,42,31],
+["Hummus",166,8,14,10],["Guacamole",150,2,8,13],["Aceitunas verdes",145,1,4,15],["Pepinillos",12,.5,2.4,.2],["Caldo de pollo",12,1.2,1,.3]
+
 ].map(x=>({name:x[0],kcal:x[1],p:x[2],c:x[3],f:x[4]}));
 const recipes=[
 {name:"Tortilla con tomate",meal:"Cena",items:[["Huevo",120],["Claras",120],["Tomate",200],["AOVE",5]]},
@@ -88,7 +97,9 @@ function get(){return JSON.parse(localStorage.getItem(k())||'{"items":[],"weight
 function food(n){return foods().find(x=>x.name===n)}
 function calcItem(f,g){return {name:f.name,grams:g,kcal:f.kcal*g/100,p:f.p*g/100,c:f.c*g/100,f:f.f*g/100}}
 function recipeData(r){let a=r.items.map(([n,g])=>calcItem(food(n),g));return {kcal:a.reduce((s,x)=>s+x.kcal,0),p:a.reduce((s,x)=>s+x.p,0),items:a}}
-function populate(){let o=foods().map((f,i)=>`<option value="${i}">${f.name} · ${f.kcal} kcal/100g</option>`).join("");$("food").innerHTML=o;$("fillFood").innerHTML=o}
+function sortedFoods(){return foods().slice().sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:"base"}))}
+function populate(){let o=sortedFoods().map(f=>`<option value="${f.name}">${f.kcal} kcal/100 g</option>`).join("");$("foodList").innerHTML=o;$("fillFoodList").innerHTML=o}
+function findFoodByInput(id){let q=$(id).value.trim().toLocaleLowerCase("es");return foods().find(f=>f.name.toLocaleLowerCase("es")===q)}
 function totals(){let a=get().items;return ["kcal","p","c","f"].reduce((o,q)=>(o[q]=a.reduce((s,x)=>s+(x[q]||0),0),o),{})}
 function render(){
  let d=get(),t=totals(),g=+$("goal").value||profiles[profile],left=g-t.kcal,pct=t.kcal/g;
@@ -145,38 +156,34 @@ function renderIdeas(){
  }).join("")
 }
 
-const menuTemplates={
- Nacho:[
-  [["Desayuno","Yogur proteico",150],["Media mañana","Huevo",100],["Comida","Pollo",180],["Comida","Patata",160],["Comida","Ensalada/hojas",120],["Comida","AOVE",5],["Merienda","Fresas",200],["Cena","Merluza",200],["Cena","Tomate",200],["Cena","Aguacate",40],["Cena","AOVE",5]],
-  [["Desayuno","Skyr natural",170],["Media mañana","Jamón serrano",35],["Comida","Rape",200],["Comida","Arroz cocido",120],["Comida","Ensalada/hojas",150],["Comida","AOVE",5],["Merienda","Naranja/Mandarina",180],["Cena","Huevo",120],["Cena","Claras",150],["Cena","Tomate",200],["Cena","AOVE",5]]
- ],
- Lucía:[
-  [["Desayuno","Yogur natural",150],["Desayuno","Fresas",150],["Media mañana","Huevo",60],["Comida","Salmón fresco",140],["Comida","Patata",180],["Comida","Ensalada/hojas",150],["Comida","AOVE",8],["Merienda","Manzana",150],["Cena","Pavo",150],["Cena","Tomate",200],["Cena","Aguacate",50],["Cena","Pan",35]],
-  [["Desayuno","Skyr natural",170],["Desayuno","Plátano",80],["Comida","Ternera magra",150],["Comida","Arroz cocido",140],["Comida","Pimiento",150],["Comida","AOVE",8],["Merienda","Yogur proteico",125],["Cena","Dorada/Lubina",180],["Cena","Patata",140],["Cena","Ensalada/hojas",150],["Cena","AOVE",6]]
- ],
- Javi:[
-  [["Desayuno","Avena",70],["Desayuno","Skyr natural",200],["Desayuno","Plátano",120],["Media mañana","Pan integral",80],["Media mañana","Pechuga pavo lonchas",80],["Comida","Pollo",220],["Comida","Arroz cocido",250],["Comida","AOVE",10],["Merienda","Yogur proteico",200],["Merienda","Almendras",25],["Cena","Salmón fresco",180],["Cena","Patata",250],["Cena","Ensalada/hojas",150],["Cena","AOVE",5]],
-  [["Desayuno","Huevo",120],["Desayuno","Pan integral",100],["Desayuno","Aguacate",50],["Media mañana","Skyr natural",200],["Media mañana","Plátano",120],["Comida","Ternera magra",220],["Comida","Pasta cocida",250],["Comida","AOVE",10],["Merienda","Yogur proteico",200],["Merienda","Nueces",20],["Cena","Merluza",250],["Cena","Arroz cocido",180],["Cena","Ensalada/hojas",150],["Cena","AOVE",8]]
- ]
-};
+const menuPools={
+Nacho:{
+"Desayuno":[[["Skyr natural",150],["Fresas",100]],[["Huevo cocido",60],["Tomate",120]],[["Yogur proteico",150]],[["Pan integral",30],["Pechuga pavo lonchas",35],["Tomate",80]],[["Queso fresco",70],["Fresas",100]],[["Plátano",80],["Skyr natural",100]]],
+"Media mañana":[[["Manzana",120]],[["Naranja/Mandarina",150]],[["Pechuga pavo lonchas",50]],[["Huevo cocido",60]],[["Yogur proteico",125]],[["Pan integral",25],["Jamón serrano",25]]],
+"Comida":[[["Pollo",180],["Patata",180],["Ensalada/hojas",150],["AOVE",8]],[["Pavo",180],["Arroz integral cocido",130],["Pimiento",150],["AOVE",8]],[["Ternera magra",160],["Arroz cocido",120],["Ensalada/hojas",150],["AOVE",7]],[["Solomillo cerdo",170],["Patata",200],["Cogollos",150],["AOVE",8]],[["Rape",220],["Arroz basmati cocido",130],["Calabacín",200],["AOVE",8]],[["Merluza",220],["Patata",220],["Menestra de verduras",180],["AOVE",7]],[["Gambones",220],["Arroz cocido",120],["Tomate",180],["AOVE",8]],[["Conejo",170],["Patata",180],["Pimiento",150],["AOVE",7]]],
+"Merienda":[[["Yogur proteico",125]],[["Skyr natural",150]],[["Fresas",200]],[["Kiwi",120]],[["Ciruela",150]],[["Pechuga pavo lonchas",50]]],
+"Cena":[[["Merluza",220],["Alcachofa",200],["AOVE",5]],[["Gambones",200],["Tomate",200],["Aguacate",40],["AOVE",5]],[["Huevo",120],["Claras",150],["Ensalada/hojas",180],["AOVE",5]],[["Dorada/Lubina",200],["Cogollos",180],["Aguacate",40],["AOVE",5]],[["Rape",220],["Calabacín",220],["AOVE",5]],[["Atún al natural",140],["Tomate",200],["Patata",120],["AOVE",5]],[["Mejillones",220],["Gambones",120],["Cogollos",180],["AOVE",5]],[["Pollo",160],["Alcachofa",180],["Tomate",150],["AOVE",5]]]
+},
+Lucía:{
+"Desayuno":[[["Skyr natural",170],["Fresas",120]],[["Yogur natural",150],["Plátano",80]],[["Huevo cocido",60],["Pan integral",35],["Tomate",100]],[["Queso fresco",90],["Manzana",100]],[["Yogur proteico",150],["Arándanos",80]]],
+"Media mañana":[[["Manzana",150]],[["Naranja/Mandarina",180]],[["Yogur proteico",125]],[["Pechuga pavo lonchas",50],["Pan integral",25]],[["Kiwi",130],["Almendras",10]]],
+"Comida":[[["Salmón fresco",150],["Patata",220],["Ensalada/hojas",150],["AOVE",8]],[["Pollo",150],["Arroz integral cocido",160],["Pimiento",150],["AOVE",8]],[["Ternera magra",150],["Arroz cocido",150],["Ensalada/hojas",150],["AOVE",8]],[["Pavo",150],["Patata",250],["Menestra de verduras",180],["AOVE",8]],[["Merluza",200],["Arroz basmati cocido",150],["Calabacín",200],["AOVE",8]],[["Solomillo cerdo",150],["Patata",230],["Cogollos",160],["AOVE",8]]],
+"Merienda":[[["Skyr natural",150]],[["Yogur proteico",125]],[["Fresas",200]],[["Pera",150]],[["Ciruela",150],["Almendras",8]]],
+"Cena":[[["Dorada/Lubina",180],["Patata",140],["Ensalada/hojas",150],["AOVE",6]],[["Gambones",170],["Tomate",200],["Aguacate",60],["Pan integral",40]],[["Huevo",120],["Claras",100],["Ensalada/hojas",180],["Pan integral",40],["AOVE",5]],[["Merluza",200],["Alcachofa",220],["Pan integral",45],["AOVE",6]],[["Atún al natural",130],["Tomate",200],["Aguacate",50],["Patata",150],["AOVE",5]]]
+},
+Javi:{
+"Desayuno":[[["Avena",70],["Skyr natural",200],["Plátano",120]],[["Huevo",120],["Pan integral",100],["Aguacate",50]],[["Yogur griego 0%",250],["Avena",70],["Arándanos",100]],[["Pan integral",120],["Pechuga pavo lonchas",100],["Huevo",60]]],
+"Media mañana":[[["Skyr natural",200],["Plátano",120]],[["Pan integral",80],["Pechuga pavo lonchas",90]],[["Yogur proteico",200],["Almendras",25]],[["Queso cottage",200],["Manzana",180]]],
+"Comida":[[["Pollo",230],["Arroz cocido",280],["AOVE",12],["Pimiento",150]],[["Ternera magra",220],["Pasta cocida",280],["AOVE",12],["Tomate",180]],[["Salmón fresco",220],["Patata",350],["AOVE",8],["Ensalada/hojas",180]],[["Pavo",230],["Arroz integral cocido",280],["AOVE",12],["Calabacín",200]],[["Solomillo cerdo",230],["Cuscús cocido",300],["AOVE",12],["Pimiento",180]]],
+"Merienda":[[["Yogur proteico",200],["Plátano",120]],[["Skyr natural",200],["Avena",40],["Fresas",150]],[["Pan integral",80],["Pechuga pavo lonchas",80]],[["Queso cottage",180],["Almendras",25]]],
+"Cena":[[["Merluza",260],["Arroz cocido",220],["AOVE",10],["Ensalada/hojas",180]],[["Salmón fresco",200],["Patata",300],["AOVE",8],["Cogollos",180]],[["Pollo",220],["Pasta cocida",220],["AOVE",10],["Tomate",200]],[["Huevo",180],["Claras",200],["Pan integral",100],["Aguacate",60],["Tomate",150]],[["Atún fresco",220],["Arroz basmati cocido",230],["AOVE",10],["Calabacín",200]]]
+}};
 function menuStats(arr){let items=arr.map(([meal,n,g])=>({...calcItem(food(n),g),meal}));return {items,kcal:items.reduce((s,x)=>s+x.kcal,0),p:items.reduce((s,x)=>s+x.p,0)}}
-function generateMenu(){
- let opts=menuTemplates[profile], pick=opts[Math.floor(Math.random()*opts.length)];
- currentMenu=menuStats(pick).items; renderMenu();
-}
-function renderMenu(){
- if(!currentMenu.length) generateMenu();
- let kcal=currentMenu.reduce((s,x)=>s+x.kcal,0),p=currentMenu.reduce((s,x)=>s+x.p,0), goal=profiles[profile];
- $("menuIntro").textContent=profile==="Javi"?"Menú orientativo para ganancia muscular: busca aproximarse a kcal y proteína del día.":"Menú orientativo adaptado al objetivo diario de "+profile+".";
- let ord=["Desayuno","Media mañana","Comida","Merienda","Cena"];
- $("dailyMenu").innerHTML=`<div class="stats" style="margin-bottom:12px"><div class="stat"><b>${Math.round(kcal)}</b><span>kcal del menú</span></div><div class="stat"><b>${Math.round(p)} g</b><span>proteína</span></div><div class="stat"><b>${goal}</b><span>objetivo kcal</span></div><div class="stat"><b>${proteinGoals[profile]} g</b><span>objetivo proteína</span></div></div>`+
- ord.map(m=>{let a=currentMenu.filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal</span><span></span></div>`).join("")}</div>`}).join("");
-}
+function buildRandomMenu(){let pools=menuPools[profile],out=[];["Desayuno","Media mañana","Comida","Merienda","Cena"].forEach(meal=>{let opts=pools[meal],choice=opts[Math.floor(Math.random()*opts.length)];choice.forEach(([n,g])=>out.push([meal,n,g]))});return out}
+function generateMenu(){let goal=profiles[profile],best=null,bestScore=1e9;for(let i=0;i<200;i++){let st=menuStats(buildRandomMenu()),kcalErr=Math.abs(st.kcal-goal)/goal,pGoal=proteinGoals[profile],proteinPenalty=st.p<pGoal?((pGoal-st.p)/pGoal)*.7:0,score=kcalErr+proteinPenalty;if(score<bestScore){bestScore=score;best=st.items}}currentMenu=best||[];renderMenu()}
+function renderMenu(){if(!currentMenu.length)generateMenu();let kcal=currentMenu.reduce((s,x)=>s+x.kcal,0),p=currentMenu.reduce((s,x)=>s+x.p,0),goal=profiles[profile];$("menuIntro").textContent=profile==="Javi"?"Cada tirada crea una combinación distinta y busca aproximarse a kcal y proteína para ganancia muscular.":"Cada tirada combina opciones distintas de las cinco comidas para aproximarse al objetivo de "+profile+".";let ord=["Desayuno","Media mañana","Comida","Merienda","Cena"];$("dailyMenu").innerHTML=`<div class="stats" style="margin-bottom:12px"><div class="stat"><b>${Math.round(kcal)}</b><span>kcal del menú</span></div><div class="stat"><b>${Math.round(p)} g</b><span>proteína</span></div><div class="stat"><b>${goal}</b><span>objetivo kcal</span></div><div class="stat"><b>${proteinGoals[profile]} g</b><span>objetivo proteína</span></div></div>`+ord.map(m=>{let a=currentMenu.filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal</span><span></span></div>`).join("")}</div>`}).join("")}
 function addCurrentMenu(){if(!currentMenu.length)return;let d=get();currentMenu.forEach(x=>d.items.push({...x}));save(d);alert("Menú añadido al día de "+profile)}
-function renderLibrary(q=""){
- let term=q.trim().toLowerCase(), arr=foods().filter(x=>x.name.toLowerCase().includes(term)).slice(0,60);
- $("libraryResults").innerHTML=arr.map(x=>`<div class="recipe"><b>${x.name}</b><span class="small muted">${x.kcal} kcal · ${x.p} g proteína · ${x.c} g HC · ${x.f} g grasa /100 g</span></div>`).join("")||'<p class="muted">No está todavía en vuestra biblioteca. Pulsa “Buscar también en Internet”.</p>';
-}
+function renderLibrary(q=""){let term=q.trim().toLocaleLowerCase("es"),arr=sortedFoods().filter(x=>x.name.toLocaleLowerCase("es").includes(term));if(term)arr.sort((a,b)=>(a.name.toLocaleLowerCase("es").startsWith(term)?0:1)-(b.name.toLocaleLowerCase("es").startsWith(term)?0:1)||a.name.localeCompare(b.name,"es"));arr=arr.slice(0,120);$("libraryResults").innerHTML=arr.map(x=>`<div class="recipe"><b>${x.name}</b><span class="small muted">${x.kcal} kcal · ${x.p} g proteína · ${x.c} g HC · ${x.f} g grasa /100 g</span></div>`).join("")||'<p class="muted">No está todavía en vuestra biblioteca. Pulsa “Buscar productos online”.</p>'}
 function saveFoundFood(name,kcal,p,c,f,source){
  let item={name,kcal:+kcal||0,p:+p||0,c:+c||0,f:+f||0};
  if(!item.kcal){alert("Ese resultado no tiene kcal/100 g suficientes.");return}
@@ -209,30 +216,7 @@ function nutrientUSDA(food,id){
  let n=(food.foodNutrients||[]).find(x=>x.nutrientId===id || x.nutrientNumber===String(id));
  return n?+n.value||0:0;
 }
-async function searchOnline(){
- let q=$("libSearch").value.trim(); if(!q)return;
- renderLibrary(q);
- $("onlineResults").innerHTML='<p class="muted">Buscando alimentos generales y productos comerciales…</p>';
- let usda=[],off=[];
- try{
-   let uq=translateFood(q);
-   let url="https://api.nal.usda.gov/fdc/v1/foods/search?api_key=DEMO_KEY&query="+encodeURIComponent(uq)+"&pageSize=12&dataType=Foundation,SR%20Legacy,Survey%20(FNDDS)";
-   let r=await fetch(url),j=await r.json();
-   usda=(j.foods||[]).map(x=>({name:x.description,kcal:nutrientUSDA(x,1008),p:nutrientUSDA(x,1003),c:nutrientUSDA(x,1005),f:nutrientUSDA(x,1004),type:x.dataType})).filter(x=>x.kcal>0).slice(0,8);
- }catch(e){}
- try{
-   let u="https://world.openfoodfacts.org/cgi/search.pl?search_terms="+encodeURIComponent(q)+"&search_simple=1&action=process&json=1&page_size=8&fields=product_name,brands,nutriments";
-   let r=await fetch(u),j=await r.json();
-   off=(j.products||[]).filter(x=>x.product_name&&x.nutriments&&x.nutriments["energy-kcal_100g"]).slice(0,6).map(x=>({
-     name:x.product_name+(x.brands?" · "+x.brands:""),kcal:+x.nutriments["energy-kcal_100g"]||0,p:+x.nutriments.proteins_100g||0,c:+x.nutriments.carbohydrates_100g||0,f:+x.nutriments.fat_100g||0
-   }));
- }catch(e){}
- let card=(x,src,i)=>`<div class="suggest" style="margin-bottom:8px"><b>${x.name}</b><div class="small muted">${Math.round(x.kcal)} kcal · ${Math.round(x.p*10)/10} g proteína · ${Math.round(x.c*10)/10} g HC · ${Math.round(x.f*10)/10} g grasa /100 g</div><div class="small muted">Fuente: ${src}</div><button onclick='saveFoundFood(${JSON.stringify(x.name)},${x.kcal},${x.p},${x.c},${x.f},${JSON.stringify(src)})'>Guardar en biblioteca</button></div>`;
- let html="";
- if(usda.length) html+=`<h3>🥕 Alimentos generales</h3><p class="small muted">Resultados de USDA FoodData Central para “${translateFood(q)}”.</p>`+usda.map((x,i)=>card(x,"USDA FoodData Central",i)).join("");
- if(off.length) html+=`<h3 style="margin-top:18px">🛒 Productos comerciales</h3>`+off.map((x,i)=>card(x,"Open Food Facts",i)).join("");
- $("onlineResults").innerHTML=html||'<p class="over">No he encontrado resultados online útiles. Prueba otro nombre o añádelo manualmente.</p>';
-}
+async function searchOnline(){let q=$("libSearch").value.trim();if(!q)return;renderLibrary(q);$("onlineResults").innerHTML='<p class="muted">Buscando productos en español…</p>';let off=[];try{let u="https://es.openfoodfacts.org/cgi/search.pl?search_terms="+encodeURIComponent(q)+"&search_simple=1&action=process&json=1&page_size=20&fields=product_name,product_name_es,brands,nutriments";let r=await fetch(u),j=await r.json();off=(j.products||[]).filter(x=>(x.product_name_es||x.product_name)&&x.nutriments&&x.nutriments["energy-kcal_100g"]).slice(0,12).map(x=>({name:(x.product_name_es||x.product_name)+(x.brands?" · "+x.brands:""),kcal:+x.nutriments["energy-kcal_100g"]||0,p:+x.nutriments.proteins_100g||0,c:+x.nutriments.carbohydrates_100g||0,f:+x.nutriments.fat_100g||0}))}catch(e){}let card=x=>`<div class="suggest" style="margin-bottom:8px"><b>${x.name}</b><div class="small muted">${Math.round(x.kcal)} kcal · ${Math.round(x.p*10)/10} g proteína · ${Math.round(x.c*10)/10} g HC · ${Math.round(x.f*10)/10} g grasa /100 g</div><div class="small muted">Fuente: Open Food Facts España</div><button onclick='saveFoundFood(${JSON.stringify(x.name)},${x.kcal},${x.p},${x.c},${x.f},"Open Food Facts España")'>Guardar en biblioteca</button></div>`;$("onlineResults").innerHTML=off.length?`<h3>🛒 Resultados online en español</h3>${off.map(card).join("")}`:'<p class="over">No he encontrado un producto útil en español. Para alimentos generales usa la biblioteca interna.</p>'}
 
 function updateFill(){let f=foods()[+$("fillFood").value||0],left=(+$("goal").value||profiles[profile])-totals().kcal;$("maxGrams").value=f&&left>0?Math.floor(left*100/f.kcal)+" g":"0 g"}
 function renderWeek(){let baseD=new Date($("date").value+"T12:00:00"),sum=0,n=0,h="";for(let i=6;i>=0;i--){let dt=new Date(baseD);dt.setDate(dt.getDate()-i);let ds=iso(dt),d=JSON.parse(localStorage.getItem(`diet:${profile}:${ds}`)||'{"items":[]}'),q=Math.round(d.items.reduce((s,x)=>s+x.kcal,0));if(q){sum+=q;n++}h+=`<div class="day"><span>${dt.toLocaleDateString("es",{weekday:"short"})}</span><b class="${q>profiles[profile]?"over":"ok"}">${q||"—"}</b><span>kcal</span></div>`}$("weekGrid").innerHTML=h;$("weekAvg").textContent=n?`Media de los ${n} días registrados: ${Math.round(sum/n)} kcal/día`:"Sin datos todavía."}
@@ -241,8 +225,8 @@ function chart(id,field){let a=records(field),el=$(id);if(!a.length){el.innerHTM
 function renderCharts(){chart("weightChart","weight");chart("waistChart","waist")}
 function setP(p){profile=p;currentMenu=[];localStorage.profile=p;$("goal").value=profiles[p];$("bn").classList.toggle("active",p==="Nacho");$("bl").classList.toggle("active",p==="Lucía");$("bj").classList.toggle("active",p==="Javi");load()}
 function load(){let d=get();$("weight").value=d.weight||"";$("waist").value=d.waist||"";render()}
-$("add").onclick=()=>{let f=foods()[+$("food").value],g=+$("grams").value;if(!f||g<=0)return;let d=get();d.items.push({...calcItem(f,g),meal:$("meal").value});save(d)}
-$("bn").onclick=()=>setP("Nacho");$("bl").onclick=()=>setP("Lucía");$("bj").onclick=()=>setP("Javi");$("date").onchange=load;$("goal").onchange=render;$("fillFood").onchange=updateFill;
+$("add").onclick=()=>{let f=findFoodByInput("food"),g=+$("grams").value;if(!f){alert("Selecciona un alimento de la lista.");return}if(g<=0)return;let d=get();d.items.push({...calcItem(f,g),meal:$("meal").value});save(d);$("food").value=""}
+$("bn").onclick=()=>setP("Nacho");$("bl").onclick=()=>setP("Lucía");$("bj").onclick=()=>setP("Javi");$("date").onchange=load;$("goal").onchange=render;$("fillFood").oninput=updateFill;
 ["weight","waist"].forEach(id=>$(id).onchange=()=>{let d=get();d[id]=$(id).value;save(d)})
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".section").forEach(x=>x.classList.remove("show"));$(b.dataset.tab).classList.add("show");render()})
 $("saveFood").onclick=()=>{let n=$("fn").value.trim(),kk=+$("fk").value;if(!n||!kk)return;custom.push({name:n,kcal:kk,p:+$("fp").value||0,c:+$("fc").value||0,f:+$("ff").value||0});localStorage.familyFoods=JSON.stringify(custom);populate();renderLibrary();render();["fn","fk","fp","fc","ff"].forEach(x=>$(x).value="")}
