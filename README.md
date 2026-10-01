@@ -1,15 +1,18 @@
-# Mi Dieta V5.2.1 — corrección funcional
+# Mi Dieta V5.2.2 — depurada con prueba de ejecución
 
-Correcciones sobre V5.2:
-- Corregido el cruce entre los nombres de ingredientes del motor y los nombres reales de la biblioteca.
-- Añadidos alias robustos (espacios, barras, acentos y variantes de producto).
-- Añadidos noodles de arroz a la biblioteca base.
-- El menú inteligente ahora también aparece claramente dentro de “Menú diario”, con botones separados para comida y cena.
-- Si no puede formar un plato solo con lo que hay en casa, muestra platos razonables y qué ingrediente falta en vez de quedarse sin respuesta.
-- Mantiene las porciones familiares Nacho/Lucía/Javi y la penalización de repeticiones.
-- No modifica ni borra las claves existentes de datos.
+Fallos encontrados y corregidos
+1. La biblioteca llamaba a `pantry()` durante el arranque antes de inicializar `V5_PANTRY_KEY`. Eso detenía JavaScript y dejaba los botones visibles pero muertos.
+2. El motor inteligente usaba una variable `logs` que no existe en esta aplicación. Eso hacía fallar el generador al pulsarlo.
+3. Los noodles aparecían en recetas, pero no se habían añadido realmente al array base de alimentos.
 
-Auditoría:
+Comprobaciones realizadas
 - JavaScript `node --check`: OK.
-- Sin borrado de localStorage.
-- IDs y referencias estáticas revisados.
+- Arranque real en Chromium headless: sin errores de página.
+- Fecha automática: OK.
+- Biblioteca: “Noodles de arroz cocidos” visible.
+- Botón “Sugerir comida”: produce respuesta incluso con despensa vacía.
+- Con Merluza + Quinoa cocida + Menestra marcados: propone “Merluza con quinoa y menestra”.
+- Botón de menú inteligente de “En casa”: produce la misma sugerencia coherente.
+- Calculador “Máximo que cabe hoy”: responde.
+- Sin operaciones destructivas de localStorage.
+- Conserva las claves/datos existentes.
