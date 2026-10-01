@@ -39,8 +39,13 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 .recipe-card{border:1px solid #dfe7e1;border-radius:14px;padding:12px;margin:8px 0;background:#fff}
 .recipe-card .ingredients{font-size:12px;color:#667;margin-top:5px}
 @media(max-width:650px){.home-hero{grid-template-columns:1fr}}
+
+.have-check{display:flex;align-items:flex-start;gap:9px}
+.have-check input{width:18px;height:18px;margin-top:2px;accent-color:#2f6d4f;cursor:pointer}
+.have-check label{cursor:pointer;flex:1}
+.pantry-note{font-size:11px;color:#667;margin-top:4px}
 </style></head><body><div class="app">
-<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V5.0.3 · Asistente familiar · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
+<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V5.1 · Asistente familiar · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
 <div class="nav"><button data-tab="today" class="active">Hoy</button><button data-tab="menu">Menú diario</button><button data-tab="pantry">🏠 En casa</button><button data-tab="familyRecipesTab">🍳 Recetas</button><button data-tab="ideas">¿Qué puedo comer?</button><button data-tab="week">Semana</button><button data-tab="progress">Progreso</button><button data-tab="foods">Alimentos</button></div>
 
 <section id="today" class="section show">
@@ -76,7 +81,7 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 <section id="pantry" class="tab" style="display:none">
   <div class="card">
     <h2>🏠 Tengo en casa</h2>
-    <p class="muted">Marca lo que tienes disponible. Es una biblioteca familiar: sirve para cualquiera de los tres perfiles.</p>
+    <p class="muted">Los alimentos se marcan directamente con una casilla en la biblioteca. Aquí puedes ver y filtrar la misma despensa familiar.</p>
     <div class="row">
       <div class="field" style="flex:2"><label>Buscar alimento</label><input id="pantrySearch" placeholder="Ej. merluza, aguacate, pollo…"></div>
       <div class="field"><label>&nbsp;</label><button id="clearPantrySearch">Ver todos</button></div>
@@ -237,7 +242,12 @@ function buildRandomMenu(){let pools=menuPools[profile],out=[];["Desayuno","Medi
 function generateMenu(){let goal=profiles[profile],best=null,bestScore=1e9;for(let i=0;i<200;i++){let st=menuStats(buildRandomMenu()),kcalErr=Math.abs(st.kcal-goal)/goal,pGoal=proteinGoals[profile],proteinPenalty=st.p<pGoal?((pGoal-st.p)/pGoal)*.7:0,score=kcalErr+proteinPenalty;if(score<bestScore){bestScore=score;best=st.items}}currentMenu=best||[];renderMenu()}
 function renderMenu(){if(!currentMenu.length)generateMenu();let kcal=currentMenu.reduce((s,x)=>s+x.kcal,0),p=currentMenu.reduce((s,x)=>s+x.p,0),goal=profiles[profile];$("menuIntro").textContent=profile==="Javi"?"Cada tirada crea una combinación distinta y busca aproximarse a kcal y proteína para ganancia muscular.":"Cada tirada combina opciones distintas de las cinco comidas para aproximarse al objetivo de "+profile+".";let ord=["Desayuno","Media mañana","Comida","Merienda","Cena"];$("dailyMenu").innerHTML=`<div class="stats" style="margin-bottom:12px"><div class="stat"><b>${Math.round(kcal)}</b><span>kcal del menú</span></div><div class="stat"><b>${Math.round(p)} g</b><span>proteína</span></div><div class="stat"><b>${goal}</b><span>objetivo kcal</span></div><div class="stat"><b>${proteinGoals[profile]} g</b><span>objetivo proteína</span></div></div>`+ord.map(m=>{let a=currentMenu.filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal</span><span></span></div>`).join("")}</div>`}).join("")}
 function addCurrentMenu(){if(!currentMenu.length)return;let d=get();currentMenu.forEach(x=>d.items.push({...x}));save(d);alert("Menú añadido al día de "+profile)}
-function renderLibrary(q=""){let term=q.trim().toLocaleLowerCase("es"),arr=sortedFoods().filter(x=>x.name.toLocaleLowerCase("es").includes(term));if(term)arr.sort((a,b)=>(a.name.toLocaleLowerCase("es").startsWith(term)?0:1)-(b.name.toLocaleLowerCase("es").startsWith(term)?0:1)||a.name.localeCompare(b.name,"es"));arr=arr.slice(0,120);$("libraryResults").innerHTML=arr.map(x=>`<div class="recipe"><b>${x.name}</b><span class="small muted">${x.kcal} kcal · ${x.p} g proteína · ${x.c} g HC · ${x.f} g grasa /100 g</span></div>`).join("")||'<p class="muted">No está todavía en vuestra biblioteca. Pulsa “Buscar productos online”.</p>'}
+function renderLibrary(q=""){
+ let term=q.trim().toLocaleLowerCase("es"),p=pantry(),arr=sortedFoods().filter(x=>x.name.toLocaleLowerCase("es").includes(term));
+ if(term)arr.sort((a,b)=>(a.name.toLocaleLowerCase("es").startsWith(term)?0:1)-(b.name.toLocaleLowerCase("es").startsWith(term)?0:1)||a.name.localeCompare(b.name,"es"));
+ arr=arr.slice(0,120);
+ $("libraryResults").innerHTML=arr.map(x=>`<div class="recipe"><div class="have-check"><input type="checkbox" ${p[x.name]?"checked":""} onchange='setPantry(${JSON.stringify(x.name)},this.checked)'><label><b>${x.name}</b><span class="small muted">${x.kcal} kcal · ${x.p} g proteína · ${x.c} g HC · ${x.f} g grasa /100 g</span><div class="pantry-note">${p[x.name]?"✓ En casa":"No marcado en casa"}</div></label></div></div>`).join("")||'<p class="muted">No está todavía en vuestra biblioteca. Pulsa “Buscar productos online”.</p>'
+}
 function saveFoundFood(name,kcal,p,c,f,source){
  let item={name,kcal:+kcal||0,p:+p||0,c:+c||0,f:+f||0};
  if(!item.kcal){alert("Ese resultado no tiene kcal/100 g suficientes.");return}
@@ -272,7 +282,7 @@ function nutrientUSDA(food,id){
 }
 async function searchOnline(){let q=$("libSearch").value.trim();if(!q)return;renderLibrary(q);$("onlineResults").innerHTML='<p class="muted">Buscando productos en español…</p>';let off=[];try{let u="https://es.openfoodfacts.org/cgi/search.pl?search_terms="+encodeURIComponent(q)+"&search_simple=1&action=process&json=1&page_size=20&fields=product_name,product_name_es,brands,nutriments";let r=await fetch(u),j=await r.json();off=(j.products||[]).filter(x=>(x.product_name_es||x.product_name)&&x.nutriments&&x.nutriments["energy-kcal_100g"]).slice(0,12).map(x=>({name:(x.product_name_es||x.product_name)+(x.brands?" · "+x.brands:""),kcal:+x.nutriments["energy-kcal_100g"]||0,p:+x.nutriments.proteins_100g||0,c:+x.nutriments.carbohydrates_100g||0,f:+x.nutriments.fat_100g||0}))}catch(e){}let card=x=>`<div class="suggest" style="margin-bottom:8px"><b>${x.name}</b><div class="small muted">${Math.round(x.kcal)} kcal · ${Math.round(x.p*10)/10} g proteína · ${Math.round(x.c*10)/10} g HC · ${Math.round(x.f*10)/10} g grasa /100 g</div><div class="small muted">Fuente: Open Food Facts España</div><button onclick='saveFoundFood(${JSON.stringify(x.name)},${x.kcal},${x.p},${x.c},${x.f},"Open Food Facts España")'>Guardar en biblioteca</button></div>`;$("onlineResults").innerHTML=off.length?`<h3>🛒 Resultados online en español</h3>${off.map(card).join("")}`:'<p class="over">No he encontrado un producto útil en español. Para alimentos generales usa la biblioteca interna.</p>'}
 
-function updateFill(){let f=foods()[+$("fillFood").value||0],left=(+$("goal").value||profiles[profile])-totals().kcal;$("maxGrams").value=f&&left>0?Math.floor(left*100/f.kcal)+" g":"0 g"}
+function updateFill(){let f=findFoodByInput("fillFood"),left=(+$("goal").value||profiles[profile])-totals().kcal;if(!f){$("maxGrams").value="Selecciona un alimento";return}$("maxGrams").value=left>0?Math.floor(left*100/f.kcal)+" g":"0 g"}
 function renderWeek(){let baseD=new Date($("date").value+"T12:00:00"),sum=0,n=0,h="";for(let i=6;i>=0;i--){let dt=new Date(baseD);dt.setDate(dt.getDate()-i);let ds=iso(dt),d=JSON.parse(localStorage.getItem(`diet:${profile}:${ds}`)||'{"items":[]}'),q=Math.round(d.items.reduce((s,x)=>s+x.kcal,0));if(q){sum+=q;n++}h+=`<div class="day"><span>${dt.toLocaleDateString("es",{weekday:"short"})}</span><b class="${q>profiles[profile]?"over":"ok"}">${q||"—"}</b><span>kcal</span></div>`}$("weekGrid").innerHTML=h;$("weekAvg").textContent=n?`Media de los ${n} días registrados: ${Math.round(sum/n)} kcal/día`:"Sin datos todavía."}
 function records(field){let a=[];for(let i=0;i<localStorage.length;i++){let key=localStorage.key(i);if(key.startsWith("diet:"+profile+":")){let d=JSON.parse(localStorage.getItem(key));if(d[field])a.push({date:key.split(":")[2],v:+d[field]})}}return a.sort((a,b)=>a.date.localeCompare(b.date)).slice(-10)}
 function chart(id,field){let a=records(field),el=$(id);if(!a.length){el.innerHTML='<p class="muted">Añade registros para ver la gráfica.</p>';return}let min=Math.min(...a.map(x=>x.v)),max=Math.max(...a.map(x=>x.v));el.innerHTML=a.map(x=>{let h=35+(x.v-min)/(max-min||1)*145;return `<div class="col"><b class="small">${x.v}</b><div class="bar" style="height:${h}px"></div><span>${x.date.slice(5)}</span></div>`}).join("")}
@@ -299,8 +309,14 @@ const V5_RECIPES_KEY="miDietaFamilyRecipesV5";
 function pantry(){try{return JSON.parse(localStorage.getItem(V5_PANTRY_KEY)||"{}")}catch(e){return {}}}
 function savePantry(x){localStorage.setItem(V5_PANTRY_KEY,JSON.stringify(x))}
 function pantryNames(){let p=pantry();return Object.keys(p).filter(k=>p[k])}
-function togglePantry(name){let p=pantry();p[name]=!p[name];savePantry(p);renderPantry($("pantrySearch")?.value||"")}
-function renderPantry(q=""){if(!$("pantryGrid"))return;let t=q.trim().toLocaleLowerCase("es"),p=pantry(),arr=sortedFoods().filter(f=>!t||f.name.toLocaleLowerCase("es").includes(t));arr.sort((a,b)=>(p[b.name]?1:0)-(p[a.name]?1:0)||a.name.localeCompare(b.name,"es"));$("pantryGrid").innerHTML=arr.slice(0,160).map(f=>`<div class="pantry-item ${p[f.name]?"have":""}"><b>${f.name}</b>${p[f.name]?'<span class="badge-have">En casa</span>':""}<div class="small muted">${f.kcal} kcal · ${f.p} g proteína /100 g</div><button onclick='togglePantry(${JSON.stringify(f.name)})'>${p[f.name]?"✓ Lo tengo":"＋ Marcar"}</button></div>`).join("")}
+function setPantry(name,value){let p=pantry();p[name]=!!value;savePantry(p);renderPantry($("pantrySearch")?.value||"");if($("libSearch"))renderLibrary($("libSearch").value)}
+function togglePantry(name){let p=pantry();setPantry(name,!p[name])}
+function renderPantry(q=""){
+ if(!$("pantryGrid"))return;
+ let t=q.trim().toLocaleLowerCase("es"),p=pantry(),arr=sortedFoods().filter(f=>!t||f.name.toLocaleLowerCase("es").includes(t));
+ arr.sort((a,b)=>(p[b.name]?1:0)-(p[a.name]?1:0)||a.name.localeCompare(b.name,"es"));
+ $("pantryGrid").innerHTML=arr.slice(0,160).map(f=>`<div class="pantry-item ${p[f.name]?"have":""}"><div class="have-check"><input type="checkbox" ${p[f.name]?"checked":""} onchange='setPantry(${JSON.stringify(f.name)},this.checked)'><label><b>${f.name}</b><div class="small muted">${f.kcal} kcal · ${f.p} g proteína /100 g</div></label></div></div>`).join("")
+}
 function familyRecipes(){try{return JSON.parse(localStorage.getItem(V5_RECIPES_KEY)||"[]")}catch(e){return []}}
 function saveRecipes(x){localStorage.setItem(V5_RECIPES_KEY,JSON.stringify(x))}
 function recipeCalc(r){let out={kcal:0,p:0,c:0,f:0},valid=[];r.ingredients.forEach(i=>{let f=food(i.name);if(f){let z=calcItem(f,i.grams);out.kcal+=z.kcal;out.p+=z.p;out.c+=z.c;out.f+=z.f;valid.push(i)}});return {...out,valid}}
@@ -308,7 +324,26 @@ function renderRecipes(){if(!$("recipeList"))return;let rs=familyRecipes();$("re
 function deleteRecipe(i){let r=familyRecipes();r.splice(i,1);saveRecipes(r);renderRecipes()}
 function addRecipeServing(i){let r=familyRecipes()[i];if(!r)return;let sv=r.servings||1,d=get();r.ingredients.forEach(x=>{let f=food(x.name);if(f)d.items.push({...calcItem(f,x.grams/sv),meal:"Comida"})});save(d)}
 function saveRecipeFromForm(){let name=$("recipeName").value.trim(),sv=Math.max(1,+$("recipeServings").value||1),lines=$("recipeIngredients").value.split(/\n+/),ings=[];for(let line of lines){let parts=line.split(","),n=(parts[0]||"").trim(),g=+(parts[1]||0);let f=food(n);if(n&&g>0&&f)ings.push({name:f.name,grams:g})}if(!name||!ings.length){alert("Pon un nombre y al menos un ingrediente válido de la biblioteca, con formato Nombre,gramos.");return}let r=familyRecipes();r.push({name,servings:sv,ingredients:ings});saveRecipes(r);$("recipeName").value="";$("recipeIngredients").value="";renderRecipes()}
-function generatePantryMenu(){let names=new Set(pantryNames()),out=$("pantryMenuOut");if(names.size<4){out.innerHTML='<p class="over">Marca algunos alimentos más en “Tengo en casa” para poder construir un menú útil.</p>';return}let available=sortedFoods().filter(f=>names.has(f.name));let proteins=available.filter(f=>f.p>=12&&f.kcal<300),veg=available.filter(f=>f.kcal<90&&f.c<20),carbs=available.filter(f=>f.c>=15&&f.kcal<400),dairy=available.filter(f=>/yog|skyr|ques|kéfir/i.test(f.name)),fruit=available.filter(f=>/manzana|plátano|fresa|naranja|mandarina|kiwi|pera|ciruela|mango|papaya|frambues|mora|granada|pomelo/i.test(f.name));let pick=a=>a.length?a[Math.floor(Math.random()*a.length)]:null,pr1=pick(proteins),pr2=pick(proteins.filter(x=>!pr1||x.name!==pr1.name))||pr1,v1=pick(veg),v2=pick(veg),c1=pick(carbs),br=pick(dairy)||pick(fruit);if(!pr1||!v1){out.innerHTML='<p class="over">Con lo marcado no encuentro todavía suficiente proteína/verdura para un menú equilibrado. Marca más productos.</p>';return}let html=`<div class="recipe-card"><b>Propuesta con tu despensa</b><div class="ingredients">${br?`Desayuno: ${br.name}<br>`:""}Comida: ${pr1.name}${c1?" + "+c1.name:""}${v1?" + "+v1.name:""}<br>Cena: ${pr2.name}${v2?" + "+v2.name:""}</div><p class="small muted">Es una propuesta de ingredientes disponibles; el generador completo de cantidades seguirá usando el objetivo del perfil.</p></div>`;out.innerHTML=html}
+function pantryMealOptions(meal){
+ let have=new Set(pantryNames()),pools=(menuPools[profile]||{})[meal]||[];
+ return pools.filter(opt=>opt.every(([n,g])=>n==="AOVE"||have.has(n)));
+}
+function pantryOptionStats(opt){let items=opt.map(([n,g])=>calcItem(food(n),g));return {items,kcal:items.reduce((a,x)=>a+x.kcal,0),p:items.reduce((a,x)=>a+x.p,0)}}
+function generatePantryMenu(){
+ let out=$("pantryMenuOut"),have=pantryNames();
+ if(have.length<3){out.innerHTML='<p class="over">Marca algunos alimentos. Solo propondré platos completos que tengan sentido.</p>';return}
+ let meals=["Desayuno","Media mañana","Comida","Merienda","Cena"],chosen=[],missing=[];
+ for(let meal of meals){
+   let opts=pantryMealOptions(meal);
+   if(!opts.length){missing.push(meal);continue}
+   let ranked=opts.map(o=>({o,...pantryOptionStats(o)})).sort((a,b)=>(meal==="Comida"||meal==="Cena")?b.p-a.p:Math.abs(a.kcal-180)-Math.abs(b.kcal-180));
+   let top=ranked.slice(0,Math.min(3,ranked.length)),x=top[Math.floor(Math.random()*top.length)];
+   chosen.push({meal,...x});
+ }
+ if(!chosen.length){out.innerHTML='<p class="over">Con lo marcado no puedo formar todavía ningún plato completo de la biblioteca.</p>';return}
+ let kcal=chosen.reduce((a,x)=>a+x.kcal,0),prot=chosen.reduce((a,x)=>a+x.p,0);
+ out.innerHTML=`<div class="recipe-card"><b>Menú coherente con tu despensa</b><div class="small muted" style="margin:5px 0 10px">${Math.round(kcal)} kcal · ${Math.round(prot)} g proteína</div>${chosen.map(x=>`<div class="meal"><div class="mealhead"><span>${x.meal}</span><span>${Math.round(x.kcal)} kcal</span></div>${x.items.map(i=>`<div class="item"><span>${i.name}</span><span class="muted">${i.grams} g</span><span>${Math.round(i.kcal)} kcal</span><span></span></div>`).join("")}</div>`).join("")}${missing.length?`<p class="small muted">No he inventado ${missing.join(", ")}: con lo marcado no hay un plato completo disponible.</p>`:""}<p class="small muted">Ya no se mezclan alimentos al azar para cuadrar calorías.</p></div>`
+}
 if($("pantrySearch")){$("pantrySearch").oninput=e=>renderPantry(e.target.value);$("clearPantrySearch").onclick=()=>{$("pantrySearch").value="";renderPantry()};$("pantryMenuBtn").onclick=generatePantryMenu}
 if($("saveRecipe"))$("saveRecipe").onclick=saveRecipeFromForm;
 renderPantry();renderRecipes();
