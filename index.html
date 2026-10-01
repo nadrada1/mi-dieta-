@@ -54,14 +54,14 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 .family-portions>div{background:#f6f8f6;border-radius:9px;padding:7px;font-size:11px}
 @media(max-width:700px){.family-portions{grid-template-columns:1fr}}
 </style></head><body><div class="app">
-<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V5.2.2 · Menús inteligentes · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
+<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V5.3 · Recetas integradas · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
 <div class="nav"><button data-tab="today" class="active">Hoy</button><button data-tab="menu">Menú diario</button><button data-tab="pantry">🏠 En casa</button><button data-tab="familyRecipesTab">🍳 Recetas</button><button data-tab="ideas">¿Qué puedo comer?</button><button data-tab="week">Semana</button><button data-tab="progress">Progreso</button><button data-tab="foods">Alimentos</button></div>
 
 <section id="today" class="section show">
 <div class="card row"><div class="field"><label>Fecha</label><input id="date" type="date"></div><div class="field"><label>Objetivo kcal</label><input id="goal" type="number"></div><div class="field"><label>Peso kg</label><input id="weight" type="number" step=".1"></div><div class="field"><label>Cintura cm</label><input id="waist" type="number" step=".1"></div></div>
 <div class="card hero"><div class="ring" id="ring"><div class="ringtext"><b id="used">0</b><span>de <i id="goalText">1100</i> kcal</span></div></div>
 <div class="stats"><div class="stat"><b id="left">0</b><span>kcal restantes</span></div><div class="stat"><b id="prot">0 g</b><span id="protLabel">proteína</span></div><div class="stat"><b id="carbs">0 g</b><span>hidratos</span></div><div class="stat"><b id="fat">0 g</b><span>grasas</span></div></div></div>
-<div class="card"><h2>Añadir comida</h2><div class="row"><div class="field"><label>Momento</label><select id="meal"><option>Desayuno</option><option>Media mañana</option><option>Comida</option><option>Merienda</option><option>Cena</option><option>Extra</option></select></div><div class="field food-picker" style="flex:2"><label>Alimento</label><input id="food" autocomplete="off" placeholder="Pulsa o escribe: mer, sal, pollo…"><div id="foodResults" class="food-results"></div></div><div class="field"><label>Gramos</label><input id="grams" type="number" value="100"></div><div class="field"><button id="add">Añadir</button></div></div></div>
+<div class="card"><h2>Añadir comida</h2><div class="row"><div class="field"><label>Momento</label><select id="meal"><option>Desayuno</option><option>Media mañana</option><option>Comida</option><option>Merienda</option><option>Cena</option><option>Extra</option></select></div><div class="field food-picker" style="flex:2"><label>Alimento</label><input id="food" autocomplete="off" placeholder="Pulsa o escribe: mer, sal, pollo…"><div id="foodResults" class="food-results"></div></div><div class="field"><label>Gramos</label><input id="grams" type="number" value="100"></div><div class="field"><button id="add">Añadir</button></div><div class="field"><label>Receta familiar</label><select id="dayFamilyRecipe"><option value="">— Elegir —</option></select></div><div class="field"><label>Raciones</label><input id="dayRecipePortions" type="number" min=".25" step=".25" value="1"></div><div class="field"><button id="addDayFamilyRecipe">🍲 Añadir receta</button></div></div></div>
 <div class="card"><h2>Registro del día</h2><div id="log"></div></div>
 <div class="card"><h2>Recetas rápidas</h2><div class="recipegrid" id="recipes"></div></div>
 </section>
@@ -160,7 +160,18 @@ const recipes=[
 {name:"Gambones y aguacate",meal:"Cena",items:[["Gambones",200],["Tomate",200],["Aguacate",40],["AOVE",5]]},
 {name:"Pollo con patata",meal:"Comida",items:[["Pollo",180],["Patata",180],["Ensalada/hojas",120],["AOVE",10]]},
 {name:"Rape con arroz",meal:"Comida",items:[["Rape",200],["Arroz cocido",130],["Ensalada/hojas",120],["AOVE",10]]},
-{name:"Pavo y patata",meal:"Comida",items:[["Pavo",180],["Patata",200],["Tomate",150],["AOVE",10]]}
+{name:"Pavo y patata",meal:"Comida",items:[["Pavo",180],["Patata",200],["Tomate",150],["AOVE",10]]},{name:"Ensalada de atún, huevo y aguacate",meal:"Cena",items:[["Atún al natural",100],["Huevo",60],["Tomate",180],["Aguacate",40],["Ensalada/hojas",120],["AOVE",5]]},
+{name:"Merluza con quinoa y menestra",meal:"Comida",items:[["Merluza",200],["Quinoa",130],["Menestra de verduras",200],["AOVE",5]]},
+{name:"Tortilla de guisantes",meal:"Cena",items:[["Huevo",120],["Claras",100],["Guisantes",100],["Tomate",150],["AOVE",5]]},
+{name:"Noodles con mejillones y guisantes",meal:"Comida",items:[["Noodles de arroz cocidos",150],["Mejillones",180],["Guisantes",100],["AOVE",5]]},
+{name:"Garbanzos con atún y tomate",meal:"Comida",items:[["Garbanzos cocidos",130],["Atún al natural",100],["Tomate",180],["Ensalada/hojas",100],["AOVE",5]]},
+{name:"Dorada con patata y tomate",meal:"Comida",items:[["Dorada/Lubina",200],["Patata",180],["Tomate",180],["AOVE",5]]},
+{name:"Rape con quinoa y verduras",meal:"Comida",items:[["Rape",200],["Quinoa",130],["Menestra de verduras",180],["AOVE",5]]},
+{name:"Mejillones con patata y ensalada",meal:"Cena",items:[["Mejillones",200],["Patata",160],["Ensalada/hojas",150],["AOVE",5]]},
+{name:"Skyr con frutos rojos y plátano",meal:"Desayuno",items:[["Skyr natural",150],["Frutos rojos",100],["Plátano",60]]},
+{name:"Huevo con tostada y tomate",meal:"Desayuno",items:[["Huevo",60],["Pan",30],["Tomate",100]]},
+{name:"Atún con patata y tomate",meal:"Cena",items:[["Atún al natural",120],["Patata",180],["Tomate",180],["AOVE",5]]},
+{name:"Merluza con guisantes y patata",meal:"Cena",items:[["Merluza",200],["Guisantes",100],["Patata",150],["AOVE",5]]}
 ];
 const profiles={Nacho:1100,Lucía:1300,Javi:2150}; const proteinGoals={Nacho:100,Lucía:80,Javi:100}; const profileModes={Nacho:"Pérdida de grasa",Lucía:"Mantenimiento",Javi:"Ganancia muscular"}; let profile=localStorage.profile||"Nacho";
 const V5_PANTRY_KEY="miDietaFamilyPantryV5";
@@ -179,6 +190,8 @@ function renderFoodPicker(inputId,resultId){let input=$(inputId),box=$(resultId)
 function setupFoodPicker(inputId,resultId){let input=$(inputId),box=$(resultId);input.addEventListener("focus",()=>{renderFoodPicker(inputId,resultId);box.classList.add("open")});input.addEventListener("input",()=>{renderFoodPicker(inputId,resultId);box.classList.add("open");if(inputId==="fillFood")updateFill()});document.addEventListener("click",e=>{if(!input.closest(".food-picker").contains(e.target))box.classList.remove("open")})}
 function findFoodByInput(id){let q=$(id).value.trim().toLocaleLowerCase("es");return foods().find(f=>f.name.toLocaleLowerCase("es")===q)}
 function totals(){let a=get().items;return ["kcal","p","c","f"].reduce((o,q)=>(o[q]=a.reduce((s,x)=>s+(x[q]||0),0),o),{})}
+let quickOffset=0;
+function rotateQuickRecipes(){quickOffset=(quickOffset+6)%recipes.length;render()}
 function render(){
  let d=get(),t=totals(),g=+$("goal").value||profiles[profile],left=g-t.kcal,pct=t.kcal/g;
  $("used").textContent=Math.round(t.kcal);$("goalText").textContent=g;$("left").textContent=Math.round(left);$("left").className=left<0?"over":"ok";
@@ -186,54 +199,23 @@ function render(){
  $("ring").style.background=`conic-gradient(${pct>1?"#b42318":"#286749"} ${Math.min(pct,1)*360}deg,#e4e9e4 0)`;
  const ord=["Desayuno","Media mañana","Comida","Merienda","Cena","Extra"];
  $("log").innerHTML=ord.map(m=>{let a=d.items.map((x,i)=>({...x,i})).filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal</span><button class="x" onclick="del(${x.i})">×</button></div>`).join("")}</div>`}).join("")||'<p class="muted">Aún no has registrado nada.</p>';
- $("recipes").innerHTML=recipes.map((r,i)=>{let q=recipeData(r);return `<div class="recipe"><b>${r.name}</b><span class="small muted">${Math.round(q.kcal)} kcal · ${Math.round(q.p)} g proteína</span><button onclick="addRecipe(${i})">Añadir</button></div>`}).join("");
+ let qidx=[];for(let z=0;z<Math.min(6,recipes.length);z++)qidx.push((quickOffset+z)%recipes.length);
+ $("recipes").innerHTML=qidx.map(i=>{let r=recipes[i],q=recipeData(r);return `<div class="recipe"><b>${r.name}</b><span class="small muted">${Math.round(q.kcal)} kcal · ${Math.round(q.p)} g proteína</span><button onclick="addRecipe(${i})">Añadir</button></div>`}).join("")+`<button class="ghost" onclick="rotateQuickRecipes()">🔄 Otras recetas</button>`;
  renderIdeas();renderWeek();renderCharts();updateFill();if($("menu").classList.contains("show"))renderMenu()
 }
 function del(i){let d=get();d.items.splice(i,1);save(d)}
 function addRecipe(i){let r=recipes[i],d=get();recipeData(r).items.forEach(x=>d.items.push({...x,meal:r.meal}));save(d)}
+let ideasOffset=0;
 function renderIdeas(){
- let t=totals(), goal=+$("goal").value||profiles[profile], left=goal-t.kcal;
- let proteinLeft=Math.max(0,proteinGoals[profile]-t.p);
- let candidates=recipes.map((r,i)=>({...recipeData(r),r,i})).filter(x=>x.kcal<=left+10);
- if(profile==="Javi"){
-   $("ideasIntro").textContent="Para Javi priorizamos llegar tanto al objetivo de calorías como al de proteína para apoyar la ganancia muscular.";
-   $("javiStatus").innerHTML=`<div class="stats" style="margin-bottom:12px">
-     <div class="stat"><b>${Math.max(0,Math.round(left))}</b><span>kcal que faltan</span></div>
-     <div class="stat"><b>${Math.round(t.p)} / ${proteinGoals.Javi} g</b><span>proteína de hoy</span></div>
-     <div class="stat"><b>${Math.round(proteinLeft)} g</b><span>proteína que falta</span></div>
-     <div class="stat"><b>${Math.round(t.kcal)} / ${goal}</b><span>kcal de hoy</span></div>
-   </div>`;
-   // Score recipes by how much of remaining protein they cover, then how closely calories fit.
-   candidates.forEach(x=>{
-      let proteinNeed=Math.max(proteinLeft,1), calorieNeed=Math.max(left,1);
-      let proteinCoverage=Math.min(x.p/proteinNeed,1.25);
-      let calorieFit=1-Math.min(Math.abs(calorieNeed-x.kcal)/calorieNeed,1);
-      let density=x.p/Math.max(x.kcal,1)*100;
-      x.score=proteinCoverage*0.60+calorieFit*0.25+Math.min(density/12,1)*0.15;
-   });
-   candidates.sort((a,b)=>b.score-a.score);
- } else {
-   $("ideasIntro").textContent="Propuestas que caben aproximadamente en las calorías que te quedan hoy. Pulsa para añadir la receta completa.";
-   $("javiStatus").innerHTML="";
-   candidates.sort((a,b)=>b.kcal-a.kcal);
- }
- if(left<=0){
-   $("suggestions").innerHTML=profile==="Javi"
-    ? `<p>Ya has alcanzado el objetivo calórico de hoy. Proteína: <b>${Math.round(t.p)} / ${proteinGoals.Javi} g</b>.</p>`
-    : '<p>Ya has alcanzado el objetivo de hoy.</p>';
-   return;
- }
- if(!candidates.length){$("suggestions").innerHTML='<p>No hay una receta completa precargada que encaje. Prueba “Completar con un alimento”.</p>';return}
- $("suggestions").innerHTML=candidates.map((x,pos)=>{
-   let tag=profile==="Javi" && pos===0?'<div class="small ok"><b>Mejor ajuste ahora</b></div>':'';
-   let afterP=Math.round(t.p+x.p), afterK=Math.round(t.kcal+x.kcal);
-   let detail=profile==="Javi"
-      ? `<div class="small muted">Después: ${afterK}/${goal} kcal · ${afterP}/${proteinGoals.Javi} g proteína</div>`
-      : '';
-   return `<div class="suggest">${tag}<h3>${x.r.name}</h3><div>${Math.round(x.kcal)} kcal · ${Math.round(x.p)} g proteína</div>${detail}<div class="small muted">${x.r.items.map(y=>y[1]+" g "+y[0]).join(" · ")}</div><button onclick="addRecipe(${x.i})">Añadir esta opción</button></div>`
- }).join("")
+ let t=totals(),goal=+$("goal").value||profiles[profile],left=goal-t.kcal,proteinLeft=Math.max(0,proteinGoals[profile]-t.p),recent=recentFoodNames();
+ if(left<=0){$("suggestions").innerHTML='<p>Ya has alcanzado el objetivo de hoy.</p>';return}
+ let cs=recipes.map((r,i)=>({...recipeData(r),name:r.name,items:r.items,action:`addRecipe(${i})`,kind:"Rápida"}));
+ familyRecipes().forEach((r,i)=>{let z=recipeCalc(r),sv=Math.max(1,+r.servings||1);cs.push({kcal:z.kcal/sv,p:z.p/sv,name:r.name,items:(r.ingredients||[]).map(x=>[x.name,x.grams/sv]),action:`addFamilyRecipePortion(${i},1)`,kind:"Familiar"})});
+ cs=cs.filter(x=>x.kcal>0&&x.kcal<=left+50);cs.forEach(x=>{let rep=(x.items||[]).filter(y=>recent.has(y[0])).length;x.score=Math.abs(left*.55-x.kcal)+Math.max(0,Math.min(proteinLeft,30)-x.p)*5+rep*40});cs.sort((a,b)=>a.score-b.score);
+ if(cs.length>4){let sh=(ideasOffset*4)%cs.length;cs=cs.slice(sh).concat(cs.slice(0,sh))}ideasOffset++;let pick=cs.slice(0,4);
+ $("ideasIntro").textContent="Opciones variadas según las kcal y proteína que te quedan. También incluye tus recetas familiares.";$("javiStatus").innerHTML="";
+ $("suggestions").innerHTML=pick.length?pick.map((x,pos)=>`<div class="suggest">${pos===0?'<div class="small ok"><b>Mejor ajuste ahora</b></div>':''}<h3>${x.name}</h3><div>${Math.round(x.kcal)} kcal · ${Math.round(x.p)} g proteína</div><div class="small muted">${x.kind} · ${(x.items||[]).map(y=>Math.round(y[1])+" g "+y[0]).join(" · ")}</div><button onclick="${x.action}">Añadir esta opción</button></div>`).join("")+'<button class="ghost" onclick="renderIdeas()">🔄 Otras opciones</button>':'<p>No encuentro una receta que encaje ahora.</p>'
 }
-
 
 // ---------- V5.2: biblioteca culinaria y motor de sugerencias ----------
 const smartDishes=[
@@ -419,9 +401,11 @@ function renderPantry(q=""){
 function familyRecipes(){try{return JSON.parse(localStorage.getItem(V5_RECIPES_KEY)||"[]")}catch(e){return []}}
 function saveRecipes(x){localStorage.setItem(V5_RECIPES_KEY,JSON.stringify(x))}
 function recipeCalc(r){let out={kcal:0,p:0,c:0,f:0},valid=[];r.ingredients.forEach(i=>{let f=food(i.name);if(f){let z=calcItem(f,i.grams);out.kcal+=z.kcal;out.p+=z.p;out.c+=z.c;out.f+=z.f;valid.push(i)}});return {...out,valid}}
-function renderRecipes(){if(!$("recipeList"))return;let rs=familyRecipes();$("recipeList").innerHTML=rs.length?rs.map((r,i)=>{let z=recipeCalc(r),sv=r.servings||1;return `<div class="recipe-card"><b>${r.name}</b><div class="small">${Math.round(z.kcal/sv)} kcal · ${Math.round(z.p/sv)} g proteína por ración</div><div class="ingredients">${r.ingredients.map(x=>`${x.name} ${x.grams} g`).join(" · ")}</div><button onclick="addRecipeServing(${i})">Añadir 1 ración al diario</button> <button onclick="deleteRecipe(${i})">Eliminar</button></div>`}).join(""):'<p class="muted">Todavía no hay recetas guardadas.</p>'}
+function refreshDayFamilyRecipes(){let el=$("dayFamilyRecipe");if(!el)return;let rs=familyRecipes();el.innerHTML='<option value="">— Elegir —</option>'+rs.map((r,i)=>`<option value="${i}">${r.name}</option>`).join("")}
+function addFamilyRecipePortion(i,portion=1){let r=familyRecipes()[i];if(!r)return;let sv=Math.max(1,+r.servings||1),d=get(),added=0;(r.ingredients||[]).forEach(x=>{let f=food(x.name);if(f){d.items.push({...calcItem(f,x.grams/sv*portion),meal:"Comida"});added++}});if(!added)return alert("No he podido reconocer los ingredientes.");save(d)}
+function renderRecipes(){refreshDayFamilyRecipes();if(!$("recipeList"))return;let rs=familyRecipes();$("recipeList").innerHTML=rs.length?rs.map((r,i)=>{let z=recipeCalc(r),sv=r.servings||1;return `<div class="recipe-card"><b>${r.name}</b><div class="small">${Math.round(z.kcal/sv)} kcal · ${Math.round(z.p/sv)} g proteína por ración</div><div class="ingredients">${r.ingredients.map(x=>`${x.name} ${x.grams} g`).join(" · ")}</div><button onclick="addRecipeServing(${i})">Añadir 1 ración al diario</button> <button onclick="deleteRecipe(${i})">Eliminar</button></div>`}).join(""):'<p class="muted">Todavía no hay recetas guardadas.</p>'}
 function deleteRecipe(i){let r=familyRecipes();r.splice(i,1);saveRecipes(r);renderRecipes()}
-function addRecipeServing(i){let r=familyRecipes()[i];if(!r)return;let sv=r.servings||1,d=get();r.ingredients.forEach(x=>{let f=food(x.name);if(f)d.items.push({...calcItem(f,x.grams/sv),meal:"Comida"})});save(d)}
+function addRecipeServing(i){addFamilyRecipePortion(i,1)}
 function saveRecipeFromForm(){let name=$("recipeName").value.trim(),sv=Math.max(1,+$("recipeServings").value||1),lines=$("recipeIngredients").value.split(/\n+/),ings=[];for(let line of lines){let parts=line.split(","),n=(parts[0]||"").trim(),g=+(parts[1]||0);let f=food(n);if(n&&g>0&&f)ings.push({name:f.name,grams:g})}if(!name||!ings.length){alert("Pon un nombre y al menos un ingrediente válido de la biblioteca, con formato Nombre,gramos.");return}let r=familyRecipes();r.push({name,servings:sv,ingredients:ings});saveRecipes(r);$("recipeName").value="";$("recipeIngredients").value="";renderRecipes()}
 function pantryMealOptions(meal){return smartSuggestions(meal,true).map(x=>x.d.i)}
 function pantryOptionStats(opt){let d={i:opt};return smartStats(d)}
@@ -433,6 +417,7 @@ if($("pantrySearch")){$("pantrySearch").oninput=e=>renderPantry(e.target.value);
 if($("smartLunchBtn"))$("smartLunchBtn").onclick=()=>{renderSmartMenu("Comida",true,"smartMenuOut")};
 if($("smartDinnerBtn"))$("smartDinnerBtn").onclick=()=>{renderSmartMenu("Cena",true,"smartMenuOut")}
 if($("saveRecipe"))$("saveRecipe").onclick=saveRecipeFromForm;
+if($("addDayFamilyRecipe"))$("addDayFamilyRecipe").onclick=()=>{let v=$("dayFamilyRecipe").value;if(v==="")return alert("Elige una receta familiar.");addFamilyRecipePortion(+v,Math.max(.25,+$("dayRecipePortions").value||1))};
 renderPantry();renderRecipes();
 
 
