@@ -1,20 +1,15 @@
-# Mi Dieta V5.2 — motor de comidas inteligentes
+# Mi Dieta V5.2.1 — corrección funcional
 
-Novedades
-- Biblioteca inicial de platos culinariamente coherentes.
-- Sugerencias de comida/cena según despensa.
-- Puntúa kcal restantes, proteína restante y repetición de alimentos de los 3 días anteriores.
-- Muestra porciones orientativas para Nacho, Lucía y Javi del mismo plato.
-- Conserva las casillas de despensa y el calculador “Máximo que cabe hoy” corregido en V5.1.
-- Mantiene todas las claves y datos existentes de localStorage.
+Correcciones sobre V5.2:
+- Corregido el cruce entre los nombres de ingredientes del motor y los nombres reales de la biblioteca.
+- Añadidos alias robustos (espacios, barras, acentos y variantes de producto).
+- Añadidos noodles de arroz a la biblioteca base.
+- El menú inteligente ahora también aparece claramente dentro de “Menú diario”, con botones separados para comida y cena.
+- Si no puede formar un plato solo con lo que hay en casa, muestra platos razonables y qué ingrediente falta en vez de quedarse sin respuesta.
+- Mantiene las porciones familiares Nacho/Lucía/Javi y la penalización de repeticiones.
+- No modifica ni borra las claves existentes de datos.
 
-Depuración previa
-- `node --check`: OK.
-- IDs duplicados: 0.
-- Pestañas sin destino: 0.
-- Referencias `$()` a IDs inexistentes: 0.
-- Funciones globales duplicadas: 0.
-- Operaciones destructivas de almacenamiento: 0.
-
-Nota
-Es una auditoría estática/estructural del código; no sustituye una prueba E2E manual en navegador.
+Auditoría:
+- JavaScript `node --check`: OK.
+- Sin borrado de localStorage.
+- IDs y referencias estáticas revisados.

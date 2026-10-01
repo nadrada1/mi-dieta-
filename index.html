@@ -54,7 +54,7 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 .family-portions>div{background:#f6f8f6;border-radius:9px;padding:7px;font-size:11px}
 @media(max-width:700px){.family-portions{grid-template-columns:1fr}}
 </style></head><body><div class="app">
-<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V5.2 · Menús inteligentes · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
+<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V5.2.1 · Menús inteligentes · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
 <div class="nav"><button data-tab="today" class="active">Hoy</button><button data-tab="menu">Menú diario</button><button data-tab="pantry">🏠 En casa</button><button data-tab="familyRecipesTab">🍳 Recetas</button><button data-tab="ideas">¿Qué puedo comer?</button><button data-tab="week">Semana</button><button data-tab="progress">Progreso</button><button data-tab="foods">Alimentos</button></div>
 
 <section id="today" class="section show">
@@ -67,6 +67,12 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 </section>
 
 <section id="menu" class="section">
+<div class="card">
+<h2>🧠 Nuevo: sugerencias inteligentes</h2>
+<p class="muted">Usa tu despensa, las kcal/proteína que te quedan y penaliza repeticiones recientes.</p>
+<div class="row"><div class="field"><button id="smartLunchBtn">🍽️ Sugerir comida</button></div><div class="field"><button id="smartDinnerBtn">🌙 Sugerir cena</button></div></div>
+<div id="smartMenuOut" style="margin-top:12px"></div>
+</div>
 <div class="card"><h2>Ideas de menú diario</h2><p class="muted" id="menuIntro">Genera un día completo adaptado al perfil seleccionado.</p>
 <div class="row"><div class="field"><button id="genMenu">🎲 Generar otro menú</button></div><div class="field"><button id="addMenu">＋ Añadir menú completo al día</button></div></div>
 <div id="dailyMenu" style="margin-top:12px"></div></div></section>
@@ -100,7 +106,7 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
   <div class="card">
     <h2>🍽️ Menú inteligente con lo que tengo</h2>
     <p class="muted">Genera una propuesta priorizando únicamente alimentos marcados como disponibles. Si faltan ingredientes para construir un día razonable, te lo dirá.</p>
-    <button id="pantryMenuBtn">🏠 Generar con mi despensa</button>
+    <button id="pantryMenuBtn">🧠 Sugerir comida/cena con mi despensa</button>
     <div id="pantryMenuOut" style="margin-top:12px"></div>
   </div>
 </section>
@@ -250,9 +256,19 @@ const smartDishes=[
  {n:"Queso fresco con frutos rojos",type:"Desayuno",tags:["lácteo","fruta"],i:[["Queso fresco",100],["Frutos rojos",120]]}
 ];
 
-function smartFood(name){return foods().find(x=>x.name===name)}
+function normFoodName(v){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("es").replace(/[^a-z0-9]+/g," ").trim()}
+const smartAliases={
+"ensalada hojas":["Ensalada/hojas","Ensalada / hojas","Cogollos","Lechuga romana"],
+"dorada lubina":["Dorada/Lubina","Dorada / lubina"],"atun al natural":["Atún al natural","Atún claro al natural"],
+"skyr natural":["Skyr natural","Danone natural Skyr"],"frutos rojos":["Frutos rojos","Fresas","Arándanos"],
+"quinoa cocida":["Quinoa cocida","Quinoa"],"arroz integral cocido":["Arroz integral cocido","Arroz integral"],
+"garbanzos cocidos":["Garbanzos cocidos","Garbanzos de lata","Garbanzos"],
+"noodles de arroz cocidos":["Noodles de arroz cocidos","Noodles de arroz","Fideos de arroz"],
+"mejillones":["Mejillones","Mejillones sin concha"],"guisantes":["Guisantes","Guisantes cocidos"]};
+function smartFood(name){let all=foods(),key=normFoodName(name),f=all.find(x=>normFoodName(x.name)===key);if(f)return f;for(let a of (smartAliases[key]||[])){f=all.find(x=>normFoodName(x.name)===normFoodName(a));if(f)return f}return null}
+function pantryHas(name){if(name==="AOVE")return true;let p=pantry(),f=smartFood(name);if(f&&p[f.name])return true;let key=normFoodName(name),aa=smartAliases[key]||[];return Object.keys(p).some(k=>p[k]&&(normFoodName(k)===key||aa.some(a=>normFoodName(a)===normFoodName(k))))}
 function smartStats(d,scale=1){
- let items=d.i.map(([n,g])=>{let f=smartFood(n);return f?calcItem(f,Math.round(g*scale)):null}).filter(Boolean);
+ let items=d.i.map(([n,g])=>{let f=smartFood(n);if(!f)return null;let z=calcItem(f,Math.round(g*scale));z.name=n;return z}).filter(Boolean);
  return {items,kcal:items.reduce((a,x)=>a+x.kcal,0),p:items.reduce((a,x)=>a+x.p,0)};
 }
 function recentFoodNames(days=3){
@@ -261,7 +277,7 @@ function recentFoodNames(days=3){
  return out;
 }
 function dishAvailable(d){
- let p=pantry(); return d.i.every(([n])=>n==="AOVE"||!!p[n]);
+ return d.i.every(([n])=>pantryHas(n));
 }
 function dishScore(d,type){
  let st=smartStats(d), left=(+$("goal").value||profiles[profile])-totals().kcal, pg=Math.max(0,(proteinGoals[profile]||90)-totals().p);
@@ -285,10 +301,11 @@ function familyScale(name){
 function familyPortionHTML(d){
  return `<div class="family-portions">${["Nacho","Lucía","Javi"].map(n=>{let st=smartStats(d,familyScale(n));return `<div><b>${n}</b><br>${st.items.map(x=>`${x.name} ${x.grams}g`).join(" · ")}<br><b>${Math.round(st.kcal)} kcal · ${Math.round(st.p)}g prot.</b></div>`}).join("")}</div>`;
 }
-function renderSmartMenu(type="Comida",onlyHome=true){
- let arr=smartSuggestions(type,onlyHome).slice(0,4),out=$("pantryMenuOut");
- if(!arr.length){out.innerHTML=`<p class="over">No encuentro un ${type.toLowerCase()} completo con lo que está marcado en casa. Marca más ingredientes o desactiva el filtro de despensa.</p>`;return}
- out.innerHTML=`<div class="smart-menu-grid">${arr.map((x,k)=>`<div class="smart-dish"><h4>${k===0?"⭐ ":""}${x.d.n}</h4><div class="smart-tags">${x.d.tags.map(t=>`<span class="smart-tag">${t}</span>`).join("")}</div><div class="small muted">${Math.round(x.kcal)} kcal · ${Math.round(x.p)} g proteína · ${dishAvailable(x.d)?"✓ ingredientes en casa":"faltan ingredientes"}</div><div class="small" style="margin-top:7px">${x.items.map(i=>`${i.name} ${i.grams} g`).join(" · ")}</div>${familyPortionHTML(x.d)}</div>`).join("")}</div>`;
+function renderSmartMenu(type="Comida",onlyHome=true,targetId="pantryMenuOut"){
+ let all=smartSuggestions(type,onlyHome),out=$(targetId);if(!out)return;
+ if(!all.length){let possible=smartSuggestions(type,false).slice(0,3);out.innerHTML=`<p class="over"><b>No puedo formar una ${type.toLowerCase()} completa solo con lo marcado.</b></p>${possible.map(x=>`<div class="smart-dish"><b>${x.d.n}</b><div class="small muted">${x.d.i.filter(([n])=>!pantryHas(n)).map(([n])=>"Falta "+n).join(" · ")}</div></div>`).join("")}`;return}
+ let arr=all.slice(0,4);
+ out.innerHTML=`<div class="smart-menu-grid">${arr.map((x,k)=>`<div class="smart-dish"><h4>${k===0?"⭐ Mejor ajuste: ":""}${x.d.n}</h4><div class="smart-tags">${x.d.tags.map(t=>`<span class="smart-tag">${t}</span>`).join("")}</div><div class="small muted">${Math.round(x.kcal)} kcal · ${Math.round(x.p)} g proteína · ✓ ingredientes en casa</div><div class="small">${x.items.map(i=>`${i.name} ${i.grams} g`).join(" · ")}</div>${familyPortionHTML(x.d)}</div>`).join("")}</div>`;
 }
 const menuPools={
 Nacho:{
@@ -403,9 +420,11 @@ function pantryMealOptions(meal){return smartSuggestions(meal,true).map(x=>x.d.i
 function pantryOptionStats(opt){let d={i:opt};return smartStats(d)}
 function generatePantryMenu(){
  let hour=new Date().getHours(),type=hour>=17?"Cena":"Comida";
- renderSmartMenu(type,true);
+ renderSmartMenu(type,true,"pantryMenuOut");
 }
-if($("pantrySearch")){$("pantrySearch").oninput=e=>renderPantry(e.target.value);$("clearPantrySearch").onclick=()=>{$("pantrySearch").value="";renderPantry()};$("pantryMenuBtn").onclick=generatePantryMenu}
+if($("pantrySearch")){$("pantrySearch").oninput=e=>renderPantry(e.target.value);$("clearPantrySearch").onclick=()=>{$("pantrySearch").value="";renderPantry()};$("pantryMenuBtn").onclick=generatePantryMenu};
+if($("smartLunchBtn"))$("smartLunchBtn").onclick=()=>renderSmartMenu("Comida",true,"smartMenuOut");
+if($("smartDinnerBtn"))$("smartDinnerBtn").onclick=()=>renderSmartMenu("Cena",true,"smartMenuOut")
 if($("saveRecipe"))$("saveRecipe").onclick=saveRecipeFromForm;
 renderPantry();renderRecipes();
 
