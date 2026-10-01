@@ -54,7 +54,7 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 .family-portions>div{background:#f6f8f6;border-radius:9px;padding:7px;font-size:11px}
 @media(max-width:700px){.family-portions{grid-template-columns:1fr}}
 </style></head><body><div class="app">
-<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V5.3 · Recetas integradas · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
+<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V5.3.1 · Constructor de recetas · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
 <div class="nav"><button data-tab="today" class="active">Hoy</button><button data-tab="menu">Menú diario</button><button data-tab="pantry">🏠 En casa</button><button data-tab="familyRecipesTab">🍳 Recetas</button><button data-tab="ideas">¿Qué puedo comer?</button><button data-tab="week">Semana</button><button data-tab="progress">Progreso</button><button data-tab="foods">Alimentos</button></div>
 
 <section id="today" class="section show">
@@ -114,13 +114,20 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 <section id="familyRecipesTab" class="tab" style="display:none">
   <div class="card">
     <h2>🍳 Recetas familiares</h2>
-    <p class="muted">Guarda platos completos. Después podrás añadir una ración al diario sin introducir ingrediente por ingrediente.</p>
+    <p class="muted">Construye la receta eligiendo alimentos de tu biblioteca. Las calorías y macros se calculan automáticamente.</p>
     <div class="row">
-      <div class="field" style="flex:2"><label>Nombre</label><input id="recipeName" placeholder="Ej. Gambones con aguacate"></div>
-      <div class="field"><label>Raciones</label><input id="recipeServings" type="number" min="1" value="2"></div>
+      <div class="field" style="flex:2"><label>Nombre</label><input id="recipeName" placeholder="Ej. Merluza con quinoa"></div>
+      <div class="field"><label>Raciones</label><input id="recipeServings" type="number" min="1" step="1" value="2"></div>
     </div>
-    <div class="field"><label>Ingredientes</label><textarea id="recipeIngredients" rows="4" placeholder="Un ingrediente por línea: nombre,cantidad en gramos&#10;Ej.: Gambones,400&#10;Aguacate,80&#10;Tomate,300&#10;AOVE,10"></textarea></div>
-    <button id="saveRecipe">Guardar receta</button>
+    <div class="row">
+      <div class="field food-picker" style="flex:2"><label>Ingrediente</label><input id="recipeFood" autocomplete="off" placeholder="Pulsa o escribe: mer, pat, hue…"><div id="recipeFoodResults" class="food-results"></div></div>
+      <div class="field"><label>Gramos</label><input id="recipeFoodGrams" type="number" min="1" value="100"></div>
+      <div class="field"><label>&nbsp;</label><button id="addRecipeIngredient">＋ Añadir ingrediente</button></div>
+    </div>
+    <div id="recipeBuilderList"></div>
+    <div id="recipeBuilderTotals" class="stats" style="margin:12px 0"></div>
+    <button id="saveRecipe">💾 Guardar receta</button>
+    <button class="ghost" id="clearRecipeBuilder">Limpiar</button>
     <div id="recipeList" style="margin-top:12px"></div>
   </div>
 </section>
@@ -292,11 +299,14 @@ function familyScale(name){
 function familyPortionHTML(d){
  return `<div class="family-portions">${["Nacho","Lucía","Javi"].map(n=>{let st=smartStats(d,familyScale(n));return `<div><b>${n}</b><br>${st.items.map(x=>`${x.name} ${x.grams}g`).join(" · ")}<br><b>${Math.round(st.kcal)} kcal · ${Math.round(st.p)}g prot.</b></div>`}).join("")}</div>`;
 }
-function renderSmartMenu(type="Comida",onlyHome=true,targetId="pantryMenuOut"){
+const smartMenuOffsets={};
+function renderSmartMenu(type="Comida",onlyHome=true,targetId="pantryMenuOut",advance=false){
  let all=smartSuggestions(type,onlyHome),out=$(targetId);if(!out)return;
- if(!all.length){let possible=smartSuggestions(type,false).slice(0,3);out.innerHTML=`<p class="over"><b>No puedo formar una ${type.toLowerCase()} completa solo con lo marcado.</b></p>${possible.map(x=>`<div class="smart-dish"><b>${x.d.n}</b><div class="small muted">${x.d.i.filter(([n])=>!pantryHas(n)).map(([n])=>"Falta "+n).join(" · ")}</div></div>`).join("")}`;return}
- let arr=all.slice(0,4);
- out.innerHTML=`<div class="smart-menu-grid">${arr.map((x,k)=>`<div class="smart-dish"><h4>${k===0?"⭐ Mejor ajuste: ":""}${x.d.n}</h4><div class="smart-tags">${x.d.tags.map(t=>`<span class="smart-tag">${t}</span>`).join("")}</div><div class="small muted">${Math.round(x.kcal)} kcal · ${Math.round(x.p)} g proteína · ✓ ingredientes en casa</div><div class="small">${x.items.map(i=>`${i.name} ${i.grams} g`).join(" · ")}</div>${familyPortionHTML(x.d)}</div>`).join("")}</div>`;
+ let key=targetId+"|"+type,off=smartMenuOffsets[key]||0;if(advance&&all.length)off=(off+3)%all.length;smartMenuOffsets[key]=off;
+ if(!all.length){let possible=smartSuggestions(type,false).filter(x=>x.d.i.filter(([n])=>!pantryHas(n)).length<=1).slice(0,3);out.innerHTML=`<p class="over"><b>No puedo formar una ${type.toLowerCase()} completa solo con lo marcado.</b></p>${possible.map(x=>`<div class="smart-dish"><b>${x.d.n}</b><div class="small muted">${x.d.i.filter(([n])=>!pantryHas(n)).map(([n])=>"Te falta "+n).join(" · ")}</div></div>`).join("")}`;return}
+ let arr=[];for(let i=0;i<Math.min(3,all.length);i++)arr.push(all[(off+i)%all.length]);
+ let near=smartSuggestions(type,false).filter(x=>x.d.i.filter(([n])=>!pantryHas(n)).length===1&&!arr.some(a=>a.d.n===x.d.n)).slice(0,2);
+ out.innerHTML=`<div class="smart-menu-grid">${arr.map((x,k)=>`<div class="smart-dish"><h4>${k===0?"⭐ Mejor ajuste: ":""}${x.d.n}</h4><div class="smart-tags">${x.d.tags.map(t=>`<span class="smart-tag">${t}</span>`).join("")}</div><div class="small muted">${Math.round(x.kcal)} kcal · ${Math.round(x.p)} g proteína · ✓ ingredientes en casa</div><div class="small">${x.items.map(i=>`${i.name} ${i.grams} g`).join(" · ")}</div>${familyPortionHTML(x.d)}</div>`).join("")}</div><button class="ghost" onclick='renderSmartMenu(${JSON.stringify(type)},true,${JSON.stringify(targetId)},true)'>🔄 Dame otras 3</button>${near.length?`<div style="margin-top:12px"><b>También podrías hacer, comprando solo una cosa:</b>${near.map(x=>`<div class="small">• ${x.d.n} — falta ${x.d.i.filter(([n])=>!pantryHas(n)).map(([n])=>n).join("")}</div>`).join("")}</div>`:""}`;
 }
 const menuPools={
 Nacho:{
@@ -377,7 +387,7 @@ $("bn").onclick=()=>setP("Nacho");$("bl").onclick=()=>setP("Lucía");$("bj").onc
 ["weight","waist"].forEach(id=>$(id).onchange=()=>{let d=get();d[id]=$(id).value;save(d)})
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".section").forEach(x=>x.classList.remove("show"));$(b.dataset.tab).classList.add("show");render()})
 $("saveFood").onclick=()=>{let n=$("fn").value.trim(),kk=+$("fk").value;if(!n||!kk)return;custom.push({name:n,kcal:kk,p:+$("fp").value||0,c:+$("fc").value||0,f:+$("ff").value||0});localStorage.familyFoods=JSON.stringify(custom);populate();renderLibrary();render();["fn","fk","fp","fc","ff"].forEach(x=>$(x).value="")}
-$("export").onclick=()=>{let o={};for(let i=0;i<localStorage.length;i++){let q=localStorage.key(i);if(q.startsWith("diet:")||(q==="customFoods"||q==="familyFoods"))o[q]=localStorage.getItem(q)}let b=new Blob([JSON.stringify(o,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="mi-dieta-backup.json";a.click()}
+$("export").onclick=()=>{let o={};for(let i=0;i<localStorage.length;i++){let q=localStorage.key(i);if(q.startsWith("diet:")||["customFoods","familyFoods","miDietaFamilyPantryV5","miDietaFamilyRecipesV5","profile"].includes(q))o[q]=localStorage.getItem(q)}let b=new Blob([JSON.stringify(o,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="mi-dieta-backup.json";a.click()}
 $("import").onchange=e=>{let r=new FileReader();r.onload=()=>{try{Object.entries(JSON.parse(r.result)).forEach(([a,b])=>localStorage.setItem(a,b));custom=JSON.parse(localStorage.familyFoods||localStorage.customFoods||"[]");populate();load();alert("Datos importados")}catch{alert("Archivo no válido")}};r.readAsText(e.target.files[0])}
 
 $("genMenu").onclick=generateMenu;$("addMenu").onclick=addCurrentMenu;
@@ -406,7 +416,16 @@ function addFamilyRecipePortion(i,portion=1){let r=familyRecipes()[i];if(!r)retu
 function renderRecipes(){refreshDayFamilyRecipes();if(!$("recipeList"))return;let rs=familyRecipes();$("recipeList").innerHTML=rs.length?rs.map((r,i)=>{let z=recipeCalc(r),sv=r.servings||1;return `<div class="recipe-card"><b>${r.name}</b><div class="small">${Math.round(z.kcal/sv)} kcal · ${Math.round(z.p/sv)} g proteína por ración</div><div class="ingredients">${r.ingredients.map(x=>`${x.name} ${x.grams} g`).join(" · ")}</div><button onclick="addRecipeServing(${i})">Añadir 1 ración al diario</button> <button onclick="deleteRecipe(${i})">Eliminar</button></div>`}).join(""):'<p class="muted">Todavía no hay recetas guardadas.</p>'}
 function deleteRecipe(i){let r=familyRecipes();r.splice(i,1);saveRecipes(r);renderRecipes()}
 function addRecipeServing(i){addFamilyRecipePortion(i,1)}
-function saveRecipeFromForm(){let name=$("recipeName").value.trim(),sv=Math.max(1,+$("recipeServings").value||1),lines=$("recipeIngredients").value.split(/\n+/),ings=[];for(let line of lines){let parts=line.split(","),n=(parts[0]||"").trim(),g=+(parts[1]||0);let f=food(n);if(n&&g>0&&f)ings.push({name:f.name,grams:g})}if(!name||!ings.length){alert("Pon un nombre y al menos un ingrediente válido de la biblioteca, con formato Nombre,gramos.");return}let r=familyRecipes();r.push({name,servings:sv,ingredients:ings});saveRecipes(r);$("recipeName").value="";$("recipeIngredients").value="";renderRecipes()}
+let recipeBuilder=[];
+function renderRecipeBuilder(){
+ let sv=Math.max(1,+$("recipeServings").value||1),kcal=0,p=0,c=0,fat=0;
+ $("recipeBuilderList").innerHTML=recipeBuilder.length?recipeBuilder.map((x,i)=>{let fd=food(x.name),z=fd?calcItem(fd,x.grams):{kcal:0,p:0,c:0,f:0};kcal+=z.kcal;p+=z.p;c+=z.c;fat+=z.f;return `<div class="item"><span><b>${x.name}</b></span><span>${x.grams} g</span><span>${Math.round(z.kcal)} kcal</span><button class="x" onclick="removeRecipeIngredient(${i})">×</button></div>`}).join(""):'<p class="muted">Añade el primer ingrediente.</p>';
+ $("recipeBuilderTotals").innerHTML=`<div class="stat"><b>${Math.round(kcal)}</b><span>kcal receta</span></div><div class="stat"><b>${Math.round(p)} g</b><span>proteína</span></div><div class="stat"><b>${Math.round(kcal/sv)}</b><span>kcal/ración</span></div><div class="stat"><b>${Math.round(p/sv)} g</b><span>proteína/ración</span></div>`;
+}
+function addRecipeIngredient(){let f=findFoodByInput("recipeFood"),g=+$("recipeFoodGrams").value;if(!f)return alert("Elige un alimento de la lista.");if(!(g>0))return alert("Indica una cantidad válida.");let ex=recipeBuilder.find(x=>x.name===f.name);if(ex)ex.grams+=g;else recipeBuilder.push({name:f.name,grams:g});$("recipeFood").value="";$("recipeFoodGrams").value=100;renderRecipeBuilder()}
+function removeRecipeIngredient(i){recipeBuilder.splice(i,1);renderRecipeBuilder()}
+function clearRecipeBuilder(){recipeBuilder=[];$("recipeName").value="";renderRecipeBuilder()}
+function saveRecipeFromForm(){let name=$("recipeName").value.trim(),sv=Math.max(1,+$("recipeServings").value||1);if(!name||!recipeBuilder.length)return alert("Pon un nombre y añade al menos un ingrediente.");let r=familyRecipes();r.push({name,servings:sv,ingredients:recipeBuilder.map(x=>({...x}))});saveRecipes(r);recipeBuilder=[];$("recipeName").value="";renderRecipeBuilder();renderRecipes()}
 function pantryMealOptions(meal){return smartSuggestions(meal,true).map(x=>x.d.i)}
 function pantryOptionStats(opt){let d={i:opt};return smartStats(d)}
 function generatePantryMenu(){
@@ -417,6 +436,11 @@ if($("pantrySearch")){$("pantrySearch").oninput=e=>renderPantry(e.target.value);
 if($("smartLunchBtn"))$("smartLunchBtn").onclick=()=>{renderSmartMenu("Comida",true,"smartMenuOut")};
 if($("smartDinnerBtn"))$("smartDinnerBtn").onclick=()=>{renderSmartMenu("Cena",true,"smartMenuOut")}
 if($("saveRecipe"))$("saveRecipe").onclick=saveRecipeFromForm;
+if($("addRecipeIngredient"))$("addRecipeIngredient").onclick=addRecipeIngredient;
+if($("clearRecipeBuilder"))$("clearRecipeBuilder").onclick=clearRecipeBuilder;
+if($("recipeServings"))$("recipeServings").oninput=renderRecipeBuilder;
+setupFoodPicker("recipeFood","recipeFoodResults");
+renderRecipeBuilder();
 if($("addDayFamilyRecipe"))$("addDayFamilyRecipe").onclick=()=>{let v=$("dayFamilyRecipe").value;if(v==="")return alert("Elige una receta familiar.");addFamilyRecipePortion(+v,Math.max(.25,+$("dayRecipePortions").value||1))};
 renderPantry();renderRecipes();
 
