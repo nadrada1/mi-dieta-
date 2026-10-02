@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0f766e"><title>Mi Dieta · V5.5.2 WOW Cloud</title>
+<meta name="theme-color" content="#0f766e"><title>Mi Dieta · V5.5.6 WOW Cloud Authority</title>
 <link rel="manifest" href="manifest.json">
 <style>
 :root{--bg:#f4f6f2;--card:#fff;--ink:#18211b;--muted:#69736c;--green:#286749;--green2:#dcece2;--line:#e1e6e1;--red:#b42318;--amber:#a05a00}
@@ -665,12 +665,18 @@ async function cloudPull(showAlert=true){
    sb.from("diary_entries").select("entry_date,meal,food_name,grams,kcal,protein,carbs,fat,migration_key").eq("user_id",cloud.user.id),
    sb.from("measurements").select("measured_on,weight_kg,waist_cm").eq("user_id",cloud.user.id)
   ]);for(const r of [fr,rr,pr,dr,mr])if(r.error)throw r.error;
-  const sharedAuthoritative=!!localStorage.getItem(`miDietaCloudMigrated:${cloud.user.id}`)||(custom.length===0&&familyRecipes().length===0);
+  // Un dispositivo queda "vinculado" a la nube solo cuando sabemos que ya trabaja con datos cloud.
+  // Esto evita que un navegador antiguo sin migrar pierda datos locales, pero permite que un
+  // portátil ya sincronizado elimine correctamente copias locales de filas borradas en otro dispositivo.
+  const cloudBoundKey=`miDietaCloudBound:${cloud.user.id}`;
+  const ownBefore=cloudDietKeysFor(profile);
+  const hasCloudEraLocal=ownBefore.some(key=>{try{return (JSON.parse(localStorage.getItem(key)||'{"items":[]}').items||[]).some(x=>/^v554:/.test(x.migration_key||""))}catch(e){return false}});
+  const authoritative=!!localStorage.getItem(`miDietaCloudMigrated:${cloud.user.id}`)||!!localStorage.getItem(cloudBoundKey)||ownBefore.length===0||hasCloudEraLocal;
+  const sharedAuthoritative=authoritative||(custom.length===0&&familyRecipes().length===0);
   if(sharedAuthoritative)custom=(fr.data||[]).map(x=>({name:x.name,kcal:+x.kcal_100||0,p:+x.protein_100||0,c:+x.carbs_100||0,f:+x.fat_100||0}));else{let known=new Set(custom.map(x=>cloudNorm(x.name)));for(const x of fr.data||[]){if(!known.has(cloudNorm(x.name))){custom.push({name:x.name,kcal:+x.kcal_100||0,p:+x.protein_100||0,c:+x.carbs_100||0,f:+x.fat_100||0});known.add(cloudNorm(x.name))}}}localStorage.familyFoods=JSON.stringify(custom);
   let localR=sharedAuthoritative?(rr.data||[]).map(r=>({name:r.name,servings:+r.servings||1,ingredients:(r.recipe_ingredients||[]).map(x=>({name:x.food_name,grams:+x.grams||0}))})):familyRecipes();if(!sharedAuthoritative){let rnames=new Set(localR.map(x=>cloudNorm(x.name)));for(const r of rr.data||[]){if(!rnames.has(cloudNorm(r.name)))localR.push({name:r.name,servings:+r.servings||1,ingredients:(r.recipe_ingredients||[]).map(x=>({name:x.food_name,grams:+x.grams||0}))})}}localStorage.setItem(V5_RECIPES_KEY,JSON.stringify(localR));
-  let lp=pantry(),migrated=!!localStorage.getItem(`miDietaCloudMigrated:${cloud.user.id}`);for(const x of pr.data||[]){if(migrated||!(x.food_name in lp))lp[x.food_name]=!!x.in_stock}localStorage.setItem(V5_PANTRY_KEY,JSON.stringify(lp));
+  let lp=pantry();for(const x of pr.data||[]){if(sharedAuthoritative||!(x.food_name in lp))lp[x.food_name]=!!x.in_stock}localStorage.setItem(V5_PANTRY_KEY,JSON.stringify(lp));
   let byDate={};for(const x of dr.data||[]){let date=x.entry_date;(byDate[date]??=[]).push(x)}
-  const ownBefore=cloudDietKeysFor(profile),authoritative=!!localStorage.getItem(`miDietaCloudMigrated:${cloud.user.id}`)||ownBefore.length===0;
   if(authoritative){
    const dates=new Set([...Object.keys(byDate),(mr.data||[]).map(x=>x.measured_on)]);
    for(const date of dates){let key=`diet:${profile}:${date}`,old=localStorage.getItem(key);if(old&&!localStorage.getItem(`miDietaFallback:${key}`))localStorage.setItem(`miDietaFallback:${key}`,old);let prior=JSON.parse(old||'{"items":[],"weight":"","waist":""}');prior.items=(byDate[date]||[]).map(x=>({name:x.food_name,grams:+x.grams||0,kcal:+x.kcal||0,p:+x.protein||0,c:+x.carbs||0,f:+x.fat||0,meal:x.meal||"Extra",migration_key:x.migration_key}));localStorage.setItem(key,JSON.stringify(prior))}
@@ -682,6 +688,7 @@ async function cloudPull(showAlert=true){
   for(const x of mr.data||[]){measurementDates.add(x.measured_on);let key=`diet:${profile}:${x.measured_on}`,d=JSON.parse(localStorage.getItem(key)||'{"items":[],"weight":"","waist":""}');d.weight=x.weight_kg==null?"":String(x.weight_kg);d.waist=x.waist_cm==null?"":String(x.waist_cm);localStorage.setItem(key,JSON.stringify(d))}
   // En modo autoritativo, una medición borrada en otro dispositivo también debe desaparecer aquí.
   if(authoritative)for(const key of cloudDietKeysFor(profile)){let date=key.split(":")[2];if(!measurementDates.has(date)){let d=JSON.parse(localStorage.getItem(key)||'{"items":[],"weight":"","waist":""}');d.weight="";d.waist="";localStorage.setItem(key,JSON.stringify(d))}}
+  if(authoritative)localStorage.setItem(cloudBoundKey,new Date().toISOString());
   populate();renderLibrary($("libSearch")?.value||"");renderPantry($("pantrySearch")?.value||"");renderRecipes();load();cloudSetStatus("☁ Guardado","ok");if(showAlert)alert("Datos de la nube fusionados con este dispositivo. No se ha borrado ningún dato local.");
  }catch(e){console.error(e);cloudSetStatus("⚠ Error al actualizar","err");if(showAlert)alert("No se ha borrado nada. Error al actualizar: "+(e.message||e))}finally{cloud.syncing=false}
 }
