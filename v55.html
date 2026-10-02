@@ -206,13 +206,15 @@ const profiles={Nacho:1100,Lucía:1300,Javi:2150}; const proteinGoals={Nacho:100
 const SUPABASE_URL="https://cezgbeposlcphperkngk.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_pbBeQxtg2PsGmjNP3FCqEA_zedrcewj";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-let cloud={ready:false,user:null,profileRow:null,familyId:null,syncing:false,timer:null,pending:new Set()};
+let cloud={ready:false,user:null,profileRow:null,familyId:null,syncing:false,timer:null,pending:new Set(),dirtyDiaryDates:new Set(),diaryDeletes:new Set(),pantryDirty:new Set(),foodsDirty:new Set(),recipeDirty:new Set(),recipeDeletes:new Set()};
 const V5_PANTRY_KEY="miDietaFamilyPantryV5";
 const V5_RECIPES_KEY="miDietaFamilyRecipesV5";
 if(!localStorage.familyFoods && localStorage.customFoods) localStorage.familyFoods=localStorage.customFoods;
 let custom=JSON.parse(localStorage.familyFoods||"[]"), currentMenu=[];
 const $=x=>document.getElementById(x), foods=()=>[...base,...custom], iso=d=>d.toISOString().slice(0,10), k=()=>`diet:${profile}:${$("date").value}`;
-function get(){return JSON.parse(localStorage.getItem(k())||'{"items":[],"weight":"","waist":""}')} function save(d){localStorage.setItem(k(),JSON.stringify(d));render();cloudSchedule("diary")}
+function get(){return JSON.parse(localStorage.getItem(k())||'{"items":[],"weight":"","waist":""}')}
+function cloudNewKey(date){try{return "v554:"+crypto.randomUUID()}catch(e){return "v554:"+date+":"+Date.now()+":"+Math.random().toString(36).slice(2)}}
+function save(d){const date=$("date").value;(d.items||[]).forEach(x=>{if(!x.migration_key)x.migration_key=cloudNewKey(date)});localStorage.setItem(`diet:${profile}:${date}`,JSON.stringify(d));render();cloudSchedule("diary",date)}
 function food(n){return foods().find(x=>x.name===n)}
 function calcItem(f,g){return {name:f.name,grams:g,kcal:f.kcal*g/100,p:f.p*g/100,c:f.c*g/100,f:f.f*g/100}}
 function recipeData(r){let a=r.items.map(([n,g])=>calcItem(food(n),g));return {kcal:a.reduce((s,x)=>s+x.kcal,0),p:a.reduce((s,x)=>s+x.p,0),items:a}}
@@ -236,7 +238,7 @@ function render(){
  $("recipes").innerHTML=qidx.map(i=>{let r=recipes[i],q=recipeData(r);return `<div class="recipe"><b>${r.name}</b><span class="small muted">${Math.round(q.kcal)} kcal · ${Math.round(q.p)} g proteína</span><button onclick="addRecipe(${i})">Añadir</button></div>`}).join("")+`<button class="ghost" onclick="rotateQuickRecipes()">🔄 Otras recetas</button>`;
  renderIdeas();renderWeek();renderCharts();updateFill();if($("menu").classList.contains("show"))renderMenu()
 }
-function del(i){let d=get();d.items.splice(i,1);save(d)}
+function del(i){let d=get(),x=d.items[i];if(x?.migration_key)cloud.diaryDeletes.add(x.migration_key);d.items.splice(i,1);save(d)}
 function addRecipe(i){let r=recipes[i],d=get();recipeData(r).items.forEach(x=>d.items.push({...x,meal:r.meal}));save(d)}
 let ideasOffset=0;
 function renderIdeas(){
@@ -371,7 +373,7 @@ function saveFoundFood(name,kcal,p,c,f,source){
  let item={name,kcal:+kcal||0,p:+p||0,c:+c||0,f:+f||0};
  if(!item.kcal){alert("Ese resultado no tiene kcal/100 g suficientes.");return}
  if(!custom.some(x=>x.name.toLowerCase()===name.toLowerCase())) custom.push(item);
- localStorage.familyFoods=JSON.stringify(custom);populate();renderLibrary($("libSearch").value);cloudSchedule("foods");
+ localStorage.familyFoods=JSON.stringify(custom);cloud.foodsDirty.add(name);populate();renderLibrary($("libSearch").value);cloudSchedule("foods");
  alert(name+" guardado en la biblioteca familiar ("+source+")");
 }
 const esToEn={
@@ -412,7 +414,7 @@ $("add").onclick=()=>{let f=findFoodByInput("food"),g=+$("grams").value;if(!f){a
 $("bn").onclick=()=>setP("Nacho");$("bl").onclick=()=>setP("Lucía");$("bj").onclick=()=>setP("Javi");$("date").onchange=load;$("goal").onchange=()=>{profiles[profile]=+$("goal").value||profiles[profile];render();cloudSchedule("profile")};$("fillFood").oninput=updateFill;
 ["weight","waist"].forEach(id=>$(id).onchange=()=>{let d=get();d[id]=$(id).value;save(d)})
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".section").forEach(x=>x.classList.remove("show"));$(b.dataset.tab).classList.add("show");render()})
-$("saveFood").onclick=()=>{let n=$("fn").value.trim(),kk=+$("fk").value;if(!n||!kk)return;custom.push({name:n,kcal:kk,p:+$("fp").value||0,c:+$("fc").value||0,f:+$("ff").value||0});localStorage.familyFoods=JSON.stringify(custom);populate();renderLibrary();render();cloudSchedule("foods");["fn","fk","fp","fc","ff"].forEach(x=>$(x).value="")}
+$("saveFood").onclick=()=>{let n=$("fn").value.trim(),kk=+$("fk").value;if(!n||!kk)return;custom.push({name:n,kcal:kk,p:+$("fp").value||0,c:+$("fc").value||0,f:+$("ff").value||0});localStorage.familyFoods=JSON.stringify(custom);cloud.foodsDirty.add(n);populate();renderLibrary();render();cloudSchedule("foods");["fn","fk","fp","fc","ff"].forEach(x=>$(x).value="")}
 $("export").onclick=()=>{let o={};for(let i=0;i<localStorage.length;i++){let q=localStorage.key(i);if(q.startsWith("diet:")||["customFoods","familyFoods","miDietaFamilyPantryV5","miDietaFamilyRecipesV5","profile"].includes(q))o[q]=localStorage.getItem(q)}let b=new Blob([JSON.stringify(o,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="mi-dieta-backup.json";a.click()}
 $("import").onchange=e=>{let r=new FileReader();r.onload=()=>{try{Object.entries(JSON.parse(r.result)).forEach(([a,b])=>localStorage.setItem(a,b));custom=JSON.parse(localStorage.familyFoods||localStorage.customFoods||"[]");populate();load();alert("Datos importados")}catch{alert("Archivo no válido")}};r.readAsText(e.target.files[0])}
 
@@ -424,9 +426,9 @@ setupFoodPicker("food","foodResults");setupFoodPicker("fillFood","fillFoodResult
 
 // ===== V5.0 additions: NON-DESTRUCTIVE storage =====
 function pantry(){try{return JSON.parse(localStorage.getItem(V5_PANTRY_KEY)||"{}")}catch(e){return {}}}
-function savePantry(x){localStorage.setItem(V5_PANTRY_KEY,JSON.stringify(x));cloudSchedule("pantry")}
+function savePantry(x,name=null){localStorage.setItem(V5_PANTRY_KEY,JSON.stringify(x));if(name)cloud.pantryDirty.add(name);cloudSchedule("pantry")}
 function pantryNames(){let p=pantry();return Object.keys(p).filter(k=>p[k])}
-function setPantry(name,value){let p=pantry();p[name]=!!value;savePantry(p);renderPantry($("pantrySearch")?.value||"");if($("libSearch"))renderLibrary($("libSearch").value)}
+function setPantry(name,value){let p=pantry();p[name]=!!value;savePantry(p,name);renderPantry($("pantrySearch")?.value||"");if($("libSearch"))renderLibrary($("libSearch").value)}
 function togglePantry(name){let p=pantry();setPantry(name,!p[name])}
 function renderPantry(q=""){
  if(!$("pantryGrid"))return;
@@ -435,12 +437,12 @@ function renderPantry(q=""){
  $("pantryGrid").innerHTML=arr.slice(0,160).map(f=>`<div class="pantry-item ${p[f.name]?"have":""}"><div class="have-check"><input type="checkbox" ${p[f.name]?"checked":""} onchange='setPantry(${JSON.stringify(f.name)},this.checked)'><label><b>${f.name}</b><div class="small muted">${f.kcal} kcal · ${f.p} g proteína /100 g</div></label></div></div>`).join("")
 }
 function familyRecipes(){try{return JSON.parse(localStorage.getItem(V5_RECIPES_KEY)||"[]")}catch(e){return []}}
-function saveRecipes(x){localStorage.setItem(V5_RECIPES_KEY,JSON.stringify(x));cloudSchedule("recipes")}
+function saveRecipes(x,name=null){localStorage.setItem(V5_RECIPES_KEY,JSON.stringify(x));if(name)cloud.recipeDirty.add(name);cloudSchedule("recipes")}
 function recipeCalc(r){let out={kcal:0,p:0,c:0,f:0},valid=[];r.ingredients.forEach(i=>{let f=food(i.name);if(f){let z=calcItem(f,i.grams);out.kcal+=z.kcal;out.p+=z.p;out.c+=z.c;out.f+=z.f;valid.push(i)}});return {...out,valid}}
 function refreshDayFamilyRecipes(){let el=$("dayFamilyRecipe");if(!el)return;let rs=familyRecipes();el.innerHTML='<option value="">— Elegir —</option>'+rs.map((r,i)=>`<option value="${i}">${r.name}</option>`).join("")}
 function addFamilyRecipePortion(i,portion=1){let r=familyRecipes()[i];if(!r)return;let sv=Math.max(1,+r.servings||1),d=get(),added=0;(r.ingredients||[]).forEach(x=>{let f=food(x.name);if(f){d.items.push({...calcItem(f,x.grams/sv*portion),meal:"Comida"});added++}});if(!added)return alert("No he podido reconocer los ingredientes.");save(d)}
 function renderRecipes(){refreshDayFamilyRecipes();if(!$("recipeList"))return;let rs=familyRecipes();$("recipeList").innerHTML=rs.length?rs.map((r,i)=>{let z=recipeCalc(r),sv=r.servings||1;return `<div class="recipe-card"><b>${r.name}</b><div class="small">${Math.round(z.kcal/sv)} kcal · ${Math.round(z.p/sv)} g proteína por ración</div><div class="ingredients">${r.ingredients.map(x=>`${x.name} ${x.grams} g`).join(" · ")}</div><button onclick="addRecipeServing(${i})">Añadir 1 ración al diario</button> <button onclick="deleteRecipe(${i})">Eliminar</button></div>`}).join(""):'<p class="muted">Todavía no hay recetas guardadas.</p>'}
-function deleteRecipe(i){let r=familyRecipes();r.splice(i,1);saveRecipes(r);renderRecipes()}
+function deleteRecipe(i){let r=familyRecipes(),gone=r[i];if(gone?.name)cloud.recipeDeletes.add(gone.name);r.splice(i,1);saveRecipes(r);renderRecipes()}
 function addRecipeServing(i){addFamilyRecipePortion(i,1)}
 let recipeBuilder=[];
 function renderRecipeBuilder(){
@@ -451,7 +453,7 @@ function renderRecipeBuilder(){
 function addRecipeIngredient(){let f=findFoodByInput("recipeFood"),g=+$("recipeFoodGrams").value;if(!f)return alert("Elige un alimento de la lista.");if(!(g>0))return alert("Indica una cantidad válida.");let ex=recipeBuilder.find(x=>x.name===f.name);if(ex)ex.grams+=g;else recipeBuilder.push({name:f.name,grams:g});$("recipeFood").value="";$("recipeFoodGrams").value=100;renderRecipeBuilder()}
 function removeRecipeIngredient(i){recipeBuilder.splice(i,1);renderRecipeBuilder()}
 function clearRecipeBuilder(){recipeBuilder=[];$("recipeName").value="";renderRecipeBuilder()}
-function saveRecipeFromForm(){let name=$("recipeName").value.trim(),sv=Math.max(1,+$("recipeServings").value||1);if(!name||!recipeBuilder.length)return alert("Pon un nombre y añade al menos un ingrediente.");let r=familyRecipes();r.push({name,servings:sv,ingredients:recipeBuilder.map(x=>({...x}))});saveRecipes(r);recipeBuilder=[];$("recipeName").value="";renderRecipeBuilder();renderRecipes()}
+function saveRecipeFromForm(){let name=$("recipeName").value.trim(),sv=Math.max(1,+$("recipeServings").value||1);if(!name||!recipeBuilder.length)return alert("Pon un nombre y añade al menos un ingrediente.");let r=familyRecipes();r.push({name,servings:sv,ingredients:recipeBuilder.map(x=>({...x}))});saveRecipes(r,name);recipeBuilder=[];$("recipeName").value="";renderRecipeBuilder();renderRecipes()}
 function pantryMealOptions(meal){return smartSuggestions(meal,true).map(x=>x.d.i)}
 function pantryOptionStats(opt){let d={i:opt};return smartStats(d)}
 function generatePantryMenu(){
@@ -576,8 +578,9 @@ async function cloudBootstrap(){
   setP(profile); await cloudPull(false); cloudSetStatus("☁ Guardado","ok");
  }catch(e){console.error(e);cloudSetStatus("⚠ Error nube","err");$("authMsg").textContent="Error de conexión: "+(e.message||e)}
 }
-function cloudSchedule(kind){
+function cloudSchedule(kind,payload=null){
  if(!cloud.ready)return;
+ if(kind==="diary")cloud.dirtyDiaryDates.add(payload||$("date").value);
  cloud.pending.add(kind);clearTimeout(cloud.timer);cloudSetStatus("⏳ Guardando…","busy");
  cloud.timer=setTimeout(()=>cloudFlush().catch(e=>{console.error(e);cloudSetStatus("⚠ Sin guardar","err")}),500);
 }
@@ -601,44 +604,52 @@ async function cloudFlush(){
 }
 async function cloudPushKind(kind,fromFlush=false){
  if(!cloud.ready)return;
- if(kind==="diary")await cloudUploadCurrentDay();
+ if(kind==="diary")await cloudUploadDirtyDiary();
  else if(kind==="foods")await cloudUploadFoods();
  else if(kind==="pantry")await cloudUploadPantry();
  else if(kind==="recipes")await cloudUploadRecipes();
  else if(kind==="profile"){const r=await sb.from("profiles").update({calorie_goal:+$("goal").value||profiles[profile],protein_goal:proteinGoals[profile],updated_at:new Date().toISOString()}).eq("id",cloud.profileRow.id);if(r.error)throw r.error}
  if(!fromFlush)cloudSetStatus("☁ Guardado","ok");
 }
-async function cloudUploadCurrentDay(){
- const date=$("date").value,d=get();
- (d.items||[]).forEach((x,i)=>{if(!x.migration_key)x.migration_key=cloudFingerprint(date,x,i)});localStorage.setItem(k(),JSON.stringify(d));
- let del=await sb.from("diary_entries").delete().eq("user_id",cloud.user.id).eq("entry_date",date);if(del.error)throw del.error;
- const rows=(d.items||[]).map(x=>({family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,entry_date:date,meal:x.meal||"Extra",food_name:x.name,grams:+x.grams||0,kcal:+x.kcal||0,protein:+x.p||0,carbs:+x.c||0,fat:+x.f||0,migration_key:x.migration_key}));
- if(rows.length){const ins=await sb.from("diary_entries").insert(rows);if(ins.error)throw ins.error}
- const meas={family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,measured_on:date,weight_kg:d.weight!==""&&d.weight!=null?+d.weight:null,waist_cm:d.waist!==""&&d.waist!=null?+d.waist:null,updated_at:new Date().toISOString()};
- if(meas.weight_kg!=null||meas.waist_cm!=null){const {error}=await sb.from("measurements").upsert(meas,{onConflict:"profile_id,measured_on"});if(error)throw error}
- else{const {error}=await sb.from("measurements").delete().eq("profile_id",cloud.profileRow.id).eq("measured_on",date);if(error)throw error}
+async function cloudUploadDirtyDiary(){
+ // Delta sync: nunca reconstruye/borrar un día entero. Solo borra entradas que el usuario borró
+ // explícitamente y hace upsert de los días realmente modificados en este dispositivo.
+ const deletes=[...cloud.diaryDeletes];
+ for(const key of deletes){const r=await sb.from("diary_entries").delete().eq("user_id",cloud.user.id).eq("migration_key",key).select("id");if(r.error)throw r.error;if(!r.data||r.data.length!==1)throw new Error(`DELETE diario no confirmado por Supabase (${key}): ${r.data?.length||0} filas borradas`);cloud.diaryDeletes.delete(key)}
+ const dates=[...cloud.dirtyDiaryDates];
+ for(const date of dates){
+  const key=`diet:${profile}:${date}`,d=JSON.parse(localStorage.getItem(key)||'{"items":[],"weight":"","waist":""}');
+  (d.items||[]).forEach(x=>{if(!x.migration_key)x.migration_key=cloudNewKey(date)});localStorage.setItem(key,JSON.stringify(d));
+  for(const x of (d.items||[])){const row={family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,entry_date:date,meal:x.meal||"Extra",food_name:x.name,grams:+x.grams||0,kcal:+x.kcal||0,protein:+x.p||0,carbs:+x.c||0,fat:+x.f||0,migration_key:x.migration_key};const z=await sb.from("diary_entries").upsert(row,{onConflict:"user_id,migration_key"});if(z.error)throw z.error}
+  const meas={family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,measured_on:date,weight_kg:d.weight!==""&&d.weight!=null?+d.weight:null,waist_cm:d.waist!==""&&d.waist!=null?+d.waist:null,updated_at:new Date().toISOString()};
+  if(meas.weight_kg!=null||meas.waist_cm!=null){const {error}=await sb.from("measurements").upsert(meas,{onConflict:"profile_id,measured_on"});if(error)throw error}else{const {error}=await sb.from("measurements").delete().eq("profile_id",cloud.profileRow.id).eq("measured_on",date);if(error)throw error}
+  cloud.dirtyDiaryDates.delete(date)
+ }
 }
-async function cloudUploadFoods(){
- for(const f of custom){let {data}=await sb.from("foods").select("id").eq("family_id",cloud.familyId).eq("name",f.name).maybeSingle();let row={family_id:cloud.familyId,name:f.name,kcal_100:+f.kcal||0,protein_100:+f.p||0,carbs_100:+f.c||0,fat_100:+f.f||0,source:"Mi Dieta",created_by:cloud.user.id,updated_at:new Date().toISOString()};let r=data?await sb.from("foods").update(row).eq("id",data.id):await sb.from("foods").insert(row);if(r.error)throw r.error}
+async function cloudUploadFoods(full=false){
+ const names=full?custom.map(f=>f.name):[...cloud.foodsDirty];
+ for(const name of names){const f=custom.find(x=>x.name===name);if(!f)continue;let {data,error}=await sb.from("foods").select("id").eq("family_id",cloud.familyId).eq("name",f.name).maybeSingle();if(error)throw error;let row={family_id:cloud.familyId,name:f.name,kcal_100:+f.kcal||0,protein_100:+f.p||0,carbs_100:+f.c||0,fat_100:+f.f||0,source:"Mi Dieta",created_by:cloud.user.id,updated_at:new Date().toISOString()};let r=data?await sb.from("foods").update(row).eq("id",data.id):await sb.from("foods").insert(row);if(r.error)throw r.error;cloud.foodsDirty.delete(name)}
 }
-async function cloudUploadPantry(){
- const p=pantry();for(const [name,val] of Object.entries(p)){let {data}=await sb.from("pantry_items").select("id").eq("family_id",cloud.familyId).eq("food_name",name).maybeSingle();let row={family_id:cloud.familyId,food_name:name,in_stock:!!val,updated_by:cloud.user.id,updated_at:new Date().toISOString()};let r=data?await sb.from("pantry_items").update(row).eq("id",data.id):await sb.from("pantry_items").insert(row);if(r.error)throw r.error}
+async function cloudUploadPantry(full=false){
+ const p=pantry(),names=full?Object.keys(p):[...cloud.pantryDirty];
+ for(const name of names){let val=!!p[name],{data,error}=await sb.from("pantry_items").select("id").eq("family_id",cloud.familyId).eq("food_name",name).maybeSingle();if(error)throw error;let row={family_id:cloud.familyId,food_name:name,in_stock:val,updated_by:cloud.user.id,updated_at:new Date().toISOString()};let r=data?await sb.from("pantry_items").update(row).eq("id",data.id):await sb.from("pantry_items").insert(row);if(r.error)throw r.error;cloud.pantryDirty.delete(name)}
 }
-async function cloudUploadRecipes(){
+async function cloudUploadRecipes(full=false){
  const local=familyRecipes(),names=new Set(local.map(r=>cloudNorm(r.name)));
+ for(const name of [...cloud.recipeDeletes]){let z=await sb.from("recipes").delete().eq("family_id",cloud.familyId).eq("name",name);if(z.error)throw z.error;cloud.recipeDeletes.delete(name)}
  const all=await sb.from("recipes").select("id,name").eq("family_id",cloud.familyId);if(all.error)throw all.error;
- for(const r of local){
+ const work=full?local:local.filter(r=>cloud.recipeDirty.has(r.name));
+ for(const r of work){
   let existing=(all.data||[]).find(x=>cloudNorm(x.name)===cloudNorm(r.name)),rid=existing?.id;
   if(!rid){let ins=await sb.from("recipes").insert({family_id:cloud.familyId,name:r.name,servings:+r.servings||1,created_by:cloud.user.id}).select("id").single();if(ins.error)throw ins.error;rid=ins.data.id}else{let up=await sb.from("recipes").update({servings:+r.servings||1,updated_at:new Date().toISOString()}).eq("id",rid);if(up.error)throw up.error;let del=await sb.from("recipe_ingredients").delete().eq("recipe_id",rid);if(del.error)throw del.error}
-  let ingredients=(r.ingredients||[]).map(x=>{let f=food(x.name)||{kcal:0,p:0,c:0,f:0};return {recipe_id:rid,food_name:x.name,grams:+x.grams||0,kcal_100:+f.kcal||0,protein_100:+f.p||0,carbs_100:+f.c||0,fat_100:+f.f||0}});if(ingredients.length){let z=await sb.from("recipe_ingredients").insert(ingredients);if(z.error)throw z.error}
+  let ingredients=(r.ingredients||[]).map(x=>{let f=food(x.name)||{kcal:0,p:0,c:0,f:0};return {recipe_id:rid,food_name:x.name,grams:+x.grams||0,kcal_100:+f.kcal||0,protein_100:+f.p||0,carbs_100:+f.c||0,fat_100:+f.f||0}});if(ingredients.length){let z=await sb.from("recipe_ingredients").insert(ingredients);if(z.error)throw z.error}cloud.recipeDirty.delete(r.name)
  }
- if(localStorage.getItem(`miDietaCloudMigrated:${cloud.user.id}`))for(const x of all.data||[]){if(!names.has(cloudNorm(x.name))){let z=await sb.from("recipes").delete().eq("id",x.id);if(z.error)throw z.error}}
 }
 async function cloudMigrate(){
  const pre=cloudInspectLocal();if(!pre.ownDays){alert("No hay días locales del usuario autenticado en este navegador. No se enviará nada.");return}if(!localStorage.getItem(`miDietaBackupReady:${cloud.user?.id||profile}`)){alert("Primero descarga la copia local de seguridad.");return}if(!confirm(`Voy a copiar ${pre.ownDays} días y ${pre.ownItems} registros de ${profile} a la nube. El localStorage NO se borrará. ¿Continuar?`))return;
  cloud.syncing=true;cloudSetStatus("⏳ Migrando…","busy");$("migrateBtn").disabled=true;
  try{
-  await cloudUploadFoods();await cloudUploadPantry();await cloudUploadRecipes();
+  await cloudUploadFoods(true);await cloudUploadPantry(true);await cloudUploadRecipes(true);
   let keys=cloudDietKeysFor(profile)
   for(const key of keys){let date=key.split(":")[2],d=JSON.parse(localStorage.getItem(key)||'{"items":[]}');(d.items||[]).forEach((x,i)=>{if(!x.migration_key)x.migration_key=cloudFingerprint(date,x,i)});localStorage.setItem(key,JSON.stringify(d));let rows=(d.items||[]).map((x)=>({family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,entry_date:date,meal:x.meal||"Extra",food_name:x.name,grams:+x.grams||0,kcal:+x.kcal||0,protein:+x.p||0,carbs:+x.c||0,fat:+x.f||0,migration_key:x.migration_key}));for(const row of rows){let z=await sb.from("diary_entries").upsert(row,{onConflict:"user_id,migration_key"});if(z.error)throw z.error}if(d.weight||d.waist){let z=await sb.from("measurements").upsert({family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,measured_on:date,weight_kg:d.weight?+d.weight:null,waist_cm:d.waist?+d.waist:null,updated_at:new Date().toISOString()},{onConflict:"profile_id,measured_on"});if(z.error)throw z.error}}
   localStorage.setItem(`miDietaCloudMigrated:${cloud.user.id}`,new Date().toISOString());await cloudPull(false);cloudSetStatus("☁ Migración verificada","ok");alert("Copia a la nube completada. Los datos locales siguen en este navegador.");
