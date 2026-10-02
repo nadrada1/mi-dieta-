@@ -78,7 +78,7 @@ body{background:radial-gradient(circle at 82% -5%,rgba(125,226,201,.22),transpar
 <nav class="nav" aria-label="Navegación principal"><button data-tab="today" class="active"><span class="navico">◉</span><span>Hoy</span></button><button data-tab="menu"><span class="navico">✦</span><span>Plan</span></button><button id="quickAddNav" type="button" class="nav-add"><span class="plus">＋</span><span>Añadir</span></button><button data-tab="familyRecipesTab"><span class="navico">♨</span><span>Recetas</span></button><button id="moreNav" type="button"><span class="navico">•••</span><span>Más</span></button></nav>
 <div id="moreDrawer" class="more-drawer" aria-hidden="true"><div class="drawer-head"><div><b>Más herramientas</b><span>Todo lo demás, sin llenar tu pantalla</span></div><button id="closeMore" class="ghost">×</button></div><div class="drawer-grid"><button data-go="ideas">💡<span>Qué puedo comer</span></button><button data-go="pantry">🏠<span>En casa</span></button><button data-go="week">📅<span>Semana</span></button><button data-go="progress">📈<span>Progreso</span></button><button data-go="foods">🥗<span>Alimentos</span></button></div></div><div id="drawerShade" class="drawer-shade"></div>
 
-<section id="today" class="section show"><div class="today-welcome"><div><span class="eyebrow">TU DÍA</span><h2>Come bien. Sin complicarte.</h2><p>Calorías, proteína y tus comidas de hoy en un solo vistazo.</p></div><div class="date-chip">● EN DIRECTO</div></div><div id="cloudPanel" class="card cloud-panel" style="display:none"><div class="row"><div class="field" style="flex:2"><b>☁️ Nube familiar</b><div id="migrationSummary" class="muted small">Tus datos locales siguen intactos.</div></div><div class="cloud-actions"><button id="migrateBtn">Copiar mis datos locales a la nube</button><button id="pullBtn" class="ghost">Actualizar desde la nube</button></div></div><div class="sync-note">La migración copia y fusiona. Nunca borra el localStorage.</div></div>
+<section id="today" class="section show"><div class="today-welcome"><div><span class="eyebrow">TU DÍA</span><h2>Come bien. Sin complicarte.</h2><p>Calorías, proteína y tus comidas de hoy en un solo vistazo.</p></div><div class="date-chip">● EN DIRECTO</div></div><div id="cloudPanel" class="card cloud-panel" style="display:none"><div class="row"><div class="field" style="flex:2"><b>☁️ Nube familiar</b><div id="migrationSummary" class="muted small">Tus datos locales siguen intactos.</div></div><div class="cloud-actions"><button id="scanLocalBtn" class="ghost">Analizar datos locales</button><button id="backupLocalBtn" class="ghost">Descargar copia local</button><button id="migrateBtn" disabled>Copiar mis datos locales a la nube</button><button id="pullBtn" class="ghost">Actualizar desde la nube</button></div></div><div class="sync-note">La migración copia y fusiona. Nunca borra el localStorage.</div></div>
 <div class="card row"><div class="field"><label>Fecha</label><input id="date" type="date"></div><div class="field"><label>Objetivo kcal</label><input id="goal" type="number"></div><div class="field"><label>Peso kg</label><input id="weight" type="number" step=".1"></div><div class="field"><label>Cintura cm</label><input id="waist" type="number" step=".1"></div></div>
 <div class="card hero"><div class="ring" id="ring"><div class="ringtext"><b id="used">0</b><span>de <i id="goalText">1100</i> kcal</span></div></div>
 <div class="stats"><div class="stat"><b id="left">0</b><span>kcal restantes</span></div><div class="stat"><b id="prot">0 g</b><span id="protLabel">proteína</span></div><div class="stat"><b id="carbs">0 g</b><span>hidratos</span></div><div class="stat"><b id="fat">0 g</b><span>grasas</span></div></div></div>
@@ -511,9 +511,50 @@ if($("quickAddNav"))$("quickAddNav").onclick=()=>{wowGo("today");setTimeout(()=>
 function cloudSetStatus(text,state=""){
  const el=$("cloudStatus"); if(!el)return; el.textContent=text; el.className="cloudstatus "+state;
 }
+function cloudNorm(v){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toLocaleLowerCase("es")}
+function cloudDietKeysFor(name=profile){
+ const wanted=cloudNorm(name), out=[];
+ for(let i=0;i<localStorage.length;i++){
+  const q=localStorage.key(i); if(!q||!q.startsWith("diet:"))continue;
+  const parts=q.split(":"); if(parts.length<3)continue;
+  if(cloudNorm(parts[1])===wanted)out.push(q);
+ }
+ return out.sort();
+}
+function cloudInspectLocal(){
+ const allDiet=[];let totalItems=0;const profilesFound={};
+ for(let i=0;i<localStorage.length;i++){const q=localStorage.key(i);if(!q||!q.startsWith("diet:"))continue;allDiet.push(q);const parts=q.split(":");const pn=parts[1]||"?";profilesFound[pn]=(profilesFound[pn]||0)+1;try{totalItems+=(JSON.parse(localStorage.getItem(q)||"{}").items||[]).length}catch(e){}}
+ const own=cloudDietKeysFor(profile);let ownItems=0;for(const q of own){try{ownItems+=(JSON.parse(localStorage.getItem(q)||"{}").items||[]).length}catch(e){}}
+ return {ownDays:own.length,ownItems,allDays:allDiet.length,totalItems,profilesFound,storageKeys:localStorage.length,foods:custom.length,recipes:familyRecipes().length,pantry:Object.keys(pantry()).length};
+}
 function cloudLocalSummary(){
- let days=0,items=0; for(let i=0;i<localStorage.length;i++){let q=localStorage.key(i);if(q&&q.startsWith(`diet:${profile}:`)){days++;try{items+=(JSON.parse(localStorage.getItem(q)||"{}").items||[]).length}catch(e){}}}
- return `${days} días locales · ${items} registros · ${custom.length} alimentos familiares · ${familyRecipes().length} recetas`;
+ const x=cloudInspectLocal();
+ const extra=x.allDays!==x.ownDays?` · ${x.allDays} días totales en este navegador`:"";
+ return `${x.ownDays} días de ${profile} · ${x.ownItems} registros · ${x.foods} alimentos · ${x.recipes} recetas${extra}`;
+}
+function cloudBackupPayload(){
+ const o={_meta:{app:"Mi Dieta",created_at:new Date().toISOString(),profile,origin:location.origin}};
+ for(let i=0;i<localStorage.length;i++){const q=localStorage.key(i);if(q&&(q.startsWith("diet:")||["customFoods","familyFoods","miDietaFamilyPantryV5","miDietaFamilyRecipesV5","profile"].includes(q)))o[q]=localStorage.getItem(q)}
+ return o;
+}
+function cloudDownloadBackup(){
+ const b=new Blob([JSON.stringify(cloudBackupPayload(),null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`mi-dieta-antes-nube-${profile}-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);localStorage.setItem(`miDietaBackupReady:${cloud.user?.id||profile}`,new Date().toISOString());$("migrateBtn").disabled=cloudDietKeysFor(profile).length===0;return true;
+}
+function cloudScanLocal(show=true){
+ const x=cloudInspectLocal();$("migrationSummary").textContent=cloudLocalSummary();
+ const ready=!!localStorage.getItem(`miDietaBackupReady:${cloud.user?.id||profile}`);$("migrateBtn").disabled=!(x.ownDays>0&&ready);
+ if(show){const pf=Object.entries(x.profilesFound).map(([n,c])=>`${n}: ${c} días`).join(" · ")||"ningún perfil";alert(`He encontrado en ESTE navegador:
+
+${x.ownDays} días de ${profile} (${x.ownItems} registros)
+${x.foods} alimentos familiares
+${x.recipes} recetas
+${x.pantry} entradas de despensa
+${x.storageKeys} claves localStorage en total
+
+Perfiles detectados: ${pf}
+
+${x.allDays===0?"Si la app antigua sí muestra datos, Safari y la app/página nueva están usando almacenes distintos. En ese caso migraremos mediante una copia JSON, sin borrar nada.":"Antes de migrar descarga la copia local."}`)}
+ return x;
 }
 function cloudFingerprint(date,item,index){
  const raw=[profile,date,item.meal||"",item.name||"",Number(item.grams||0).toFixed(2),Number(item.kcal||0).toFixed(2),index].join("|");
@@ -531,7 +572,7 @@ async function cloudBootstrap(){
   cloud.user=session.user;
   const {data:pr,error:pe}=await sb.from("profiles").select("id,family_id,user_id,name,calorie_goal,protein_goal,mode").single(); if(pe)throw pe;
   cloud.profileRow=pr;cloud.familyId=pr.family_id;profile=pr.name;localStorage.profile=profile;profiles[profile]=pr.calorie_goal||profiles[profile];proteinGoals[profile]=Number(pr.protein_goal)||proteinGoals[profile];profileModes[profile]=pr.mode||profileModes[profile];
-  cloud.ready=true;$("authOverlay").classList.add("hidden");$("cloudUser").textContent=profile;$("logoutBtn").style.display="";$("cloudPanel").style.display="";$("migrationSummary").textContent=cloudLocalSummary();
+  cloud.ready=true;$("authOverlay").classList.add("hidden");$("cloudUser").textContent=profile;$("logoutBtn").style.display="";$("cloudPanel").style.display="";$("migrationSummary").textContent=cloudLocalSummary();$("migrateBtn").disabled=true;
   setP(profile); await cloudPull(false); cloudSetStatus("☁ Guardado","ok");
  }catch(e){console.error(e);cloudSetStatus("⚠ Error nube","err");$("authMsg").textContent="Error de conexión: "+(e.message||e)}
 }
@@ -572,11 +613,11 @@ async function cloudUploadRecipes(){
  }
 }
 async function cloudMigrate(){
- if(!confirm("Se copiarán y fusionarán tus datos locales con Supabase. No se borrará nada del navegador. ¿Continuar?"))return;
+ const pre=cloudInspectLocal();if(!pre.ownDays){alert("No hay días locales del usuario autenticado en este navegador. No se enviará nada.");return}if(!localStorage.getItem(`miDietaBackupReady:${cloud.user?.id||profile}`)){alert("Primero descarga la copia local de seguridad.");return}if(!confirm(`Voy a copiar ${pre.ownDays} días y ${pre.ownItems} registros de ${profile} a la nube. El localStorage NO se borrará. ¿Continuar?`))return;
  cloud.syncing=true;cloudSetStatus("⏳ Migrando…","busy");$("migrateBtn").disabled=true;
  try{
   await cloudUploadFoods();await cloudUploadPantry();await cloudUploadRecipes();
-  let keys=[];for(let i=0;i<localStorage.length;i++){let q=localStorage.key(i);if(q&&q.startsWith(`diet:${profile}:`))keys.push(q)}
+  let keys=cloudDietKeysFor(profile)
   for(const key of keys){let date=key.split(":")[2],d=JSON.parse(localStorage.getItem(key)||'{"items":[]}');(d.items||[]).forEach((x,i)=>{if(!x.migration_key)x.migration_key=cloudFingerprint(date,x,i)});localStorage.setItem(key,JSON.stringify(d));let rows=(d.items||[]).map((x)=>({family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,entry_date:date,meal:x.meal||"Extra",food_name:x.name,grams:+x.grams||0,kcal:+x.kcal||0,protein:+x.p||0,carbs:+x.c||0,fat:+x.f||0,migration_key:x.migration_key}));for(const row of rows){let z=await sb.from("diary_entries").upsert(row,{onConflict:"user_id,migration_key"});if(z.error)throw z.error}if(d.weight||d.waist){let z=await sb.from("measurements").upsert({family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,measured_on:date,weight_kg:d.weight?+d.weight:null,waist_cm:d.waist?+d.waist:null,updated_at:new Date().toISOString()},{onConflict:"profile_id,measured_on"});if(z.error)throw z.error}}
   localStorage.setItem(`miDietaCloudMigrated:${cloud.user.id}`,new Date().toISOString());await cloudPull(false);cloudSetStatus("☁ Migración verificada","ok");alert("Copia a la nube completada. Los datos locales siguen en este navegador.");
  }catch(e){console.error(e);cloudSetStatus("⚠ Migración incompleta","err");alert("No se ha borrado nada. La migración se detuvo por este error: "+(e.message||e))}finally{cloud.syncing=false;$("migrateBtn").disabled=false;$("migrationSummary").textContent=cloudLocalSummary()}
@@ -599,7 +640,7 @@ async function cloudPull(showAlert=true){
   populate();renderLibrary($("libSearch")?.value||"");renderPantry($("pantrySearch")?.value||"");renderRecipes();load();cloudSetStatus("☁ Guardado","ok");if(showAlert)alert("Datos de la nube fusionados con este dispositivo. No se ha borrado ningún dato local.");
  }catch(e){console.error(e);cloudSetStatus("⚠ Error al actualizar","err");if(showAlert)alert("No se ha borrado nada. Error al actualizar: "+(e.message||e))}finally{cloud.syncing=false}
 }
-$("loginBtn").onclick=cloudLogin;$("authPassword").addEventListener("keydown",e=>{if(e.key==="Enter")cloudLogin()});$("logoutBtn").onclick=cloudLogout;$("migrateBtn").onclick=cloudMigrate;$("pullBtn").onclick=()=>cloudPull(true);
+$("scanLocalBtn").onclick=()=>cloudScanLocal(true);$("backupLocalBtn").onclick=()=>{cloudDownloadBackup();cloudScanLocal(false);alert("Copia local descargada. Ya puedes migrar cuando los números sean correctos.")};$("loginBtn").onclick=cloudLogin;$("authPassword").addEventListener("keydown",e=>{if(e.key==="Enter")cloudLogin()});$("logoutBtn").onclick=cloudLogout;$("migrateBtn").onclick=cloudMigrate;$("pullBtn").onclick=()=>cloudPull(true);
 sb.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_OUT"){$("authOverlay").classList.remove("hidden")} });
 setTimeout(cloudBootstrap,0);
 
