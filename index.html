@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#183f2d"><title>Mi Dieta V4</title>
+<meta name="theme-color" content="#0f766e"><title>Mi Dieta · V5.5.6 WOW Cloud Authority</title>
 <link rel="manifest" href="manifest.json">
 <style>
 :root{--bg:#f4f6f2;--card:#fff;--ink:#18211b;--muted:#69736c;--green:#286749;--green2:#dcece2;--line:#e1e6e1;--red:#b42318;--amber:#a05a00}
@@ -53,16 +53,37 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 .family-portions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
 .family-portions>div{background:#f6f8f6;border-radius:9px;padding:7px;font-size:11px}
 @media(max-width:700px){.family-portions{grid-template-columns:1fr}}
-</style></head><body><div class="app">
-<div class="head"><div><h1>Mi Dieta</h1><div class="muted">V5.3.1 · Constructor de recetas · Nacho, Lucía & Javi</div></div><div class="tabs"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></div>
-<div class="nav"><button data-tab="today" class="active">Hoy</button><button data-tab="menu">Menú diario</button><button data-tab="pantry">🏠 En casa</button><button data-tab="familyRecipesTab">🍳 Recetas</button><button data-tab="ideas">¿Qué puedo comer?</button><button data-tab="week">Semana</button><button data-tab="progress">Progreso</button><button data-tab="foods">Alimentos</button></div>
 
-<section id="today" class="section show">
+/* ===== V5.5 modern UI ===== */
+:root{--bg:#f7f8fa;--card:#fff;--ink:#17211d;--muted:#6d7772;--green:#0f766e;--green2:#dff4f1;--line:#e7ebe9;--red:#c0392b;--amber:#b76e00}
+body{background:linear-gradient(180deg,#f2f8f6 0,#f7f8fa 260px);padding-bottom:88px}
+.app{max-width:1120px;padding:24px}.head{background:rgba(255,255,255,.82);backdrop-filter:blur(12px);border:1px solid #e8efec;border-radius:22px;padding:16px 18px;box-shadow:0 10px 35px #183f2d0d;position:sticky;top:10px;z-index:20}
+h1{font-size:29px;letter-spacing:-.7px}.card{border:1px solid #e8ecea;border-radius:22px;box-shadow:0 10px 30px #16251f0a;padding:18px}.nav{position:sticky;top:92px;z-index:18;background:rgba(247,248,250,.9);backdrop-filter:blur(10px);padding:10px 0}.nav button{background:#fff;border:1px solid #e4e9e6;box-shadow:0 3px 12px #00000008}.nav button.active{box-shadow:0 7px 18px #0f766e28}.ring{box-shadow:inset 0 0 0 1px #edf1ef}.stat{background:#f6f9f7;border:1px solid #edf1ef}.recipe,.suggest,.smart-dish,.recipe-card,.pantry-item{box-shadow:0 4px 16px #00000008}
+.cloudbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.cloudstatus{font-size:12px;font-weight:800;padding:7px 10px;border-radius:999px;background:#eef2f0;color:#5c6862}.cloudstatus.ok{background:#e3f5ee;color:#176844}.cloudstatus.busy{background:#fff4dc;color:#8a5a00}.cloudstatus.err{background:#ffebe8;color:#a62b1f}.ghost{background:#eef3f1;color:#23443a}.danger{background:#fff0ee;color:#a62b1f}.auth-overlay{position:fixed;inset:0;z-index:999;background:radial-gradient(circle at 20% 0,#d8f2eb,transparent 40%),#f6f8f7;display:grid;place-items:center;padding:20px}.auth-overlay.hidden{display:none}.auth-card{width:min(440px,100%);background:#fff;border:1px solid #e4ebe7;border-radius:28px;padding:28px;box-shadow:0 24px 70px #183f2d24}.auth-logo{width:52px;height:52px;border-radius:16px;background:#0f766e;color:#fff;display:grid;place-items:center;font-size:26px;margin-bottom:16px}.auth-card h2{font-size:28px;margin:0 0 6px}.auth-card input{margin:7px 0 12px}.auth-card button{width:100%;padding:12px}.cloud-panel{border:1px solid #cfe6df;background:linear-gradient(135deg,#f4fbf8,#fff);}.cloud-panel .row{align-items:center}.cloud-user{font-weight:800}.cloud-actions{display:flex;gap:8px;flex-wrap:wrap}.cloud-actions button{width:auto}.sync-note{font-size:12px;color:#64716b;margin-top:8px}
+@media(max-width:720px){.app{padding:12px}.head{top:6px;border-radius:18px}.nav{position:fixed;left:0;right:0;bottom:0;top:auto;background:rgba(255,255,255,.96);padding:8px 8px max(8px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:5px;border-top:1px solid #e3e8e5;z-index:50}.nav button{font-size:10px;padding:9px 3px;border:0;box-shadow:none;background:transparent}.nav button:nth-child(n+6){display:none}.head .tabs{display:none}.hero{gap:10px}.card{border-radius:18px;padding:14px}.cloudbar{width:100%;justify-content:space-between}}
+
+/* ===== V5.5.2 WOW visual system ===== */
+:root{--accent:#13a38f;--accent2:#7de2c9;--night:#10231e;--soft:#effaf6;--shadow:0 24px 70px rgba(16,35,30,.10)}
+body{background:radial-gradient(circle at 82% -5%,rgba(125,226,201,.22),transparent 27%),radial-gradient(circle at 8% 15%,rgba(19,163,143,.10),transparent 25%),#f5f7f6;color:#13231e}
+.app{max-width:1240px;padding:24px 24px 110px}.head{position:relative;top:auto;background:transparent;border:0;box-shadow:none;padding:8px 4px 18px;border-radius:0}.brand{display:flex;align-items:center;gap:12px}.brandmark{width:46px;height:46px;border-radius:15px;background:linear-gradient(145deg,#0b6f65,#18aa94);display:grid;place-items:center;color:#fff;font-weight:900;font-size:22px;box-shadow:0 12px 28px rgba(15,118,110,.28)}.brand h1{font-size:26px}.legacy-profiles{display:none!important}.cloudbar{margin-left:auto}.cloud-user{font-size:14px}.cloudstatus{background:#fff;border:1px solid #dfe9e5;box-shadow:0 5px 18px rgba(16,35,30,.06)}
+.nav{position:fixed;left:50%;bottom:22px;top:auto;transform:translateX(-50%);z-index:90;width:min(620px,calc(100% - 28px));display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:rgba(16,35,30,.94);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(22px);padding:8px;border-radius:24px;box-shadow:0 24px 65px rgba(10,31,25,.30)}.nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:54px;background:transparent!important;border:0;color:#aebdb7!important;box-shadow:none!important;padding:6px 8px;border-radius:17px;font-size:11px}.nav button.active{background:rgba(255,255,255,.12)!important;color:#fff!important}.navico{font-size:18px;line-height:1}.nav-add{position:relative;color:#fff!important}.nav-add .plus{display:grid;place-items:center;width:43px;height:43px;margin-top:-27px;margin-bottom:1px;border-radius:15px;background:linear-gradient(145deg,#20c8ad,#0f8d7b);font-size:28px;line-height:1;box-shadow:0 10px 25px rgba(19,163,143,.45);border:3px solid #10231e}
+.today-welcome{display:flex;align-items:end;justify-content:space-between;gap:20px;padding:34px 4px 10px}.today-welcome h2{font-size:clamp(34px,5vw,58px);line-height:.98;letter-spacing:-2.2px;margin:7px 0 12px;max-width:700px}.today-welcome p{font-size:16px;color:#64736d;margin:0}.eyebrow,.section-kicker{font-size:11px;font-weight:900;letter-spacing:1.6px;color:#0e8f7e}.date-chip{font-size:10px;font-weight:900;letter-spacing:1px;padding:9px 12px;border-radius:999px;background:#e4f8f2;color:#087666;white-space:nowrap}
+.card{border:1px solid rgba(18,60,49,.07);border-radius:26px;box-shadow:0 16px 50px rgba(16,35,30,.065);padding:22px;margin-top:16px}.cloud-panel{background:linear-gradient(120deg,#10231e,#173d33);color:#fff;border:0}.cloud-panel .muted,.cloud-panel .sync-note{color:#b8cdc6}.cloud-panel button{background:#fff;color:#12362d}.cloud-panel .ghost{background:rgba(255,255,255,.10);color:#fff}.hero{grid-template-columns:250px 1fr;background:linear-gradient(135deg,#fff 55%,#f0fbf7);min-height:270px}.ring{width:205px;height:205px;background:conic-gradient(var(--accent) 0deg,#e7efec 0);box-shadow:0 18px 45px rgba(19,163,143,.12)}.ring:after{width:158px;height:158px}.ringtext b{font-size:40px;letter-spacing:-1.5px}.stats{gap:12px}.stat{background:#fff;border:1px solid #e8efec;border-radius:18px;padding:17px}.stat b{font-size:24px;letter-spacing:-.6px}.add-food-card{background:linear-gradient(145deg,#ffffff,#f8fcfa)}.section-kicker{margin-bottom:5px}.card h2{letter-spacing:-.7px;margin-top:4px}.day-log-card{min-height:160px}.recipegrid,.suggestions{gap:14px}.recipe,.suggest,.smart-dish,.recipe-card,.pantry-item{border:1px solid #e5ece9;border-radius:20px;background:#fff;box-shadow:0 10px 30px rgba(16,35,30,.055);transition:.18s transform,.18s box-shadow}.recipe:hover,.suggest:hover,.smart-dish:hover,.recipe-card:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(16,35,30,.09)}
+.more-drawer{position:fixed;z-index:120;left:50%;bottom:100px;transform:translate(-50%,24px);width:min(560px,calc(100% - 28px));background:#fff;border:1px solid #e4ebe8;border-radius:26px;padding:18px;box-shadow:0 30px 90px rgba(10,31,25,.28);opacity:0;pointer-events:none;transition:.2s}.more-drawer.open{opacity:1;pointer-events:auto;transform:translate(-50%,0)}.drawer-shade{position:fixed;inset:0;background:rgba(9,25,21,.26);backdrop-filter:blur(2px);z-index:110;opacity:0;pointer-events:none;transition:.2s}.drawer-shade.open{opacity:1;pointer-events:auto}.drawer-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.drawer-head b{display:block;font-size:20px}.drawer-head span{display:block;color:#74817c;font-size:12px;margin-top:3px}.drawer-head button{font-size:24px;padding:5px 11px}.drawer-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.drawer-grid button{background:#f3f8f6;color:#17342c;min-height:88px;border-radius:18px;font-size:23px}.drawer-grid button span{display:block;font-size:10px;margin-top:6px}
+.auth-overlay{background:radial-gradient(circle at 75% 10%,rgba(125,226,201,.35),transparent 30%),radial-gradient(circle at 10% 90%,rgba(19,163,143,.18),transparent 35%),#f2f7f5}.auth-card{position:relative;overflow:hidden;border-radius:34px;padding:34px;box-shadow:0 35px 100px rgba(16,35,30,.18)}.auth-card:before{content:"";position:absolute;right:-70px;top:-80px;width:190px;height:190px;border-radius:50%;background:linear-gradient(145deg,#7de2c9,#0f8d7b);opacity:.16}.auth-logo{width:60px;height:60px;border-radius:19px;background:linear-gradient(145deg,#0c6e64,#1db49d);box-shadow:0 14px 30px rgba(15,118,110,.25)}.auth-card h2{font-size:36px;letter-spacing:-1.5px}.auth-card button{background:linear-gradient(135deg,#0f766e,#13a38f);padding:14px;border-radius:14px}
+@media(min-width:1000px){.app{padding-bottom:130px}.section.show{animation:fadeUp .28s ease}.today-welcome{padding-top:24px}}@keyframes fadeUp{from{opacity:.25;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(max-width:720px){body{padding-bottom:92px}.app{padding:12px 12px 105px}.head{padding:6px 2px 10px}.brandmark{width:40px;height:40px;border-radius:13px}.brand h1{font-size:22px}.brand .muted{font-size:11px}.cloudstatus{font-size:0;padding:8px}.cloudstatus:before{content:"☁";font-size:14px}.cloud-user{font-size:12px}.iconbtn{padding:8px;font-size:11px}.nav{bottom:max(10px,env(safe-area-inset-bottom));padding:7px;width:calc(100% - 20px);border-radius:22px}.nav button{font-size:10px;min-height:51px}.today-welcome{padding:25px 4px 6px;align-items:flex-start}.today-welcome h2{font-size:39px;letter-spacing:-1.7px}.today-welcome p{font-size:13px;max-width:260px}.date-chip{display:none}.card{border-radius:22px;padding:16px}.hero{grid-template-columns:1fr;min-height:auto}.ring{width:180px;height:180px}.ring:after{width:139px;height:139px}.stats{grid-template-columns:1fr 1fr}.drawer-grid{grid-template-columns:repeat(3,1fr)}.more-drawer{bottom:86px}.cloud-panel .row{display:block}.cloud-actions{margin-top:14px}.cloud-actions button{width:100%}.row .field{min-width:145px}}
+</style></head><body><div id="authOverlay" class="auth-overlay"><div class="auth-card"><div class="auth-logo">☁</div><h2>Mi Dieta</h2><p class="muted">Familia Adrada · acceso seguro</p><label>Email</label><input id="authEmail" type="email" autocomplete="username" placeholder="tu@email.com"><label>Contraseña</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="••••••••"><button id="loginBtn">Entrar</button><div id="authMsg" class="small muted" style="margin-top:12px"></div></div></div><div class="app">
+<header class="head"><div class="brand"><div class="brandmark">M</div><div><h1>Mi Dieta</h1><div class="muted">Familia Adrada · Cloud</div></div></div><div class="cloudbar"><span id="cloudStatus" class="cloudstatus">☁ Conectando…</span><span id="cloudUser" class="cloud-user"></span><button id="logoutBtn" class="ghost iconbtn" style="display:none">Salir</button></div><div class="tabs legacy-profiles" aria-hidden="true"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></header>
+<nav class="nav" aria-label="Navegación principal"><button data-tab="today" class="active"><span class="navico">◉</span><span>Hoy</span></button><button data-tab="menu"><span class="navico">✦</span><span>Plan</span></button><button id="quickAddNav" type="button" class="nav-add"><span class="plus">＋</span><span>Añadir</span></button><button data-tab="familyRecipesTab"><span class="navico">♨</span><span>Recetas</span></button><button id="moreNav" type="button"><span class="navico">•••</span><span>Más</span></button></nav>
+<div id="moreDrawer" class="more-drawer" aria-hidden="true"><div class="drawer-head"><div><b>Más herramientas</b><span>Todo lo demás, sin llenar tu pantalla</span></div><button id="closeMore" class="ghost">×</button></div><div class="drawer-grid"><button data-go="ideas">💡<span>Qué puedo comer</span></button><button data-go="pantry">🏠<span>En casa</span></button><button data-go="week">📅<span>Semana</span></button><button data-go="progress">📈<span>Progreso</span></button><button data-go="foods">🥗<span>Alimentos</span></button></div></div><div id="drawerShade" class="drawer-shade"></div>
+
+<section id="today" class="section show"><div class="today-welcome"><div><span class="eyebrow">TU DÍA</span><h2>Come bien. Sin complicarte.</h2><p>Calorías, proteína y tus comidas de hoy en un solo vistazo.</p></div><div class="date-chip">● EN DIRECTO</div></div><div id="cloudPanel" class="card cloud-panel" style="display:none"><div class="row"><div class="field" style="flex:2"><b>☁️ Nube familiar</b><div id="migrationSummary" class="muted small">Tus datos locales siguen intactos.</div></div><div class="cloud-actions"><button id="scanLocalBtn" class="ghost">Analizar datos locales</button><button id="backupLocalBtn" class="ghost">Descargar copia local</button><button id="migrateBtn" disabled>Copiar mis datos locales a la nube</button><button id="pullBtn" class="ghost">Actualizar desde la nube</button></div></div><div class="sync-note">La migración copia y fusiona. Nunca borra el localStorage.</div></div>
 <div class="card row"><div class="field"><label>Fecha</label><input id="date" type="date"></div><div class="field"><label>Objetivo kcal</label><input id="goal" type="number"></div><div class="field"><label>Peso kg</label><input id="weight" type="number" step=".1"></div><div class="field"><label>Cintura cm</label><input id="waist" type="number" step=".1"></div></div>
 <div class="card hero"><div class="ring" id="ring"><div class="ringtext"><b id="used">0</b><span>de <i id="goalText">1100</i> kcal</span></div></div>
 <div class="stats"><div class="stat"><b id="left">0</b><span>kcal restantes</span></div><div class="stat"><b id="prot">0 g</b><span id="protLabel">proteína</span></div><div class="stat"><b id="carbs">0 g</b><span>hidratos</span></div><div class="stat"><b id="fat">0 g</b><span>grasas</span></div></div></div>
-<div class="card"><h2>Añadir comida</h2><div class="row"><div class="field"><label>Momento</label><select id="meal"><option>Desayuno</option><option>Media mañana</option><option>Comida</option><option>Merienda</option><option>Cena</option><option>Extra</option></select></div><div class="field food-picker" style="flex:2"><label>Alimento</label><input id="food" autocomplete="off" placeholder="Pulsa o escribe: mer, sal, pollo…"><div id="foodResults" class="food-results"></div></div><div class="field"><label>Gramos</label><input id="grams" type="number" value="100"></div><div class="field"><button id="add">Añadir</button></div><div class="field"><label>Receta familiar</label><select id="dayFamilyRecipe"><option value="">— Elegir —</option></select></div><div class="field"><label>Raciones</label><input id="dayRecipePortions" type="number" min=".25" step=".25" value="1"></div><div class="field"><button id="addDayFamilyRecipe">🍲 Añadir receta</button></div></div></div>
-<div class="card"><h2>Registro del día</h2><div id="log"></div></div>
+<div class="card add-food-card" id="addFoodCard"><div class="section-kicker">REGISTRO RÁPIDO</div><h2>Añadir comida</h2><div class="row"><div class="field"><label>Momento</label><select id="meal"><option>Desayuno</option><option>Media mañana</option><option>Comida</option><option>Merienda</option><option>Cena</option><option>Extra</option></select></div><div class="field food-picker" style="flex:2"><label>Alimento</label><input id="food" autocomplete="off" placeholder="Pulsa o escribe: mer, sal, pollo…"><div id="foodResults" class="food-results"></div></div><div class="field"><label>Gramos</label><input id="grams" type="number" value="100"></div><div class="field"><button id="add">Añadir</button></div><div class="field"><label>Receta familiar</label><select id="dayFamilyRecipe"><option value="">— Elegir —</option></select></div><div class="field"><label>Raciones</label><input id="dayRecipePortions" type="number" min=".25" step=".25" value="1"></div><div class="field"><button id="addDayFamilyRecipe">🍲 Añadir receta</button></div></div></div>
+<div class="card day-log-card"><div class="section-kicker">HOY</div><h2>Registro del día</h2><div id="log"></div></div>
 <div class="card"><h2>Recetas rápidas</h2><div class="recipegrid" id="recipes"></div></div>
 </section>
 
@@ -132,6 +153,7 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
   </div>
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const base=[
 ["Huevo",143,12.6,.7,9.5],["Claras",48,10.5,.7,.2],["Pollo",120,23,0,2.6],["Pavo",115,24,0,1.5],["Ternera magra",150,22,0,6],
@@ -181,12 +203,18 @@ const recipes=[
 {name:"Merluza con guisantes y patata",meal:"Cena",items:[["Merluza",200],["Guisantes",100],["Patata",150],["AOVE",5]]}
 ];
 const profiles={Nacho:1100,Lucía:1300,Javi:2150}; const proteinGoals={Nacho:100,Lucía:80,Javi:100}; const profileModes={Nacho:"Pérdida de grasa",Lucía:"Mantenimiento",Javi:"Ganancia muscular"}; let profile=localStorage.profile||"Nacho";
+const SUPABASE_URL="https://cezgbeposlcphperkngk.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_pbBeQxtg2PsGmjNP3FCqEA_zedrcewj";
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+let cloud={ready:false,user:null,profileRow:null,familyId:null,syncing:false,timer:null,pending:new Set(),dirtyDiaryDates:new Set(),diaryDeletes:new Set(),pantryDirty:new Set(),foodsDirty:new Set(),recipeDirty:new Set(),recipeDeletes:new Set()};
 const V5_PANTRY_KEY="miDietaFamilyPantryV5";
 const V5_RECIPES_KEY="miDietaFamilyRecipesV5";
 if(!localStorage.familyFoods && localStorage.customFoods) localStorage.familyFoods=localStorage.customFoods;
 let custom=JSON.parse(localStorage.familyFoods||"[]"), currentMenu=[];
 const $=x=>document.getElementById(x), foods=()=>[...base,...custom], iso=d=>d.toISOString().slice(0,10), k=()=>`diet:${profile}:${$("date").value}`;
-function get(){return JSON.parse(localStorage.getItem(k())||'{"items":[],"weight":"","waist":""}')} function save(d){localStorage.setItem(k(),JSON.stringify(d));render()}
+function get(){return JSON.parse(localStorage.getItem(k())||'{"items":[],"weight":"","waist":""}')}
+function cloudNewKey(date){try{return "v554:"+crypto.randomUUID()}catch(e){return "v554:"+date+":"+Date.now()+":"+Math.random().toString(36).slice(2)}}
+function save(d){const date=$("date").value;(d.items||[]).forEach(x=>{if(!x.migration_key)x.migration_key=cloudNewKey(date)});localStorage.setItem(`diet:${profile}:${date}`,JSON.stringify(d));render();cloudSchedule("diary",date)}
 function food(n){return foods().find(x=>x.name===n)}
 function calcItem(f,g){return {name:f.name,grams:g,kcal:f.kcal*g/100,p:f.p*g/100,c:f.c*g/100,f:f.f*g/100}}
 function recipeData(r){let a=r.items.map(([n,g])=>calcItem(food(n),g));return {kcal:a.reduce((s,x)=>s+x.kcal,0),p:a.reduce((s,x)=>s+x.p,0),items:a}}
@@ -210,7 +238,7 @@ function render(){
  $("recipes").innerHTML=qidx.map(i=>{let r=recipes[i],q=recipeData(r);return `<div class="recipe"><b>${r.name}</b><span class="small muted">${Math.round(q.kcal)} kcal · ${Math.round(q.p)} g proteína</span><button onclick="addRecipe(${i})">Añadir</button></div>`}).join("")+`<button class="ghost" onclick="rotateQuickRecipes()">🔄 Otras recetas</button>`;
  renderIdeas();renderWeek();renderCharts();updateFill();if($("menu").classList.contains("show"))renderMenu()
 }
-function del(i){let d=get();d.items.splice(i,1);save(d)}
+function del(i){let d=get(),x=d.items[i];if(x?.migration_key)cloud.diaryDeletes.add(x.migration_key);d.items.splice(i,1);save(d)}
 function addRecipe(i){let r=recipes[i],d=get();recipeData(r).items.forEach(x=>d.items.push({...x,meal:r.meal}));save(d)}
 let ideasOffset=0;
 function renderIdeas(){
@@ -345,7 +373,7 @@ function saveFoundFood(name,kcal,p,c,f,source){
  let item={name,kcal:+kcal||0,p:+p||0,c:+c||0,f:+f||0};
  if(!item.kcal){alert("Ese resultado no tiene kcal/100 g suficientes.");return}
  if(!custom.some(x=>x.name.toLowerCase()===name.toLowerCase())) custom.push(item);
- localStorage.familyFoods=JSON.stringify(custom);populate();renderLibrary($("libSearch").value);
+ localStorage.familyFoods=JSON.stringify(custom);cloud.foodsDirty.add(name);populate();renderLibrary($("libSearch").value);cloudSchedule("foods");
  alert(name+" guardado en la biblioteca familiar ("+source+")");
 }
 const esToEn={
@@ -380,13 +408,13 @@ function renderWeek(){let baseD=new Date($("date").value+"T12:00:00"),sum=0,n=0,
 function records(field){let a=[];for(let i=0;i<localStorage.length;i++){let key=localStorage.key(i);if(key.startsWith("diet:"+profile+":")){let d=JSON.parse(localStorage.getItem(key));if(d[field])a.push({date:key.split(":")[2],v:+d[field]})}}return a.sort((a,b)=>a.date.localeCompare(b.date)).slice(-10)}
 function chart(id,field){let a=records(field),el=$(id);if(!a.length){el.innerHTML='<p class="muted">Añade registros para ver la gráfica.</p>';return}let min=Math.min(...a.map(x=>x.v)),max=Math.max(...a.map(x=>x.v));el.innerHTML=a.map(x=>{let h=35+(x.v-min)/(max-min||1)*145;return `<div class="col"><b class="small">${x.v}</b><div class="bar" style="height:${h}px"></div><span>${x.date.slice(5)}</span></div>`}).join("")}
 function renderCharts(){chart("weightChart","weight");chart("waistChart","waist")}
-function setP(p){profile=p;currentMenu=[];localStorage.profile=p;$("goal").value=profiles[p];$("bn").classList.toggle("active",p==="Nacho");$("bl").classList.toggle("active",p==="Lucía");$("bj").classList.toggle("active",p==="Javi");load()}
+function setP(p){if(cloud.ready&&cloud.profileRow&&p!==cloud.profileRow.name)return;profile=p;currentMenu=[];localStorage.profile=p;$("goal").value=profiles[p];$("bn").classList.toggle("active",p==="Nacho");$("bl").classList.toggle("active",p==="Lucía");$("bj").classList.toggle("active",p==="Javi");load()}
 function load(){let d=get();$("weight").value=d.weight||"";$("waist").value=d.waist||"";render()}
 $("add").onclick=()=>{let f=findFoodByInput("food"),g=+$("grams").value;if(!f){alert("Selecciona un alimento de la lista.");return}if(g<=0)return;let d=get();d.items.push({...calcItem(f,g),meal:$("meal").value});save(d);$("food").value=""}
-$("bn").onclick=()=>setP("Nacho");$("bl").onclick=()=>setP("Lucía");$("bj").onclick=()=>setP("Javi");$("date").onchange=load;$("goal").onchange=render;$("fillFood").oninput=updateFill;
+$("bn").onclick=()=>setP("Nacho");$("bl").onclick=()=>setP("Lucía");$("bj").onclick=()=>setP("Javi");$("date").onchange=load;$("goal").onchange=()=>{profiles[profile]=+$("goal").value||profiles[profile];render();cloudSchedule("profile")};$("fillFood").oninput=updateFill;
 ["weight","waist"].forEach(id=>$(id).onchange=()=>{let d=get();d[id]=$(id).value;save(d)})
 document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".section").forEach(x=>x.classList.remove("show"));$(b.dataset.tab).classList.add("show");render()})
-$("saveFood").onclick=()=>{let n=$("fn").value.trim(),kk=+$("fk").value;if(!n||!kk)return;custom.push({name:n,kcal:kk,p:+$("fp").value||0,c:+$("fc").value||0,f:+$("ff").value||0});localStorage.familyFoods=JSON.stringify(custom);populate();renderLibrary();render();["fn","fk","fp","fc","ff"].forEach(x=>$(x).value="")}
+$("saveFood").onclick=()=>{let n=$("fn").value.trim(),kk=+$("fk").value;if(!n||!kk)return;custom.push({name:n,kcal:kk,p:+$("fp").value||0,c:+$("fc").value||0,f:+$("ff").value||0});localStorage.familyFoods=JSON.stringify(custom);cloud.foodsDirty.add(n);populate();renderLibrary();render();cloudSchedule("foods");["fn","fk","fp","fc","ff"].forEach(x=>$(x).value="")}
 $("export").onclick=()=>{let o={};for(let i=0;i<localStorage.length;i++){let q=localStorage.key(i);if(q.startsWith("diet:")||["customFoods","familyFoods","miDietaFamilyPantryV5","miDietaFamilyRecipesV5","profile"].includes(q))o[q]=localStorage.getItem(q)}let b=new Blob([JSON.stringify(o,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="mi-dieta-backup.json";a.click()}
 $("import").onchange=e=>{let r=new FileReader();r.onload=()=>{try{Object.entries(JSON.parse(r.result)).forEach(([a,b])=>localStorage.setItem(a,b));custom=JSON.parse(localStorage.familyFoods||localStorage.customFoods||"[]");populate();load();alert("Datos importados")}catch{alert("Archivo no válido")}};r.readAsText(e.target.files[0])}
 
@@ -398,9 +426,9 @@ setupFoodPicker("food","foodResults");setupFoodPicker("fillFood","fillFoodResult
 
 // ===== V5.0 additions: NON-DESTRUCTIVE storage =====
 function pantry(){try{return JSON.parse(localStorage.getItem(V5_PANTRY_KEY)||"{}")}catch(e){return {}}}
-function savePantry(x){localStorage.setItem(V5_PANTRY_KEY,JSON.stringify(x))}
+function savePantry(x,name=null){localStorage.setItem(V5_PANTRY_KEY,JSON.stringify(x));if(name)cloud.pantryDirty.add(name);cloudSchedule("pantry")}
 function pantryNames(){let p=pantry();return Object.keys(p).filter(k=>p[k])}
-function setPantry(name,value){let p=pantry();p[name]=!!value;savePantry(p);renderPantry($("pantrySearch")?.value||"");if($("libSearch"))renderLibrary($("libSearch").value)}
+function setPantry(name,value){let p=pantry();p[name]=!!value;savePantry(p,name);renderPantry($("pantrySearch")?.value||"");if($("libSearch"))renderLibrary($("libSearch").value)}
 function togglePantry(name){let p=pantry();setPantry(name,!p[name])}
 function renderPantry(q=""){
  if(!$("pantryGrid"))return;
@@ -409,12 +437,12 @@ function renderPantry(q=""){
  $("pantryGrid").innerHTML=arr.slice(0,160).map(f=>`<div class="pantry-item ${p[f.name]?"have":""}"><div class="have-check"><input type="checkbox" ${p[f.name]?"checked":""} onchange='setPantry(${JSON.stringify(f.name)},this.checked)'><label><b>${f.name}</b><div class="small muted">${f.kcal} kcal · ${f.p} g proteína /100 g</div></label></div></div>`).join("")
 }
 function familyRecipes(){try{return JSON.parse(localStorage.getItem(V5_RECIPES_KEY)||"[]")}catch(e){return []}}
-function saveRecipes(x){localStorage.setItem(V5_RECIPES_KEY,JSON.stringify(x))}
+function saveRecipes(x,name=null){localStorage.setItem(V5_RECIPES_KEY,JSON.stringify(x));if(name)cloud.recipeDirty.add(name);cloudSchedule("recipes")}
 function recipeCalc(r){let out={kcal:0,p:0,c:0,f:0},valid=[];r.ingredients.forEach(i=>{let f=food(i.name);if(f){let z=calcItem(f,i.grams);out.kcal+=z.kcal;out.p+=z.p;out.c+=z.c;out.f+=z.f;valid.push(i)}});return {...out,valid}}
 function refreshDayFamilyRecipes(){let el=$("dayFamilyRecipe");if(!el)return;let rs=familyRecipes();el.innerHTML='<option value="">— Elegir —</option>'+rs.map((r,i)=>`<option value="${i}">${r.name}</option>`).join("")}
 function addFamilyRecipePortion(i,portion=1){let r=familyRecipes()[i];if(!r)return;let sv=Math.max(1,+r.servings||1),d=get(),added=0;(r.ingredients||[]).forEach(x=>{let f=food(x.name);if(f){d.items.push({...calcItem(f,x.grams/sv*portion),meal:"Comida"});added++}});if(!added)return alert("No he podido reconocer los ingredientes.");save(d)}
 function renderRecipes(){refreshDayFamilyRecipes();if(!$("recipeList"))return;let rs=familyRecipes();$("recipeList").innerHTML=rs.length?rs.map((r,i)=>{let z=recipeCalc(r),sv=r.servings||1;return `<div class="recipe-card"><b>${r.name}</b><div class="small">${Math.round(z.kcal/sv)} kcal · ${Math.round(z.p/sv)} g proteína por ración</div><div class="ingredients">${r.ingredients.map(x=>`${x.name} ${x.grams} g`).join(" · ")}</div><button onclick="addRecipeServing(${i})">Añadir 1 ración al diario</button> <button onclick="deleteRecipe(${i})">Eliminar</button></div>`}).join(""):'<p class="muted">Todavía no hay recetas guardadas.</p>'}
-function deleteRecipe(i){let r=familyRecipes();r.splice(i,1);saveRecipes(r);renderRecipes()}
+function deleteRecipe(i){let r=familyRecipes(),gone=r[i];if(gone?.name)cloud.recipeDeletes.add(gone.name);r.splice(i,1);saveRecipes(r);renderRecipes()}
 function addRecipeServing(i){addFamilyRecipePortion(i,1)}
 let recipeBuilder=[];
 function renderRecipeBuilder(){
@@ -425,7 +453,7 @@ function renderRecipeBuilder(){
 function addRecipeIngredient(){let f=findFoodByInput("recipeFood"),g=+$("recipeFoodGrams").value;if(!f)return alert("Elige un alimento de la lista.");if(!(g>0))return alert("Indica una cantidad válida.");let ex=recipeBuilder.find(x=>x.name===f.name);if(ex)ex.grams+=g;else recipeBuilder.push({name:f.name,grams:g});$("recipeFood").value="";$("recipeFoodGrams").value=100;renderRecipeBuilder()}
 function removeRecipeIngredient(i){recipeBuilder.splice(i,1);renderRecipeBuilder()}
 function clearRecipeBuilder(){recipeBuilder=[];$("recipeName").value="";renderRecipeBuilder()}
-function saveRecipeFromForm(){let name=$("recipeName").value.trim(),sv=Math.max(1,+$("recipeServings").value||1);if(!name||!recipeBuilder.length)return alert("Pon un nombre y añade al menos un ingrediente.");let r=familyRecipes();r.push({name,servings:sv,ingredients:recipeBuilder.map(x=>({...x}))});saveRecipes(r);recipeBuilder=[];$("recipeName").value="";renderRecipeBuilder();renderRecipes()}
+function saveRecipeFromForm(){let name=$("recipeName").value.trim(),sv=Math.max(1,+$("recipeServings").value||1);if(!name||!recipeBuilder.length)return alert("Pon un nombre y añade al menos un ingrediente.");let r=familyRecipes();r.push({name,servings:sv,ingredients:recipeBuilder.map(x=>({...x}))});saveRecipes(r,name);recipeBuilder=[];$("recipeName").value="";renderRecipeBuilder();renderRecipes()}
 function pantryMealOptions(meal){return smartSuggestions(meal,true).map(x=>x.d.i)}
 function pantryOptionStats(opt){let d={i:opt};return smartStats(d)}
 function generatePantryMenu(){
@@ -458,5 +486,214 @@ document.querySelectorAll('button[data-tab="pantry"],button[data-tab="familyReci
     if(btn.dataset.tab==="familyRecipesTab") renderRecipes();
   });
 });
+
+
+
+// ===== V5.5.2 WOW navigation =====
+function wowCloseMore(){const d=$("moreDrawer"),sh=$("drawerShade");if(d)d.classList.remove("open");if(sh)sh.classList.remove("open")}
+function wowOpenMore(){const d=$("moreDrawer"),sh=$("drawerShade");if(d)d.classList.add("open");if(sh)sh.classList.add("open")}
+function wowGo(tab){
+  wowCloseMore();
+  document.querySelectorAll(".section").forEach(x=>x.classList.remove("show"));
+  document.querySelectorAll(".tab").forEach(x=>x.style.display="none");
+  const t=$(tab); if(!t)return; if(t.classList.contains("section"))t.classList.add("show");else t.style.display="";
+  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+  const nb=document.querySelector(`.nav button[data-tab="${tab}"]`); if(nb)nb.classList.add("active");
+  if(tab==="pantry")renderPantry($("pantrySearch")?.value||"");
+  if(tab==="familyRecipesTab")renderRecipes();
+  render(); window.scrollTo({top:0,behavior:"smooth"});
+}
+if($("moreNav"))$("moreNav").onclick=wowOpenMore;
+if($("closeMore"))$("closeMore").onclick=wowCloseMore;
+if($("drawerShade"))$("drawerShade").onclick=wowCloseMore;
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>wowGo(b.dataset.go));
+if($("quickAddNav"))$("quickAddNav").onclick=()=>{wowGo("today");setTimeout(()=>$("addFoodCard")?.scrollIntoView({behavior:"smooth",block:"center"}),120)};
+
+// ===== V5.5 CLOUD: login, non-destructive migration and automatic sync =====
+function cloudSetStatus(text,state=""){
+ const el=$("cloudStatus"); if(!el)return; el.textContent=text; el.className="cloudstatus "+state;
+}
+function cloudNorm(v){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toLocaleLowerCase("es")}
+function cloudDietKeysFor(name=profile){
+ const wanted=cloudNorm(name), out=[];
+ for(let i=0;i<localStorage.length;i++){
+  const q=localStorage.key(i); if(!q||!q.startsWith("diet:"))continue;
+  const parts=q.split(":"); if(parts.length<3)continue;
+  if(cloudNorm(parts[1])===wanted)out.push(q);
+ }
+ return out.sort();
+}
+function cloudInspectLocal(){
+ const allDiet=[];let totalItems=0;const profilesFound={};
+ for(let i=0;i<localStorage.length;i++){const q=localStorage.key(i);if(!q||!q.startsWith("diet:"))continue;allDiet.push(q);const parts=q.split(":");const pn=parts[1]||"?";profilesFound[pn]=(profilesFound[pn]||0)+1;try{totalItems+=(JSON.parse(localStorage.getItem(q)||"{}").items||[]).length}catch(e){}}
+ const own=cloudDietKeysFor(profile);let ownItems=0;for(const q of own){try{ownItems+=(JSON.parse(localStorage.getItem(q)||"{}").items||[]).length}catch(e){}}
+ return {ownDays:own.length,ownItems,allDays:allDiet.length,totalItems,profilesFound,storageKeys:localStorage.length,foods:custom.length,recipes:familyRecipes().length,pantry:Object.keys(pantry()).length};
+}
+function cloudLocalSummary(){
+ const x=cloudInspectLocal();
+ const extra=x.allDays!==x.ownDays?` · ${x.allDays} días totales en este navegador`:"";
+ return `${x.ownDays} días de ${profile} · ${x.ownItems} registros · ${x.foods} alimentos · ${x.recipes} recetas${extra}`;
+}
+function cloudBackupPayload(){
+ const o={_meta:{app:"Mi Dieta",created_at:new Date().toISOString(),profile,origin:location.origin}};
+ for(let i=0;i<localStorage.length;i++){const q=localStorage.key(i);if(q&&(q.startsWith("diet:")||["customFoods","familyFoods","miDietaFamilyPantryV5","miDietaFamilyRecipesV5","profile"].includes(q)))o[q]=localStorage.getItem(q)}
+ return o;
+}
+function cloudDownloadBackup(){
+ const b=new Blob([JSON.stringify(cloudBackupPayload(),null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`mi-dieta-antes-nube-${profile}-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);localStorage.setItem(`miDietaBackupReady:${cloud.user?.id||profile}`,new Date().toISOString());$("migrateBtn").disabled=cloudDietKeysFor(profile).length===0;return true;
+}
+function cloudScanLocal(show=true){
+ const x=cloudInspectLocal();$("migrationSummary").textContent=cloudLocalSummary();
+ const ready=!!localStorage.getItem(`miDietaBackupReady:${cloud.user?.id||profile}`);$("migrateBtn").disabled=!(x.ownDays>0&&ready);
+ if(show){const pf=Object.entries(x.profilesFound).map(([n,c])=>`${n}: ${c} días`).join(" · ")||"ningún perfil";alert(`He encontrado en ESTE navegador:
+
+${x.ownDays} días de ${profile} (${x.ownItems} registros)
+${x.foods} alimentos familiares
+${x.recipes} recetas
+${x.pantry} entradas de despensa
+${x.storageKeys} claves localStorage en total
+
+Perfiles detectados: ${pf}
+
+${x.allDays===0?"Si la app antigua sí muestra datos, Safari y la app/página nueva están usando almacenes distintos. En ese caso migraremos mediante una copia JSON, sin borrar nada.":"Antes de migrar descarga la copia local."}`)}
+ return x;
+}
+function cloudFingerprint(date,item,index){
+ const raw=[profile,date,item.meal||"",item.name||"",Number(item.grams||0).toFixed(2),Number(item.kcal||0).toFixed(2),index].join("|");
+ let h=2166136261;for(let i=0;i<raw.length;i++){h^=raw.charCodeAt(i);h=Math.imul(h,16777619)}return `local-${profile}-${date}-${(h>>>0).toString(16)}`;
+}
+async function cloudLogin(){
+ const email=$("authEmail").value.trim(),password=$("authPassword").value;$("authMsg").textContent="Entrando…";
+ const {error}=await sb.auth.signInWithPassword({email,password}); if(error){$("authMsg").textContent="No se ha podido entrar: "+error.message;return} await cloudBootstrap();
+}
+async function cloudLogout(){await sb.auth.signOut();cloud.ready=false;cloud.user=null;cloud.profileRow=null;cloud.familyId=null;$("authOverlay").classList.remove("hidden");$("logoutBtn").style.display="none";cloudSetStatus("☁ Sin sesión","")}
+async function cloudBootstrap(){
+ try{
+  cloudSetStatus("⏳ Conectando…","busy");
+  const {data:{session}}=await sb.auth.getSession(); if(!session){$("authOverlay").classList.remove("hidden");cloudSetStatus("☁ Inicia sesión","");return}
+  cloud.user=session.user;
+  const {data:pr,error:pe}=await sb.from("profiles").select("id,family_id,user_id,name,calorie_goal,protein_goal,mode").single(); if(pe)throw pe;
+  cloud.profileRow=pr;cloud.familyId=pr.family_id;profile=pr.name;localStorage.profile=profile;profiles[profile]=pr.calorie_goal||profiles[profile];proteinGoals[profile]=Number(pr.protein_goal)||proteinGoals[profile];profileModes[profile]=pr.mode||profileModes[profile];
+  cloud.ready=true;$("authOverlay").classList.add("hidden");$("cloudUser").textContent=profile;$("logoutBtn").style.display="";$("cloudPanel").style.display="";$("migrationSummary").textContent=cloudLocalSummary();$("migrateBtn").disabled=true;
+  setP(profile); await cloudPull(false); cloudSetStatus("☁ Guardado","ok");
+ }catch(e){console.error(e);cloudSetStatus("⚠ Error nube","err");$("authMsg").textContent="Error de conexión: "+(e.message||e)}
+}
+function cloudSchedule(kind,payload=null){
+ if(!cloud.ready)return;
+ if(kind==="diary")cloud.dirtyDiaryDates.add(payload||$("date").value);
+ cloud.pending.add(kind);clearTimeout(cloud.timer);cloudSetStatus("⏳ Guardando…","busy");
+ cloud.timer=setTimeout(()=>cloudFlush().catch(e=>{console.error(e);cloudSetStatus("⚠ Sin guardar","err")}),500);
+}
+async function cloudFlush(){
+ if(!cloud.ready)return;
+ // Si una lectura/migración está usando la nube, NO perder el guardado pendiente.
+ // Reintentarlo cuando quede libre en vez de devolver sin más.
+ if(cloud.syncing){
+  clearTimeout(cloud.timer);
+  cloud.timer=setTimeout(()=>cloudFlush().catch(e=>{console.error(e);cloudSetStatus("⚠ Sin guardar","err")}),350);
+  return;
+ }
+ cloud.syncing=true;
+ try{
+  while(cloud.pending.size){
+   const kinds=[...cloud.pending];cloud.pending.clear();
+   for(const kind of kinds)await cloudPushKind(kind,true);
+  }
+  cloudSetStatus("☁ Guardado","ok");
+ }catch(e){cloudSetStatus("⚠ Sin guardar","err");throw e}finally{cloud.syncing=false;if(cloud.pending.size)cloudSchedule([...cloud.pending][0])}
+}
+async function cloudPushKind(kind,fromFlush=false){
+ if(!cloud.ready)return;
+ if(kind==="diary")await cloudUploadDirtyDiary();
+ else if(kind==="foods")await cloudUploadFoods();
+ else if(kind==="pantry")await cloudUploadPantry();
+ else if(kind==="recipes")await cloudUploadRecipes();
+ else if(kind==="profile"){const r=await sb.from("profiles").update({calorie_goal:+$("goal").value||profiles[profile],protein_goal:proteinGoals[profile],updated_at:new Date().toISOString()}).eq("id",cloud.profileRow.id);if(r.error)throw r.error}
+ if(!fromFlush)cloudSetStatus("☁ Guardado","ok");
+}
+async function cloudUploadDirtyDiary(){
+ // Delta sync: nunca reconstruye/borrar un día entero. Solo borra entradas que el usuario borró
+ // explícitamente y hace upsert de los días realmente modificados en este dispositivo.
+ const deletes=[...cloud.diaryDeletes];
+ for(const key of deletes){const r=await sb.from("diary_entries").delete().eq("user_id",cloud.user.id).eq("migration_key",key).select("id");if(r.error)throw r.error;if(!r.data||r.data.length!==1)throw new Error(`DELETE diario no confirmado por Supabase (${key}): ${r.data?.length||0} filas borradas`);cloud.diaryDeletes.delete(key)}
+ const dates=[...cloud.dirtyDiaryDates];
+ for(const date of dates){
+  const key=`diet:${profile}:${date}`,d=JSON.parse(localStorage.getItem(key)||'{"items":[],"weight":"","waist":""}');
+  (d.items||[]).forEach(x=>{if(!x.migration_key)x.migration_key=cloudNewKey(date)});localStorage.setItem(key,JSON.stringify(d));
+  for(const x of (d.items||[])){const row={family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,entry_date:date,meal:x.meal||"Extra",food_name:x.name,grams:+x.grams||0,kcal:+x.kcal||0,protein:+x.p||0,carbs:+x.c||0,fat:+x.f||0,migration_key:x.migration_key};const z=await sb.from("diary_entries").upsert(row,{onConflict:"user_id,migration_key"});if(z.error)throw z.error}
+  const meas={family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,measured_on:date,weight_kg:d.weight!==""&&d.weight!=null?+d.weight:null,waist_cm:d.waist!==""&&d.waist!=null?+d.waist:null,updated_at:new Date().toISOString()};
+  if(meas.weight_kg!=null||meas.waist_cm!=null){const {error}=await sb.from("measurements").upsert(meas,{onConflict:"profile_id,measured_on"});if(error)throw error}else{const {error}=await sb.from("measurements").delete().eq("profile_id",cloud.profileRow.id).eq("measured_on",date);if(error)throw error}
+  cloud.dirtyDiaryDates.delete(date)
+ }
+}
+async function cloudUploadFoods(full=false){
+ const names=full?custom.map(f=>f.name):[...cloud.foodsDirty];
+ for(const name of names){const f=custom.find(x=>x.name===name);if(!f)continue;let {data,error}=await sb.from("foods").select("id").eq("family_id",cloud.familyId).eq("name",f.name).maybeSingle();if(error)throw error;let row={family_id:cloud.familyId,name:f.name,kcal_100:+f.kcal||0,protein_100:+f.p||0,carbs_100:+f.c||0,fat_100:+f.f||0,source:"Mi Dieta",created_by:cloud.user.id,updated_at:new Date().toISOString()};let r=data?await sb.from("foods").update(row).eq("id",data.id):await sb.from("foods").insert(row);if(r.error)throw r.error;cloud.foodsDirty.delete(name)}
+}
+async function cloudUploadPantry(full=false){
+ const p=pantry(),names=full?Object.keys(p):[...cloud.pantryDirty];
+ for(const name of names){let val=!!p[name],{data,error}=await sb.from("pantry_items").select("id").eq("family_id",cloud.familyId).eq("food_name",name).maybeSingle();if(error)throw error;let row={family_id:cloud.familyId,food_name:name,in_stock:val,updated_by:cloud.user.id,updated_at:new Date().toISOString()};let r=data?await sb.from("pantry_items").update(row).eq("id",data.id):await sb.from("pantry_items").insert(row);if(r.error)throw r.error;cloud.pantryDirty.delete(name)}
+}
+async function cloudUploadRecipes(full=false){
+ const local=familyRecipes(),names=new Set(local.map(r=>cloudNorm(r.name)));
+ for(const name of [...cloud.recipeDeletes]){let z=await sb.from("recipes").delete().eq("family_id",cloud.familyId).eq("name",name);if(z.error)throw z.error;cloud.recipeDeletes.delete(name)}
+ const all=await sb.from("recipes").select("id,name").eq("family_id",cloud.familyId);if(all.error)throw all.error;
+ const work=full?local:local.filter(r=>cloud.recipeDirty.has(r.name));
+ for(const r of work){
+  let existing=(all.data||[]).find(x=>cloudNorm(x.name)===cloudNorm(r.name)),rid=existing?.id;
+  if(!rid){let ins=await sb.from("recipes").insert({family_id:cloud.familyId,name:r.name,servings:+r.servings||1,created_by:cloud.user.id}).select("id").single();if(ins.error)throw ins.error;rid=ins.data.id}else{let up=await sb.from("recipes").update({servings:+r.servings||1,updated_at:new Date().toISOString()}).eq("id",rid);if(up.error)throw up.error;let del=await sb.from("recipe_ingredients").delete().eq("recipe_id",rid);if(del.error)throw del.error}
+  let ingredients=(r.ingredients||[]).map(x=>{let f=food(x.name)||{kcal:0,p:0,c:0,f:0};return {recipe_id:rid,food_name:x.name,grams:+x.grams||0,kcal_100:+f.kcal||0,protein_100:+f.p||0,carbs_100:+f.c||0,fat_100:+f.f||0}});if(ingredients.length){let z=await sb.from("recipe_ingredients").insert(ingredients);if(z.error)throw z.error}cloud.recipeDirty.delete(r.name)
+ }
+}
+async function cloudMigrate(){
+ const pre=cloudInspectLocal();if(!pre.ownDays){alert("No hay días locales del usuario autenticado en este navegador. No se enviará nada.");return}if(!localStorage.getItem(`miDietaBackupReady:${cloud.user?.id||profile}`)){alert("Primero descarga la copia local de seguridad.");return}if(!confirm(`Voy a copiar ${pre.ownDays} días y ${pre.ownItems} registros de ${profile} a la nube. El localStorage NO se borrará. ¿Continuar?`))return;
+ cloud.syncing=true;cloudSetStatus("⏳ Migrando…","busy");$("migrateBtn").disabled=true;
+ try{
+  await cloudUploadFoods(true);await cloudUploadPantry(true);await cloudUploadRecipes(true);
+  let keys=cloudDietKeysFor(profile)
+  for(const key of keys){let date=key.split(":")[2],d=JSON.parse(localStorage.getItem(key)||'{"items":[]}');(d.items||[]).forEach((x,i)=>{if(!x.migration_key)x.migration_key=cloudFingerprint(date,x,i)});localStorage.setItem(key,JSON.stringify(d));let rows=(d.items||[]).map((x)=>({family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,entry_date:date,meal:x.meal||"Extra",food_name:x.name,grams:+x.grams||0,kcal:+x.kcal||0,protein:+x.p||0,carbs:+x.c||0,fat:+x.f||0,migration_key:x.migration_key}));for(const row of rows){let z=await sb.from("diary_entries").upsert(row,{onConflict:"user_id,migration_key"});if(z.error)throw z.error}if(d.weight||d.waist){let z=await sb.from("measurements").upsert({family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,measured_on:date,weight_kg:d.weight?+d.weight:null,waist_cm:d.waist?+d.waist:null,updated_at:new Date().toISOString()},{onConflict:"profile_id,measured_on"});if(z.error)throw z.error}}
+  localStorage.setItem(`miDietaCloudMigrated:${cloud.user.id}`,new Date().toISOString());await cloudPull(false);cloudSetStatus("☁ Migración verificada","ok");alert("Copia a la nube completada. Los datos locales siguen en este navegador.");
+ }catch(e){console.error(e);cloudSetStatus("⚠ Migración incompleta","err");alert("No se ha borrado nada. La migración se detuvo por este error: "+(e.message||e))}finally{cloud.syncing=false;$("migrateBtn").disabled=false;$("migrationSummary").textContent=cloudLocalSummary()}
+}
+async function cloudPull(showAlert=true){
+ if(!cloud.ready)return;cloud.syncing=true;cloudSetStatus("⏳ Actualizando…","busy");
+ try{
+  const [fr,rr,pr,dr,mr]=await Promise.all([
+   sb.from("foods").select("name,kcal_100,protein_100,carbs_100,fat_100").eq("family_id",cloud.familyId),
+   sb.from("recipes").select("id,name,servings,recipe_ingredients(food_name,grams)").eq("family_id",cloud.familyId),
+   sb.from("pantry_items").select("food_name,in_stock").eq("family_id",cloud.familyId),
+   sb.from("diary_entries").select("entry_date,meal,food_name,grams,kcal,protein,carbs,fat,migration_key").eq("user_id",cloud.user.id),
+   sb.from("measurements").select("measured_on,weight_kg,waist_cm").eq("user_id",cloud.user.id)
+  ]);for(const r of [fr,rr,pr,dr,mr])if(r.error)throw r.error;
+  // Un dispositivo queda "vinculado" a la nube solo cuando sabemos que ya trabaja con datos cloud.
+  // Esto evita que un navegador antiguo sin migrar pierda datos locales, pero permite que un
+  // portátil ya sincronizado elimine correctamente copias locales de filas borradas en otro dispositivo.
+  const cloudBoundKey=`miDietaCloudBound:${cloud.user.id}`;
+  const ownBefore=cloudDietKeysFor(profile);
+  const hasCloudEraLocal=ownBefore.some(key=>{try{return (JSON.parse(localStorage.getItem(key)||'{"items":[]}').items||[]).some(x=>/^v554:/.test(x.migration_key||""))}catch(e){return false}});
+  const authoritative=!!localStorage.getItem(`miDietaCloudMigrated:${cloud.user.id}`)||!!localStorage.getItem(cloudBoundKey)||ownBefore.length===0||hasCloudEraLocal;
+  const sharedAuthoritative=authoritative||(custom.length===0&&familyRecipes().length===0);
+  if(sharedAuthoritative)custom=(fr.data||[]).map(x=>({name:x.name,kcal:+x.kcal_100||0,p:+x.protein_100||0,c:+x.carbs_100||0,f:+x.fat_100||0}));else{let known=new Set(custom.map(x=>cloudNorm(x.name)));for(const x of fr.data||[]){if(!known.has(cloudNorm(x.name))){custom.push({name:x.name,kcal:+x.kcal_100||0,p:+x.protein_100||0,c:+x.carbs_100||0,f:+x.fat_100||0});known.add(cloudNorm(x.name))}}}localStorage.familyFoods=JSON.stringify(custom);
+  let localR=sharedAuthoritative?(rr.data||[]).map(r=>({name:r.name,servings:+r.servings||1,ingredients:(r.recipe_ingredients||[]).map(x=>({name:x.food_name,grams:+x.grams||0}))})):familyRecipes();if(!sharedAuthoritative){let rnames=new Set(localR.map(x=>cloudNorm(x.name)));for(const r of rr.data||[]){if(!rnames.has(cloudNorm(r.name)))localR.push({name:r.name,servings:+r.servings||1,ingredients:(r.recipe_ingredients||[]).map(x=>({name:x.food_name,grams:+x.grams||0}))})}}localStorage.setItem(V5_RECIPES_KEY,JSON.stringify(localR));
+  let lp=pantry();for(const x of pr.data||[]){if(sharedAuthoritative||!(x.food_name in lp))lp[x.food_name]=!!x.in_stock}localStorage.setItem(V5_PANTRY_KEY,JSON.stringify(lp));
+  let byDate={};for(const x of dr.data||[]){let date=x.entry_date;(byDate[date]??=[]).push(x)}
+  if(authoritative){
+   const dates=new Set([...Object.keys(byDate),(mr.data||[]).map(x=>x.measured_on)]);
+   for(const date of dates){let key=`diet:${profile}:${date}`,old=localStorage.getItem(key);if(old&&!localStorage.getItem(`miDietaFallback:${key}`))localStorage.setItem(`miDietaFallback:${key}`,old);let prior=JSON.parse(old||'{"items":[],"weight":"","waist":""}');prior.items=(byDate[date]||[]).map(x=>({name:x.food_name,grams:+x.grams||0,kcal:+x.kcal||0,p:+x.protein||0,c:+x.carbs||0,f:+x.fat||0,meal:x.meal||"Extra",migration_key:x.migration_key}));localStorage.setItem(key,JSON.stringify(prior))}
+   for(const key of ownBefore){let date=key.split(":")[2];if(!dates.has(date)){let old=localStorage.getItem(key);if(old&&!localStorage.getItem(`miDietaFallback:${key}`))localStorage.setItem(`miDietaFallback:${key}`,old);let d=JSON.parse(old||'{"items":[],"weight":"","waist":""}');d.items=[];localStorage.setItem(key,JSON.stringify(d))}}
+  }else for(const [date,rows] of Object.entries(byDate)){let key=`diet:${profile}:${date}`,d=JSON.parse(localStorage.getItem(key)||'{"items":[],"weight":"","waist":""}');let existing=new Set((d.items||[]).map(x=>x.migration_key).filter(Boolean));for(const x of rows){if(x.migration_key&&existing.has(x.migration_key))continue;d.items.push({name:x.food_name,grams:+x.grams||0,kcal:+x.kcal||0,p:+x.protein||0,c:+x.carbs||0,f:+x.fat||0,meal:x.meal||"Extra",migration_key:x.migration_key});if(x.migration_key)existing.add(x.migration_key)}localStorage.setItem(key,JSON.stringify(d))}
+  // En modo Cloud, Supabase manda para peso/cintura: sobrescribir el valor local, no solo rellenar huecos.
+  // Así un cambio hecho en otro dispositivo sustituye correctamente el dato antiguo.
+  const measurementDates=new Set();
+  for(const x of mr.data||[]){measurementDates.add(x.measured_on);let key=`diet:${profile}:${x.measured_on}`,d=JSON.parse(localStorage.getItem(key)||'{"items":[],"weight":"","waist":""}');d.weight=x.weight_kg==null?"":String(x.weight_kg);d.waist=x.waist_cm==null?"":String(x.waist_cm);localStorage.setItem(key,JSON.stringify(d))}
+  // En modo autoritativo, una medición borrada en otro dispositivo también debe desaparecer aquí.
+  if(authoritative)for(const key of cloudDietKeysFor(profile)){let date=key.split(":")[2];if(!measurementDates.has(date)){let d=JSON.parse(localStorage.getItem(key)||'{"items":[],"weight":"","waist":""}');d.weight="";d.waist="";localStorage.setItem(key,JSON.stringify(d))}}
+  if(authoritative)localStorage.setItem(cloudBoundKey,new Date().toISOString());
+  populate();renderLibrary($("libSearch")?.value||"");renderPantry($("pantrySearch")?.value||"");renderRecipes();load();cloudSetStatus("☁ Guardado","ok");if(showAlert)alert("Datos de la nube fusionados con este dispositivo. No se ha borrado ningún dato local.");
+ }catch(e){console.error(e);cloudSetStatus("⚠ Error al actualizar","err");if(showAlert)alert("No se ha borrado nada. Error al actualizar: "+(e.message||e))}finally{cloud.syncing=false}
+}
+$("scanLocalBtn").onclick=()=>cloudScanLocal(true);$("backupLocalBtn").onclick=()=>{cloudDownloadBackup();cloudScanLocal(false);alert("Copia local descargada. Ya puedes migrar cuando los números sean correctos.")};$("loginBtn").onclick=cloudLogin;$("authPassword").addEventListener("keydown",e=>{if(e.key==="Enter")cloudLogin()});$("logoutBtn").onclick=cloudLogout;$("migrateBtn").onclick=cloudMigrate;$("pullBtn").onclick=()=>cloudPull(true);
+sb.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_OUT"){$("authOverlay").classList.remove("hidden")} });
+setTimeout(cloudBootstrap,0);
 
 </script></body></html>
