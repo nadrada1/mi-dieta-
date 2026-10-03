@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0f766e"><title>Mi Dieta · V5.6.1 Cocinero IA</title>
+<meta name="theme-color" content="#0f766e"><title>Mi Dieta · V5.6.2 Cocinero IA</title>
 <link rel="manifest" href="manifest.json">
 <style>
 :root{--bg:#f4f6f2;--card:#fff;--ink:#18211b;--muted:#69736c;--green:#286749;--green2:#dcece2;--line:#e1e6e1;--red:#b42318;--amber:#a05a00}
@@ -76,10 +76,14 @@ body{background:radial-gradient(circle at 82% -5%,rgba(125,226,201,.22),transpar
 @media(min-width:1000px){.app{padding-bottom:130px}.section.show{animation:fadeUp .28s ease}.today-welcome{padding-top:24px}}@keyframes fadeUp{from{opacity:.25;transform:translateY(5px)}to{opacity:1;transform:none}}
 .ai-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.ai-card{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fbfcfa}.ai-mode{font-size:11px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.05em}.ai-card h3{margin:6px 0}.ai-desc{font-size:13px;color:var(--muted);margin-bottom:8px}.ai-ingredients,.ai-steps{font-size:13px;line-height:1.45}.ai-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.ai-actions button{font-size:12px;padding:8px}.ai-loading{padding:18px;text-align:center;color:var(--muted)}.ai-buy{font-size:12px;margin:8px 0;padding:8px;border-radius:10px;background:#fff6e8}.ai-nutrition{font-size:12px;font-weight:700;margin:8px 0}@media(max-width:720px){.ai-grid{grid-template-columns:1fr}.item{grid-template-columns:1fr 62px 125px 34px;font-size:12px}}
 @media(max-width:720px){body{padding-bottom:92px}.app{padding:12px 12px 105px}.head{padding:6px 2px 10px}.brandmark{width:40px;height:40px;border-radius:13px}.brand h1{font-size:22px}.brand .muted{font-size:11px}.cloudstatus{font-size:0;padding:8px}.cloudstatus:before{content:"☁";font-size:14px}.cloud-user{font-size:12px}.iconbtn{padding:8px;font-size:11px}.nav{bottom:max(10px,env(safe-area-inset-bottom));padding:7px;width:calc(100% - 20px);border-radius:22px}.nav button{font-size:10px;min-height:51px}.today-welcome{padding:25px 4px 6px;align-items:flex-start}.today-welcome h2{font-size:39px;letter-spacing:-1.7px}.today-welcome p{font-size:13px;max-width:260px}.date-chip{display:none}.card{border-radius:22px;padding:16px}.hero{grid-template-columns:1fr;min-height:auto}.ring{width:180px;height:180px}.ring:after{width:139px;height:139px}.stats{grid-template-columns:1fr 1fr}.drawer-grid{grid-template-columns:repeat(3,1fr)}.more-drawer{bottom:86px}.cloud-panel .row{display:block}.cloud-actions{margin-top:14px}.cloud-actions button{width:100%}.row .field{min-width:145px}}
+
+/* V5.6.2: Cocinero IA protagonista y menos ruido */
+#aiCook{max-width:1240px;margin:-110px auto 0;padding:0 24px 110px}.ai-chef-home{max-width:980px;margin-left:auto;margin-right:auto}.ai-request-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:16px}.ai-request-row input{font-size:16px;padding:13px 14px}.ai-request-row button{padding:13px 18px}.ai-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.ai-chips button{background:#eef6f3;color:#17342c;border:1px solid #dfeae6;border-radius:999px;padding:9px 12px;font-size:12px}.ai-chips button:hover{background:#e2f2ec}.ai-chef-home>p{margin-top:6px}.ai-chef-home h2{font-size:32px;margin-bottom:0}
+@media(max-width:720px){#aiCook{margin:-105px auto 0;padding:0 12px 105px}.ai-chef-home{margin-top:8px}.ai-chef-home h2{font-size:30px}.ai-request-row{grid-template-columns:1fr}.ai-request-row button{width:100%}.ai-chips{gap:7px}.ai-chips button{font-size:11px;padding:8px 10px}}
 </style></head><body><div id="authOverlay" class="auth-overlay"><div class="auth-card"><div class="auth-logo">☁</div><h2>Mi Dieta</h2><p class="muted">Familia Adrada · acceso seguro</p><label>Email</label><input id="authEmail" type="email" autocomplete="username" placeholder="tu@email.com"><label>Contraseña</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="••••••••"><button id="loginBtn">Entrar</button><div id="authMsg" class="small muted" style="margin-top:12px"></div></div></div><div class="app">
 <header class="head"><div class="brand"><div class="brandmark">M</div><div><h1>Mi Dieta</h1><div class="muted">Familia Adrada · Cloud</div></div></div><div class="cloudbar"><span id="cloudStatus" class="cloudstatus">☁ Conectando…</span><span id="cloudUser" class="cloud-user"></span><button id="logoutBtn" class="ghost iconbtn" style="display:none">Salir</button></div><div class="tabs legacy-profiles" aria-hidden="true"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></header>
 <nav class="nav" aria-label="Navegación principal"><button data-tab="today" class="active"><span class="navico">◉</span><span>Hoy</span></button><button data-tab="menu"><span class="navico">✦</span><span>Plan</span></button><button id="quickAddNav" type="button" class="nav-add"><span class="plus">＋</span><span>Añadir</span></button><button data-tab="familyRecipesTab"><span class="navico">♨</span><span>Recetas</span></button><button id="moreNav" type="button"><span class="navico">•••</span><span>Más</span></button></nav>
-<div id="moreDrawer" class="more-drawer" aria-hidden="true"><div class="drawer-head"><div><b>Más herramientas</b><span>Todo lo demás, sin llenar tu pantalla</span></div><button id="closeMore" class="ghost">×</button></div><div class="drawer-grid"><button data-go="aiCook">👨‍🍳<span>Cocinero IA</span></button><button data-go="ideas">💡<span>Qué puedo comer</span></button><button data-go="pantry">🏠<span>En casa</span></button><button data-go="week">📅<span>Semana</span></button><button data-go="progress">📈<span>Progreso</span></button><button data-go="foods">🥗<span>Alimentos</span></button></div></div><div id="drawerShade" class="drawer-shade"></div>
+<div id="moreDrawer" class="more-drawer" aria-hidden="true"><div class="drawer-head"><div><b>Más</b></div><button id="closeMore" class="ghost">×</button></div><div class="drawer-grid"><button data-go="aiCook">👨‍🍳<span>Cocinero IA</span></button><button data-go="ideas">💡<span>Qué puedo comer</span></button><button data-go="pantry">🏠<span>En casa</span></button><button data-go="week">📅<span>Semana</span></button><button data-go="progress">📈<span>Progreso</span></button><button data-go="foods">🥗<span>Alimentos</span></button></div></div><div id="drawerShade" class="drawer-shade"></div>
 
 <section id="today" class="section show"><div class="today-welcome"><div><span class="eyebrow">TU DÍA</span><h2>Come bien. Sin complicarte.</h2><p>Calorías, proteína y tus comidas de hoy en un solo vistazo.</p></div><div class="date-chip">● EN DIRECTO</div></div><div id="cloudPanel" class="card cloud-panel" style="display:none"><div class="row"><div class="field" style="flex:2"><b>☁️ Nube familiar</b><div id="migrationSummary" class="muted small">Tus datos locales siguen intactos.</div></div><div class="cloud-actions"><button id="scanLocalBtn" class="ghost">Analizar datos locales</button><button id="backupLocalBtn" class="ghost">Descargar copia local</button><button id="migrateBtn" disabled>Copiar mis datos locales a la nube</button><button id="pullBtn" class="ghost">Actualizar desde la nube</button></div></div><div class="sync-note">La migración copia y fusiona. Nunca borra el localStorage.</div></div>
 <div class="card row"><div class="field"><label>Fecha</label><input id="date" type="date"></div><div class="field"><label>Objetivo kcal</label><input id="goal" type="number"></div><div class="field"><label>Peso kg</label><input id="weight" type="number" step=".1"></div><div class="field"><label>Cintura cm</label><input id="waist" type="number" step=".1"></div></div>
@@ -91,23 +95,16 @@ body{background:radial-gradient(circle at 82% -5%,rgba(125,226,201,.22),transpar
 </section>
 
 <section id="menu" class="section">
-<div class="card">
-<h2>🧠 Nuevo: sugerencias inteligentes</h2>
-<p class="muted">Usa tu despensa, las kcal/proteína que te quedan y penaliza repeticiones recientes.</p>
-<div class="row"><div class="field"><button id="smartLunchBtn">🍽️ Sugerir comida</button></div><div class="field"><button id="smartDinnerBtn">🌙 Sugerir cena</button></div></div>
-<div id="smartMenuOut" style="margin-top:12px"></div>
-</div>
-<div class="card"><h2>Ideas de menú diario</h2><p class="muted" id="menuIntro">Genera un día completo adaptado al perfil seleccionado.</p>
-<div class="row"><div class="field"><button id="genMenu">🎲 Generar otro menú</button></div><div class="field"><button id="addMenu">＋ Añadir menú completo al día</button></div></div>
+<div class="card"><div class="section-kicker">PLAN DEL DÍA</div><h2>Tu menú de hoy</h2>
+<div class="row"><div class="field"><button id="genMenu">✨ Crear plan</button></div><div class="field"><button id="addMenu">＋ Añadir al día</button></div></div>
 <div id="dailyMenu" style="margin-top:12px"></div></div></section>
 
-<section id="ideas" class="section"><div class="card"><h2>¿Qué puedo comer?</h2><p class="muted" id="ideasIntro">Propuestas que caben aproximadamente en las calorías que te quedan hoy.</p><div id="javiStatus"></div><div class="suggestions" id="suggestions"></div></div>
-<div class="card"><h2>Completar con un alimento</h2><div class="row"><div class="field food-picker"><label>Alimento</label><input id="fillFood" autocomplete="off" placeholder="Pulsa o escribe…"><div id="fillFoodResults" class="food-results"></div></div><div class="field"><label>Máximo que cabe hoy</label><input id="maxGrams" readonly></div></div><p class="small muted">Cálculo matemático según las kcal/100 g del alimento; no es una recomendación de ración.</p></div></section>
+<section id="ideas" class="section"><div class="card"><h2>¿Qué puedo comer?</h2><div id="javiStatus"></div><div class="suggestions" id="suggestions"></div></div>
+<div class="card"><h2>Completar con un alimento</h2><div class="row"><div class="field food-picker"><label>Alimento</label><input id="fillFood" autocomplete="off" placeholder="Pulsa o escribe…"><div id="fillFoodResults" class="food-results"></div></div><div class="field"><label>Máximo que cabe hoy</label><input id="maxGrams" readonly></div></div></div></section>
 
 <section id="week" class="section"><div class="card"><h2>Últimos 7 días</h2><div class="week" id="weekGrid"></div><p id="weekAvg"></p></div></section>
 <section id="progress" class="section"><div class="card"><h2>Peso · últimos registros</h2><div class="chart" id="weightChart"></div></div><div class="card"><h2>Cintura · últimos registros</h2><div class="chart" id="waistChart"></div></div></section>
-<section id="foods" class="section"><div class="card"><h2>🔎 Buscador único de alimentos</h2>
-<p class="muted">Escribe las primeras letras. La biblioteca está ordenada alfabéticamente; para productos comerciales puedes ampliar la búsqueda online en español.</p>
+<section id="foods" class="section"><div class="card"><h2>🔎 Alimentos</h2>
 <div class="row"><div class="field" style="flex:2"><label>¿Qué alimento buscas?</label><input id="libSearch" placeholder="Ej. merluza, solomillo de cerdo, salmón, Skyr..."></div>
 <div class="field"><label>&nbsp;</label><button id="onlineSearch">🌐 Buscar productos online</button></div>
 <div class="field"><label>&nbsp;</label><button id="clearSearch">Limpiar</button></div></div>
@@ -118,19 +115,28 @@ body{background:radial-gradient(circle at 82% -5%,rgba(125,226,201,.22),transpar
 </div>
 
 <section id="aiCook" class="section">
-  <div class="card">
-    <div class="section-kicker">FUNCIÓN ESTRELLA</div>
-    <h2>👨‍🍳 Cocinero IA</h2>
-    <p class="muted">Tres ideas distintas según tu día: una con lo que tienes, otra comprando solo 1–2 cosas y una tercera para inspirarte. Entrar aquí no consume OpenAI; solo se genera al pulsar el botón.</p>
-    <button id="aiCookBtn">✨ Dame ideas para cocinar</button>
-    <div id="aiCookOut" style="margin-top:12px"><p class="muted">Pulsa el botón cuando quieras generar tres propuestas nuevas.</p></div>
+  <div class="card ai-chef-home">
+    <div class="section-kicker">COCINERO IA</div>
+    <h2>👨‍🍳 ¿Qué te apetece?</h2>
+    <p class="muted">Te propongo platos que encajen con tu día.</p>
+    <div class="ai-request-row"><input id="aiCookRequest" autocomplete="off" placeholder="Ej. cena rápida con pescado, me apetece pasta…"><button id="aiCookBtn">✨ Dame ideas</button></div>
+    <div class="ai-chips">
+      <button type="button" data-ai-prompt="rápido, máximo 20 minutos">⚡ Rápido</button>
+      <button type="button" data-ai-prompt="ligero y fresco">🥗 Ligero</button>
+      <button type="button" data-ai-prompt="alto en proteína">💪 Proteína</button>
+      <button type="button" data-ai-prompt="con pescado">🐟 Pescado</button>
+      <button type="button" data-ai-prompt="me apetece pasta">🍝 Pasta</button>
+      <button type="button" data-ai-prompt="solo con lo que tengo en casa">🏠 En casa</button>
+      <button type="button" data-ai-prompt="sorpréndeme con algo distinto">🎲 Sorpréndeme</button>
+    </div>
+    <div id="aiCookOut" style="margin-top:14px"></div>
   </div>
 </section>
 
 <section id="pantry" class="tab" style="display:none">
   <div class="card">
     <h2>🏠 Tengo en casa</h2>
-    <p class="muted">Los alimentos se marcan directamente con una casilla en la biblioteca. Aquí puedes ver y filtrar la misma despensa familiar.</p>
+    
     <div class="row">
       <div class="field" style="flex:2"><label>Buscar alimento</label><input id="pantrySearch" placeholder="Ej. merluza, aguacate, pollo…"></div>
       <div class="field"><label>&nbsp;</label><button id="clearPantrySearch">Ver todos</button></div>
@@ -139,7 +145,7 @@ body{background:radial-gradient(circle at 82% -5%,rgba(125,226,201,.22),transpar
   </div>
   <div class="card">
     <h2>👨‍🍳 Cocinero IA</h2>
-    <p class="muted">Tres ideas distintas: con lo que tienes, comprando 1–2 cosas y una propuesta libre para inspirarte. Tiene en cuenta lo que te queda hoy y lo que has comido recientemente.</p>
+    <p class="muted">Ideas adaptadas a lo que tienes hoy.</p>
     <button id="pantryMenuBtn">✨ Dame ideas para cocinar</button>
     <div id="pantryMenuOut" style="margin-top:12px"></div>
   </div>
@@ -148,7 +154,7 @@ body{background:radial-gradient(circle at 82% -5%,rgba(125,226,201,.22),transpar
 <section id="familyRecipesTab" class="tab" style="display:none">
   <div class="card">
     <h2>🍳 Recetas familiares</h2>
-    <p class="muted">Construye la receta eligiendo alimentos de tu biblioteca. Las calorías y macros se calculan automáticamente.</p>
+    
     <div class="row">
       <div class="field" style="flex:2"><label>Nombre</label><input id="recipeName" placeholder="Ej. Merluza con quinoa"></div>
       <div class="field"><label>Raciones</label><input id="recipeServings" type="number" min="1" step="1" value="2"></div>
@@ -485,11 +491,12 @@ function saveAiRecipe(i){let r=aiLastRecipes[i];if(!r)return;let ing=[];(r.ingre
 function rejectAiRecipe(i){let r=aiLastRecipes[i];if(!r)return;aiTrack("rejected",r.nombre);document.querySelectorAll(`#aiRecipe${i}`).forEach(el=>{el.innerHTML='<div class="ai-mode">DESCARTADA</div><p class="muted">No te apetece esta propuesta. Queda anotado para mejorar la variedad.</p>'})}
 async function generatePantryMenu(){
  if(!cloud.ready||!cloud.user){aiSetOutput('<p class="over">Inicia sesión para usar el Cocinero IA.</p>');return}
- let t=totals(),goal=+$(`goal`).value||profiles[profile],meal=new Date().getHours()>=17?"cena":"comida";
+ let t=totals(),goal=+$(`goal`).value||profiles[profile],meal=new Date().getHours()>=17?"cena":"comida",request=($("aiCookRequest")?.value||"").trim();
  aiSetOutput('<div class="ai-loading">👨‍🍳 Pensando tres platos distintos…</div>');
- try{const {data:{session}}=await sb.auth.getSession();if(!session?.access_token)throw new Error("La sesión ha caducado. Vuelve a iniciar sesión.");let d=get();let res=await fetch(AI_COOK_URL,{method:"POST",headers:{"Authorization":"Bearer "+session.access_token,"Content-Type":"application/json"},body:JSON.stringify({perfil:profile,comida:meal,kcalRestantes:Math.max(0,Math.round(goal-t.kcal)),proteinaRestante:Math.max(0,Math.round((proteinGoals[profile]||0)-t.p)),despensa:pantryNames(),comidoHoy:[...new Set((d.items||[]).map(x=>x.name))],comidoReciente:aiRecentMeals()})});let data=await res.json();if(!res.ok)throw new Error(data?.message||data?.error||`Error ${res.status}`);renderAiRecipes(data.recetas||[])}catch(e){console.error(e);aiSetOutput(`<p class="over"><b>No he podido consultar al Cocinero IA.</b><br><span class="small">${e.message||e}</span></p><button class="ghost" onclick="generatePantryMenu()">Reintentar</button>`)}
+ try{const {data:{session}}=await sb.auth.getSession();if(!session?.access_token)throw new Error("La sesión ha caducado. Vuelve a iniciar sesión.");let d=get();let res=await fetch(AI_COOK_URL,{method:"POST",headers:{"Authorization":"Bearer "+session.access_token,"Content-Type":"application/json"},body:JSON.stringify({perfil:profile,comida:meal+(request?`. Petición del usuario: ${request}`:""),kcalRestantes:Math.max(0,Math.round(goal-t.kcal)),proteinaRestante:Math.max(0,Math.round((proteinGoals[profile]||0)-t.p)),despensa:pantryNames(),comidoHoy:[...new Set((d.items||[]).map(x=>x.name))],comidoReciente:aiRecentMeals()})});let data=await res.json();if(!res.ok)throw new Error(data?.message||data?.error||`Error ${res.status}`);renderAiRecipes(data.recetas||[])}catch(e){console.error(e);aiSetOutput(`<p class="over"><b>No he podido consultar al Cocinero IA.</b><br><span class="small">${e.message||e}</span></p><button class="ghost" onclick="generatePantryMenu()">Reintentar</button>`)}
 }
 if($("pantrySearch")){$("pantrySearch").oninput=e=>renderPantry(e.target.value);$("clearPantrySearch").onclick=()=>{$("pantrySearch").value="";renderPantry()};$("pantryMenuBtn").onclick=generatePantryMenu};if($("aiCookBtn"))$("aiCookBtn").onclick=generatePantryMenu;
+if($("aiCookRequest"))$("aiCookRequest").onkeydown=e=>{if(e.key==="Enter")generatePantryMenu()};document.querySelectorAll("[data-ai-prompt]").forEach(b=>b.onclick=()=>{if($("aiCookRequest"))$("aiCookRequest").value=b.dataset.aiPrompt||""});
 if($("smartLunchBtn"))$("smartLunchBtn").onclick=()=>{renderSmartMenu("Comida",true,"smartMenuOut")};
 if($("smartDinnerBtn"))$("smartDinnerBtn").onclick=()=>{renderSmartMenu("Cena",true,"smartMenuOut")}
 if($("saveRecipe"))$("saveRecipe").onclick=saveRecipeFromForm;

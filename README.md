@@ -1,28 +1,21 @@
-# Mi Dieta V5.6.1 Beta — Cocinero IA
+# Mi Dieta · V5.6.2 Beta
 
-Fecha: 3 octubre 2026
+## Cambios
+- Cocinero IA pasa a una experiencia principal con petición libre: "¿Qué te apetece?".
+- Accesos rápidos: Rápido, Ligero, Proteína, Pescado, Pasta, En casa y Sorpréndeme.
+- La petición escrita o elegida se incorpora al contexto que recibe el Cocinero.
+- Se mantiene el contexto automático: perfil, momento del día, kcal/proteína restantes, despensa, lo comido hoy y comidas recientes.
+- Plan se simplifica: queda centrado en crear un menú del día sin duplicar las sugerencias del Cocinero IA.
+- Limpieza de textos explicativos en Más, Alimentos, En casa, Recetas y otras pantallas.
+- Cocinero IA sube de posición visual y reduce el espacio vacío en escritorio y móvil.
+- Se mantiene la validación nutricional con la biblioteca interna: no se muestran kcal/proteína parciales como si fueran totales.
+- Entrar en Cocinero IA, escribir o pulsar un acceso rápido NO llama a OpenAI. La llamada solo ocurre al pulsar "Dame ideas" / "Dame otras ideas".
 
-## Cambios de esta build
-- Cocinero IA pasa a tener acceso propio en `Más > Cocinero IA`.
-- Se mantiene también el acceso desde `Más > En casa`.
-- Ambos accesos comparten las mismas propuestas: entrar o cambiar de pantalla NO genera una nueva llamada a OpenAI.
-- OpenAI solo se consulta al pulsar `Dame ideas para cocinar`, `Dame otras ideas` o `Reintentar`.
-- `No me apetece` ya NO genera automáticamente otra llamada: registra el rechazo y descarta visualmente esa propuesta.
-- Nutrición: solo se muestran kcal/proteína de Mi Dieta cuando reconoce el 100% de los ingredientes. Si faltan ingredientes, muestra `Nutrición pendiente` en vez de una cifra parcial engañosa.
-- Se mantiene la integración autenticada con `cocinero-ai` mediante la sesión Supabase del usuario.
-- No se modifica ni elimina el almacenamiento local existente.
-- No sustituye V5.5.6: esta beta se publica como `v56.html` para probar en paralelo.
+## Seguridad y datos
+- No se modifica ni borra el almacenamiento histórico.
+- Sin `localStorage.clear()` ni `removeItem()`.
+- V5.5.6 (`index.html`) y `v55.html` no deben sustituirse durante la beta.
+- `cocinero-ai` continúa requiriendo sesión autenticada de Supabase.
 
-## Pruebas técnicas realizadas antes de empaquetar
-- JavaScript: `node --check` correcto.
-- IDs HTML duplicados: 0.
-- `localStorage.clear`: 0.
-- `localStorage.removeItem`: 0.
-- Verificado acceso `data-go="aiCook"` y sección `id="aiCook"`.
-
-## Despliegue
-Subir `v56.html` a la raíz del repositorio `mi-dieta-`, reemplazando únicamente la beta anterior `v56.html`.
-No tocar `index.html` ni `v55.html`.
-
-URL de prueba:
-https://nadrada1.github.io/mi-dieta-/v56.html
+## Despliegue beta
+Subir `v56.html` al raíz del repositorio y probar en `/mi-dieta-/v56.html`.
