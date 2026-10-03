@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0f766e"><title>Mi Dieta · V5.5.6 WOW Cloud Authority</title>
+<meta name="theme-color" content="#0f766e"><title>Mi Dieta · V5.6.2a Cocinero IA</title>
 <link rel="manifest" href="manifest.json">
 <style>
 :root{--bg:#f4f6f2;--card:#fff;--ink:#18211b;--muted:#69736c;--green:#286749;--green2:#dcece2;--line:#e1e6e1;--red:#b42318;--amber:#a05a00}
@@ -15,11 +15,12 @@ button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--
 .ring:after{content:"";position:absolute;width:145px;height:145px;background:#fff;border-radius:50%}.ringtext{z-index:1;text-align:center}.ringtext b{font-size:31px}.ringtext span{display:block;color:var(--muted);font-size:12px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stat{background:#f1f5f1;padding:13px;border-radius:14px}.stat b{display:block;font-size:21px}.stat span{font-size:11px;color:var(--muted)}
 .section{display:none}.section.show{display:block}.meal{border-top:1px solid var(--line);padding:12px 0}.meal:first-child{border:0}.mealhead{display:flex;justify-content:space-between;font-weight:800}
-.item{display:grid;grid-template-columns:1fr 75px 85px 38px;gap:7px;align-items:center;padding:6px 0;font-size:14px}.x{background:#fff0ee;color:var(--red);padding:7px}
+.item{display:grid;grid-template-columns:1fr 75px 145px 38px;gap:7px;align-items:center;padding:6px 0;font-size:14px}.x{background:#fff0ee;color:var(--red);padding:7px}
 .suggestions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.suggest{border:1px solid var(--line);border-radius:15px;padding:14px}.suggest h3{margin:0 0 5px}.suggest button{margin-top:8px}
 .week{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.day{background:#f1f5f1;border-radius:13px;padding:10px 5px;text-align:center;font-size:12px}.day b{display:block;font-size:15px}.ok{color:var(--green)}.over{color:var(--red)}
 .chart{height:220px;display:flex;align-items:end;gap:8px;border-bottom:1px solid var(--line);padding-top:20px}.col{flex:1;text-align:center}.bar{background:var(--green);border-radius:6px 6px 0 0;min-height:2px}.col span{font-size:10px;color:var(--muted)}
 .recipegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.recipe{background:#f5f7f4;border-radius:14px;padding:12px}.recipe b{display:block}.recipe button{margin-top:8px;width:100%}
+.ai-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.ai-card{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fbfcfa}.ai-mode{font-size:11px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.05em}.ai-card h3{margin:6px 0}.ai-desc{font-size:13px;color:var(--muted);margin-bottom:8px}.ai-ingredients,.ai-steps{font-size:13px;line-height:1.45}.ai-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.ai-actions button{font-size:12px;padding:8px}.ai-loading{padding:18px;text-align:center;color:var(--muted)}.ai-buy{font-size:12px;margin:8px 0;padding:8px;border-radius:10px;background:#fff6e8}.ai-nutrition{font-size:12px;font-weight:700;margin:8px 0}@media(max-width:720px){.ai-grid{grid-template-columns:1fr}.item{grid-template-columns:1fr 62px 125px 34px;font-size:12px}}
 @media(max-width:720px){.hero{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.suggestions,.recipegrid{grid-template-columns:1fr}.week{grid-template-columns:repeat(4,1fr)}}
 
 .food-picker{position:relative}
@@ -60,6 +61,7 @@ body{background:linear-gradient(180deg,#f2f8f6 0,#f7f8fa 260px);padding-bottom:8
 .app{max-width:1120px;padding:24px}.head{background:rgba(255,255,255,.82);backdrop-filter:blur(12px);border:1px solid #e8efec;border-radius:22px;padding:16px 18px;box-shadow:0 10px 35px #183f2d0d;position:sticky;top:10px;z-index:20}
 h1{font-size:29px;letter-spacing:-.7px}.card{border:1px solid #e8ecea;border-radius:22px;box-shadow:0 10px 30px #16251f0a;padding:18px}.nav{position:sticky;top:92px;z-index:18;background:rgba(247,248,250,.9);backdrop-filter:blur(10px);padding:10px 0}.nav button{background:#fff;border:1px solid #e4e9e6;box-shadow:0 3px 12px #00000008}.nav button.active{box-shadow:0 7px 18px #0f766e28}.ring{box-shadow:inset 0 0 0 1px #edf1ef}.stat{background:#f6f9f7;border:1px solid #edf1ef}.recipe,.suggest,.smart-dish,.recipe-card,.pantry-item{box-shadow:0 4px 16px #00000008}
 .cloudbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.cloudstatus{font-size:12px;font-weight:800;padding:7px 10px;border-radius:999px;background:#eef2f0;color:#5c6862}.cloudstatus.ok{background:#e3f5ee;color:#176844}.cloudstatus.busy{background:#fff4dc;color:#8a5a00}.cloudstatus.err{background:#ffebe8;color:#a62b1f}.ghost{background:#eef3f1;color:#23443a}.danger{background:#fff0ee;color:#a62b1f}.auth-overlay{position:fixed;inset:0;z-index:999;background:radial-gradient(circle at 20% 0,#d8f2eb,transparent 40%),#f6f8f7;display:grid;place-items:center;padding:20px}.auth-overlay.hidden{display:none}.auth-card{width:min(440px,100%);background:#fff;border:1px solid #e4ebe7;border-radius:28px;padding:28px;box-shadow:0 24px 70px #183f2d24}.auth-logo{width:52px;height:52px;border-radius:16px;background:#0f766e;color:#fff;display:grid;place-items:center;font-size:26px;margin-bottom:16px}.auth-card h2{font-size:28px;margin:0 0 6px}.auth-card input{margin:7px 0 12px}.auth-card button{width:100%;padding:12px}.cloud-panel{border:1px solid #cfe6df;background:linear-gradient(135deg,#f4fbf8,#fff);}.cloud-panel .row{align-items:center}.cloud-user{font-weight:800}.cloud-actions{display:flex;gap:8px;flex-wrap:wrap}.cloud-actions button{width:auto}.sync-note{font-size:12px;color:#64716b;margin-top:8px}
+.ai-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.ai-card{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fbfcfa}.ai-mode{font-size:11px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.05em}.ai-card h3{margin:6px 0}.ai-desc{font-size:13px;color:var(--muted);margin-bottom:8px}.ai-ingredients,.ai-steps{font-size:13px;line-height:1.45}.ai-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.ai-actions button{font-size:12px;padding:8px}.ai-loading{padding:18px;text-align:center;color:var(--muted)}.ai-buy{font-size:12px;margin:8px 0;padding:8px;border-radius:10px;background:#fff6e8}.ai-nutrition{font-size:12px;font-weight:700;margin:8px 0}@media(max-width:720px){.ai-grid{grid-template-columns:1fr}.item{grid-template-columns:1fr 62px 125px 34px;font-size:12px}}
 @media(max-width:720px){.app{padding:12px}.head{top:6px;border-radius:18px}.nav{position:fixed;left:0;right:0;bottom:0;top:auto;background:rgba(255,255,255,.96);padding:8px 8px max(8px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:5px;border-top:1px solid #e3e8e5;z-index:50}.nav button{font-size:10px;padding:9px 3px;border:0;box-shadow:none;background:transparent}.nav button:nth-child(n+6){display:none}.head .tabs{display:none}.hero{gap:10px}.card{border-radius:18px;padding:14px}.cloudbar{width:100%;justify-content:space-between}}
 
 /* ===== V5.5.2 WOW visual system ===== */
@@ -72,11 +74,16 @@ body{background:radial-gradient(circle at 82% -5%,rgba(125,226,201,.22),transpar
 .more-drawer{position:fixed;z-index:120;left:50%;bottom:100px;transform:translate(-50%,24px);width:min(560px,calc(100% - 28px));background:#fff;border:1px solid #e4ebe8;border-radius:26px;padding:18px;box-shadow:0 30px 90px rgba(10,31,25,.28);opacity:0;pointer-events:none;transition:.2s}.more-drawer.open{opacity:1;pointer-events:auto;transform:translate(-50%,0)}.drawer-shade{position:fixed;inset:0;background:rgba(9,25,21,.26);backdrop-filter:blur(2px);z-index:110;opacity:0;pointer-events:none;transition:.2s}.drawer-shade.open{opacity:1;pointer-events:auto}.drawer-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.drawer-head b{display:block;font-size:20px}.drawer-head span{display:block;color:#74817c;font-size:12px;margin-top:3px}.drawer-head button{font-size:24px;padding:5px 11px}.drawer-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.drawer-grid button{background:#f3f8f6;color:#17342c;min-height:88px;border-radius:18px;font-size:23px}.drawer-grid button span{display:block;font-size:10px;margin-top:6px}
 .auth-overlay{background:radial-gradient(circle at 75% 10%,rgba(125,226,201,.35),transparent 30%),radial-gradient(circle at 10% 90%,rgba(19,163,143,.18),transparent 35%),#f2f7f5}.auth-card{position:relative;overflow:hidden;border-radius:34px;padding:34px;box-shadow:0 35px 100px rgba(16,35,30,.18)}.auth-card:before{content:"";position:absolute;right:-70px;top:-80px;width:190px;height:190px;border-radius:50%;background:linear-gradient(145deg,#7de2c9,#0f8d7b);opacity:.16}.auth-logo{width:60px;height:60px;border-radius:19px;background:linear-gradient(145deg,#0c6e64,#1db49d);box-shadow:0 14px 30px rgba(15,118,110,.25)}.auth-card h2{font-size:36px;letter-spacing:-1.5px}.auth-card button{background:linear-gradient(135deg,#0f766e,#13a38f);padding:14px;border-radius:14px}
 @media(min-width:1000px){.app{padding-bottom:130px}.section.show{animation:fadeUp .28s ease}.today-welcome{padding-top:24px}}@keyframes fadeUp{from{opacity:.25;transform:translateY(5px)}to{opacity:1;transform:none}}
+.ai-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.ai-card{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fbfcfa}.ai-mode{font-size:11px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.05em}.ai-card h3{margin:6px 0}.ai-desc{font-size:13px;color:var(--muted);margin-bottom:8px}.ai-ingredients,.ai-steps{font-size:13px;line-height:1.45}.ai-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.ai-actions button{font-size:12px;padding:8px}.ai-loading{padding:18px;text-align:center;color:var(--muted)}.ai-buy{font-size:12px;margin:8px 0;padding:8px;border-radius:10px;background:#fff6e8}.ai-nutrition{font-size:12px;font-weight:700;margin:8px 0}@media(max-width:720px){.ai-grid{grid-template-columns:1fr}.item{grid-template-columns:1fr 62px 125px 34px;font-size:12px}}
 @media(max-width:720px){body{padding-bottom:92px}.app{padding:12px 12px 105px}.head{padding:6px 2px 10px}.brandmark{width:40px;height:40px;border-radius:13px}.brand h1{font-size:22px}.brand .muted{font-size:11px}.cloudstatus{font-size:0;padding:8px}.cloudstatus:before{content:"☁";font-size:14px}.cloud-user{font-size:12px}.iconbtn{padding:8px;font-size:11px}.nav{bottom:max(10px,env(safe-area-inset-bottom));padding:7px;width:calc(100% - 20px);border-radius:22px}.nav button{font-size:10px;min-height:51px}.today-welcome{padding:25px 4px 6px;align-items:flex-start}.today-welcome h2{font-size:39px;letter-spacing:-1.7px}.today-welcome p{font-size:13px;max-width:260px}.date-chip{display:none}.card{border-radius:22px;padding:16px}.hero{grid-template-columns:1fr;min-height:auto}.ring{width:180px;height:180px}.ring:after{width:139px;height:139px}.stats{grid-template-columns:1fr 1fr}.drawer-grid{grid-template-columns:repeat(3,1fr)}.more-drawer{bottom:86px}.cloud-panel .row{display:block}.cloud-actions{margin-top:14px}.cloud-actions button{width:100%}.row .field{min-width:145px}}
+
+/* V5.6.2: Cocinero IA protagonista y menos ruido */
+#aiCook{max-width:1240px;margin:-110px auto 0;padding:0 24px 110px}.ai-chef-home{max-width:980px;margin-left:auto;margin-right:auto}.ai-request-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:16px}.ai-request-row input{font-size:16px;padding:13px 14px}.ai-request-row button{padding:13px 18px}.ai-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.ai-chips button{background:#eef6f3;color:#17342c;border:1px solid #dfeae6;border-radius:999px;padding:9px 12px;font-size:12px}.ai-chips button:hover{background:#e2f2ec}.ai-chef-home>p{margin-top:6px}.ai-chef-home h2{font-size:32px;margin-bottom:0}
+@media(max-width:720px){#aiCook{margin:-105px auto 0;padding:0 12px 105px}.ai-chef-home{margin-top:8px}.ai-chef-home h2{font-size:30px}.ai-request-row{grid-template-columns:1fr}.ai-request-row button{width:100%}.ai-chips{gap:7px}.ai-chips button{font-size:11px;padding:8px 10px}}
 </style></head><body><div id="authOverlay" class="auth-overlay"><div class="auth-card"><div class="auth-logo">☁</div><h2>Mi Dieta</h2><p class="muted">Familia Adrada · acceso seguro</p><label>Email</label><input id="authEmail" type="email" autocomplete="username" placeholder="tu@email.com"><label>Contraseña</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="••••••••"><button id="loginBtn">Entrar</button><div id="authMsg" class="small muted" style="margin-top:12px"></div></div></div><div class="app">
 <header class="head"><div class="brand"><div class="brandmark">M</div><div><h1>Mi Dieta</h1><div class="muted">Familia Adrada · Cloud</div></div></div><div class="cloudbar"><span id="cloudStatus" class="cloudstatus">☁ Conectando…</span><span id="cloudUser" class="cloud-user"></span><button id="logoutBtn" class="ghost iconbtn" style="display:none">Salir</button></div><div class="tabs legacy-profiles" aria-hidden="true"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></header>
 <nav class="nav" aria-label="Navegación principal"><button data-tab="today" class="active"><span class="navico">◉</span><span>Hoy</span></button><button data-tab="menu"><span class="navico">✦</span><span>Plan</span></button><button id="quickAddNav" type="button" class="nav-add"><span class="plus">＋</span><span>Añadir</span></button><button data-tab="familyRecipesTab"><span class="navico">♨</span><span>Recetas</span></button><button id="moreNav" type="button"><span class="navico">•••</span><span>Más</span></button></nav>
-<div id="moreDrawer" class="more-drawer" aria-hidden="true"><div class="drawer-head"><div><b>Más herramientas</b><span>Todo lo demás, sin llenar tu pantalla</span></div><button id="closeMore" class="ghost">×</button></div><div class="drawer-grid"><button data-go="ideas">💡<span>Qué puedo comer</span></button><button data-go="pantry">🏠<span>En casa</span></button><button data-go="week">📅<span>Semana</span></button><button data-go="progress">📈<span>Progreso</span></button><button data-go="foods">🥗<span>Alimentos</span></button></div></div><div id="drawerShade" class="drawer-shade"></div>
+<div id="moreDrawer" class="more-drawer" aria-hidden="true"><div class="drawer-head"><div><b>Más</b></div><button id="closeMore" class="ghost">×</button></div><div class="drawer-grid"><button data-go="aiCook">👨‍🍳<span>Cocinero IA</span></button><button data-go="ideas">💡<span>Qué puedo comer</span></button><button data-go="pantry">🏠<span>En casa</span></button><button data-go="week">📅<span>Semana</span></button><button data-go="progress">📈<span>Progreso</span></button><button data-go="foods">🥗<span>Alimentos</span></button></div></div><div id="drawerShade" class="drawer-shade"></div>
 
 <section id="today" class="section show"><div class="today-welcome"><div><span class="eyebrow">TU DÍA</span><h2>Come bien. Sin complicarte.</h2><p>Calorías, proteína y tus comidas de hoy en un solo vistazo.</p></div><div class="date-chip">● EN DIRECTO</div></div><div id="cloudPanel" class="card cloud-panel" style="display:none"><div class="row"><div class="field" style="flex:2"><b>☁️ Nube familiar</b><div id="migrationSummary" class="muted small">Tus datos locales siguen intactos.</div></div><div class="cloud-actions"><button id="scanLocalBtn" class="ghost">Analizar datos locales</button><button id="backupLocalBtn" class="ghost">Descargar copia local</button><button id="migrateBtn" disabled>Copiar mis datos locales a la nube</button><button id="pullBtn" class="ghost">Actualizar desde la nube</button></div></div><div class="sync-note">La migración copia y fusiona. Nunca borra el localStorage.</div></div>
 <div class="card row"><div class="field"><label>Fecha</label><input id="date" type="date"></div><div class="field"><label>Objetivo kcal</label><input id="goal" type="number"></div><div class="field"><label>Peso kg</label><input id="weight" type="number" step=".1"></div><div class="field"><label>Cintura cm</label><input id="waist" type="number" step=".1"></div></div>
@@ -88,23 +95,16 @@ body{background:radial-gradient(circle at 82% -5%,rgba(125,226,201,.22),transpar
 </section>
 
 <section id="menu" class="section">
-<div class="card">
-<h2>🧠 Nuevo: sugerencias inteligentes</h2>
-<p class="muted">Usa tu despensa, las kcal/proteína que te quedan y penaliza repeticiones recientes.</p>
-<div class="row"><div class="field"><button id="smartLunchBtn">🍽️ Sugerir comida</button></div><div class="field"><button id="smartDinnerBtn">🌙 Sugerir cena</button></div></div>
-<div id="smartMenuOut" style="margin-top:12px"></div>
-</div>
-<div class="card"><h2>Ideas de menú diario</h2><p class="muted" id="menuIntro">Genera un día completo adaptado al perfil seleccionado.</p>
-<div class="row"><div class="field"><button id="genMenu">🎲 Generar otro menú</button></div><div class="field"><button id="addMenu">＋ Añadir menú completo al día</button></div></div>
+<div class="card"><div class="section-kicker">PLAN DEL DÍA</div><h2>Tu menú de hoy</h2>
+<div class="row"><div class="field"><button id="genMenu">✨ Crear plan</button></div><div class="field"><button id="addMenu">＋ Añadir al día</button></div></div>
 <div id="dailyMenu" style="margin-top:12px"></div></div></section>
 
-<section id="ideas" class="section"><div class="card"><h2>¿Qué puedo comer?</h2><p class="muted" id="ideasIntro">Propuestas que caben aproximadamente en las calorías que te quedan hoy.</p><div id="javiStatus"></div><div class="suggestions" id="suggestions"></div></div>
-<div class="card"><h2>Completar con un alimento</h2><div class="row"><div class="field food-picker"><label>Alimento</label><input id="fillFood" autocomplete="off" placeholder="Pulsa o escribe…"><div id="fillFoodResults" class="food-results"></div></div><div class="field"><label>Máximo que cabe hoy</label><input id="maxGrams" readonly></div></div><p class="small muted">Cálculo matemático según las kcal/100 g del alimento; no es una recomendación de ración.</p></div></section>
+<section id="ideas" class="section"><div class="card"><h2>¿Qué puedo comer?</h2><div id="javiStatus"></div><div class="suggestions" id="suggestions"></div></div>
+<div class="card"><h2>Completar con un alimento</h2><div class="row"><div class="field food-picker"><label>Alimento</label><input id="fillFood" autocomplete="off" placeholder="Pulsa o escribe…"><div id="fillFoodResults" class="food-results"></div></div><div class="field"><label>Máximo que cabe hoy</label><input id="maxGrams" readonly></div></div></div></section>
 
 <section id="week" class="section"><div class="card"><h2>Últimos 7 días</h2><div class="week" id="weekGrid"></div><p id="weekAvg"></p></div></section>
 <section id="progress" class="section"><div class="card"><h2>Peso · últimos registros</h2><div class="chart" id="weightChart"></div></div><div class="card"><h2>Cintura · últimos registros</h2><div class="chart" id="waistChart"></div></div></section>
-<section id="foods" class="section"><div class="card"><h2>🔎 Buscador único de alimentos</h2>
-<p class="muted">Escribe las primeras letras. La biblioteca está ordenada alfabéticamente; para productos comerciales puedes ampliar la búsqueda online en español.</p>
+<section id="foods" class="section"><div class="card"><h2>🔎 Alimentos</h2>
 <div class="row"><div class="field" style="flex:2"><label>¿Qué alimento buscas?</label><input id="libSearch" placeholder="Ej. merluza, solomillo de cerdo, salmón, Skyr..."></div>
 <div class="field"><label>&nbsp;</label><button id="onlineSearch">🌐 Buscar productos online</button></div>
 <div class="field"><label>&nbsp;</label><button id="clearSearch">Limpiar</button></div></div>
@@ -114,10 +114,29 @@ body{background:radial-gradient(circle at 82% -5%,rgba(125,226,201,.22),transpar
 <div class="card"><h2>Copia de seguridad</h2><div class="row"><div class="field"><button id="export">Exportar copia completa</button></div><div class="field"><label>Importar JSON</label><input id="import" type="file" accept=".json"></div></div></div></section>
 </div>
 
+<section id="aiCook" class="section">
+  <div class="card ai-chef-home">
+    <div class="section-kicker">COCINERO IA</div>
+    <h2>👨‍🍳 ¿Qué te apetece?</h2>
+    <p class="muted">Te propongo platos que encajen con tu día.</p>
+    <div class="ai-request-row"><input id="aiCookRequest" autocomplete="off" placeholder="Ej. cena rápida con pescado, me apetece pasta…"><button id="aiCookBtn">✨ Dame ideas</button></div>
+    <div class="ai-chips">
+      <button type="button" data-ai-prompt="rápido, máximo 20 minutos">⚡ Rápido</button>
+      <button type="button" data-ai-prompt="ligero y fresco">🥗 Ligero</button>
+      <button type="button" data-ai-prompt="alto en proteína">💪 Proteína</button>
+      <button type="button" data-ai-prompt="con pescado">🐟 Pescado</button>
+      <button type="button" data-ai-prompt="me apetece pasta">🍝 Pasta</button>
+      <button type="button" data-ai-prompt="solo con lo que tengo en casa">🏠 En casa</button>
+      <button type="button" data-ai-prompt="sorpréndeme con algo distinto">🎲 Sorpréndeme</button>
+    </div>
+    <div id="aiCookOut" style="margin-top:14px"></div>
+  </div>
+</section>
+
 <section id="pantry" class="tab" style="display:none">
   <div class="card">
     <h2>🏠 Tengo en casa</h2>
-    <p class="muted">Los alimentos se marcan directamente con una casilla en la biblioteca. Aquí puedes ver y filtrar la misma despensa familiar.</p>
+    
     <div class="row">
       <div class="field" style="flex:2"><label>Buscar alimento</label><input id="pantrySearch" placeholder="Ej. merluza, aguacate, pollo…"></div>
       <div class="field"><label>&nbsp;</label><button id="clearPantrySearch">Ver todos</button></div>
@@ -125,9 +144,9 @@ body{background:radial-gradient(circle at 82% -5%,rgba(125,226,201,.22),transpar
     <div id="pantryGrid" class="pantry-grid"></div>
   </div>
   <div class="card">
-    <h2>🍽️ Menú inteligente con lo que tengo</h2>
-    <p class="muted">Genera una propuesta priorizando únicamente alimentos marcados como disponibles. Si faltan ingredientes para construir un día razonable, te lo dirá.</p>
-    <button id="pantryMenuBtn">🧠 Sugerir comida/cena con mi despensa</button>
+    <h2>👨‍🍳 Cocinero IA</h2>
+    <p class="muted">Ideas adaptadas a lo que tienes hoy.</p>
+    <button id="pantryMenuBtn">✨ Dame ideas para cocinar</button>
     <div id="pantryMenuOut" style="margin-top:12px"></div>
   </div>
 </section>
@@ -135,7 +154,7 @@ body{background:radial-gradient(circle at 82% -5%,rgba(125,226,201,.22),transpar
 <section id="familyRecipesTab" class="tab" style="display:none">
   <div class="card">
     <h2>🍳 Recetas familiares</h2>
-    <p class="muted">Construye la receta eligiendo alimentos de tu biblioteca. Las calorías y macros se calculan automáticamente.</p>
+    
     <div class="row">
       <div class="field" style="flex:2"><label>Nombre</label><input id="recipeName" placeholder="Ej. Merluza con quinoa"></div>
       <div class="field"><label>Raciones</label><input id="recipeServings" type="number" min="1" step="1" value="2"></div>
@@ -233,7 +252,7 @@ function render(){
  $("prot").textContent=Math.round(t.p)+" / "+proteinGoals[profile]+" g";$("protLabel").textContent="proteína · "+profileModes[profile];$("carbs").textContent=Math.round(t.c)+" g";$("fat").textContent=Math.round(t.f)+" g";
  $("ring").style.background=`conic-gradient(${pct>1?"#b42318":"#286749"} ${Math.min(pct,1)*360}deg,#e4e9e4 0)`;
  const ord=["Desayuno","Media mañana","Comida","Merienda","Cena","Extra"];
- $("log").innerHTML=ord.map(m=>{let a=d.items.map((x,i)=>({...x,i})).filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal</span><button class="x" onclick="del(${x.i})">×</button></div>`).join("")}</div>`}).join("")||'<p class="muted">Aún no has registrado nada.</p>';
+ $("log").innerHTML=ord.map(m=>{let a=d.items.map((x,i)=>({...x,i})).filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal · ${Math.round(x.p||0)} g prot.</span><button class="x" onclick="del(${x.i})">×</button></div>`).join("")}</div>`}).join("")||'<p class="muted">Aún no has registrado nada.</p>';
  let qidx=[];for(let z=0;z<Math.min(6,recipes.length);z++)qidx.push((quickOffset+z)%recipes.length);
  $("recipes").innerHTML=qidx.map(i=>{let r=recipes[i],q=recipeData(r);return `<div class="recipe"><b>${r.name}</b><span class="small muted">${Math.round(q.kcal)} kcal · ${Math.round(q.p)} g proteína</span><button onclick="addRecipe(${i})">Añadir</button></div>`}).join("")+`<button class="ghost" onclick="rotateQuickRecipes()">🔄 Otras recetas</button>`;
  renderIdeas();renderWeek();renderCharts();updateFill();if($("menu").classList.contains("show"))renderMenu()
@@ -248,7 +267,7 @@ function renderIdeas(){
  familyRecipes().forEach((r,i)=>{let z=recipeCalc(r),sv=Math.max(1,+r.servings||1);cs.push({kcal:z.kcal/sv,p:z.p/sv,name:r.name,items:(r.ingredients||[]).map(x=>[x.name,x.grams/sv]),action:`addFamilyRecipePortion(${i},1)`,kind:"Familiar"})});
  cs=cs.filter(x=>x.kcal>0&&x.kcal<=left+50);cs.forEach(x=>{let rep=(x.items||[]).filter(y=>recent.has(y[0])).length;x.score=Math.abs(left*.55-x.kcal)+Math.max(0,Math.min(proteinLeft,30)-x.p)*5+rep*40});cs.sort((a,b)=>a.score-b.score);
  if(cs.length>4){let sh=(ideasOffset*4)%cs.length;cs=cs.slice(sh).concat(cs.slice(0,sh))}ideasOffset++;let pick=cs.slice(0,4);
- $("ideasIntro").textContent="Opciones variadas según las kcal y proteína que te quedan. También incluye tus recetas familiares.";$("javiStatus").innerHTML="";
+ if($("ideasIntro"))$("ideasIntro").textContent="Opciones variadas según las kcal y proteína que te quedan. También incluye tus recetas familiares.";$("javiStatus").innerHTML="";
  $("suggestions").innerHTML=pick.length?pick.map((x,pos)=>`<div class="suggest">${pos===0?'<div class="small ok"><b>Mejor ajuste ahora</b></div>':''}<h3>${x.name}</h3><div>${Math.round(x.kcal)} kcal · ${Math.round(x.p)} g proteína</div><div class="small muted">${x.kind} · ${(x.items||[]).map(y=>Math.round(y[1])+" g "+y[0]).join(" · ")}</div><button onclick="${x.action}">Añadir esta opción</button></div>`).join("")+'<button class="ghost" onclick="renderIdeas()">🔄 Otras opciones</button>':'<p>No encuentro una receta que encaje ahora.</p>'
 }
 
@@ -361,7 +380,7 @@ Javi:{
 function menuStats(arr){let items=arr.map(([meal,n,g])=>({...calcItem(food(n),g),meal}));return {items,kcal:items.reduce((s,x)=>s+x.kcal,0),p:items.reduce((s,x)=>s+x.p,0)}}
 function buildRandomMenu(){let pools=menuPools[profile],out=[];["Desayuno","Media mañana","Comida","Merienda","Cena"].forEach(meal=>{let opts=pools[meal],choice=opts[Math.floor(Math.random()*opts.length)];choice.forEach(([n,g])=>out.push([meal,n,g]))});return out}
 function generateMenu(){let goal=profiles[profile],best=null,bestScore=1e9;for(let i=0;i<200;i++){let st=menuStats(buildRandomMenu()),kcalErr=Math.abs(st.kcal-goal)/goal,pGoal=proteinGoals[profile],proteinPenalty=st.p<pGoal?((pGoal-st.p)/pGoal)*.7:0,score=kcalErr+proteinPenalty;if(score<bestScore){bestScore=score;best=st.items}}currentMenu=best||[];renderMenu()}
-function renderMenu(){if(!currentMenu.length)generateMenu();let kcal=currentMenu.reduce((s,x)=>s+x.kcal,0),p=currentMenu.reduce((s,x)=>s+x.p,0),goal=profiles[profile];$("menuIntro").textContent=profile==="Javi"?"Cada tirada crea una combinación distinta y busca aproximarse a kcal y proteína para ganancia muscular.":"Cada tirada combina opciones distintas de las cinco comidas para aproximarse al objetivo de "+profile+".";let ord=["Desayuno","Media mañana","Comida","Merienda","Cena"];$("dailyMenu").innerHTML=`<div class="stats" style="margin-bottom:12px"><div class="stat"><b>${Math.round(kcal)}</b><span>kcal del menú</span></div><div class="stat"><b>${Math.round(p)} g</b><span>proteína</span></div><div class="stat"><b>${goal}</b><span>objetivo kcal</span></div><div class="stat"><b>${proteinGoals[profile]} g</b><span>objetivo proteína</span></div></div>`+ord.map(m=>{let a=currentMenu.filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal</span><span></span></div>`).join("")}</div>`}).join("")}
+function renderMenu(){if(!currentMenu.length)generateMenu();let kcal=currentMenu.reduce((s,x)=>s+x.kcal,0),p=currentMenu.reduce((s,x)=>s+x.p,0),goal=profiles[profile];if($("menuIntro"))$("menuIntro").textContent=profile==="Javi"?"Cada tirada crea una combinación distinta y busca aproximarse a kcal y proteína para ganancia muscular.":"Cada tirada combina opciones distintas de las cinco comidas para aproximarse al objetivo de "+profile+".";let ord=["Desayuno","Media mañana","Comida","Merienda","Cena"];$("dailyMenu").innerHTML=`<div class="stats" style="margin-bottom:12px"><div class="stat"><b>${Math.round(kcal)}</b><span>kcal del menú</span></div><div class="stat"><b>${Math.round(p)} g</b><span>proteína</span></div><div class="stat"><b>${goal}</b><span>objetivo kcal</span></div><div class="stat"><b>${proteinGoals[profile]} g</b><span>objetivo proteína</span></div></div>`+ord.map(m=>{let a=currentMenu.filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal</span><span></span></div>`).join("")}</div>`}).join("")}
 function addCurrentMenu(){if(!currentMenu.length)return;let d=get();currentMenu.forEach(x=>d.items.push({...x}));save(d);alert("Menú añadido al día de "+profile)}
 function renderLibrary(q=""){
  let term=q.trim().toLocaleLowerCase("es"),p=pantry(),arr=sortedFoods().filter(x=>x.name.toLocaleLowerCase("es").includes(term));
@@ -456,11 +475,28 @@ function clearRecipeBuilder(){recipeBuilder=[];$("recipeName").value="";renderRe
 function saveRecipeFromForm(){let name=$("recipeName").value.trim(),sv=Math.max(1,+$("recipeServings").value||1);if(!name||!recipeBuilder.length)return alert("Pon un nombre y añade al menos un ingrediente.");let r=familyRecipes();r.push({name,servings:sv,ingredients:recipeBuilder.map(x=>({...x}))});saveRecipes(r,name);recipeBuilder=[];$("recipeName").value="";renderRecipeBuilder();renderRecipes()}
 function pantryMealOptions(meal){return smartSuggestions(meal,true).map(x=>x.d.i)}
 function pantryOptionStats(opt){let d={i:opt};return smartStats(d)}
-function generatePantryMenu(){
- let hour=new Date().getHours(),type=hour>=17?"Cena":"Comida";
- renderSmartMenu(type,true,"pantryMenuOut");
+const AI_COOK_URL=SUPABASE_URL+"/functions/v1/cocinero-ai";
+let aiLastRecipes=[];
+function aiRecentMeals(days=3){let out=[],now=new Date($("date").value+"T12:00:00");for(let j=1;j<=days;j++){let d=new Date(now);d.setDate(d.getDate()-j);let ds=iso(d),rec;try{rec=JSON.parse(localStorage.getItem(`diet:${profile}:${ds}`)||'{"items":[]}')}catch(e){rec={items:[]}};(rec.items||[]).forEach(x=>out.push(x.name))}return [...new Set(out)].slice(0,30)}
+function aiIngredientFood(i){let f=smartFood(i.nombre);if(f)return f;let q=normFoodName(i.nombre);return foods().find(x=>{let n=normFoodName(x.name);return n.includes(q)||q.includes(n)})||null}
+function aiIngredientGrams(i){let u=normFoodName(i.unidad);if(u==="g"||u==="gr"||u.includes("gram"))return +i.cantidad||0;if(normFoodName(i.nombre).includes("huevo")&&(u.includes("unidad")||u==="ud"))return (+i.cantidad||0)*60;return 0}
+function aiValidatedNutrition(r){let kcal=0,p=0,recognized=0;(r.ingredientes||[]).forEach(i=>{let f=aiIngredientFood(i),g=aiIngredientGrams(i);if(f&&g>0){let z=calcItem(f,g);kcal+=z.kcal;p+=z.p;recognized++}});return {kcal,p,recognized,total:(r.ingredientes||[]).length}}
+function aiTrack(kind,name){let key="miDietaAiCookHistoryV56",a=[];try{a=JSON.parse(localStorage.getItem(key)||"[]")}catch(e){};a.push({at:new Date().toISOString(),profile,kind,name});localStorage.setItem(key,JSON.stringify(a.slice(-100)))}
+function aiOutputEls(){return [$("pantryMenuOut"),$("aiCookOut")].filter(Boolean)}
+function aiSetOutput(html){aiOutputEls().forEach(el=>el.innerHTML=html)}
+function aiNutritionLabel(z){return z.total>0&&z.recognized===z.total?`Mi Dieta: ${Math.round(z.kcal)} kcal · ${Math.round(z.p)} g proteína`:`Nutrición pendiente: ${z.recognized}/${z.total} ingredientes reconocidos`}
+function renderAiRecipes(rs){aiLastRecipes=rs||[];let labels={con_lo_que_tienes:"🏠 Con lo que tienes",comprando_1_2_cosas:"🛒 Comprando 1–2 cosas",inspirame:"🌍 Inspírame"};let html=`<div class="ai-grid">${aiLastRecipes.map((r,i)=>{let z=aiValidatedNutrition(r),buy=(r.comprar||[]);aiTrack("shown",r.nombre);return `<div class="ai-card" id="aiRecipe${i}"><div class="ai-mode">${labels[r.tipo]||r.tipo}</div><h3>${r.nombre}</h3><div class="ai-desc">${r.descripcion||""}</div>${buy.length?`<div class="ai-buy"><b>Comprar:</b> ${buy.join(" · ")}</div>`:""}<div class="ai-nutrition">${aiNutritionLabel(z)}</div><div class="ai-ingredients"><b>Ingredientes</b><br>${(r.ingredientes||[]).map(x=>`${x.cantidad} ${x.unidad} ${x.nombre}`).join(" · ")}</div><div class="ai-steps"><b>Preparación</b><ol>${(r.preparacion||[]).map(x=>`<li>${x}</li>`).join("")}</ol></div><div class="ai-actions"><button onclick="addAiRecipe(${i})">＋ Añadir al diario</button><button class="ghost" onclick="saveAiRecipe(${i})">❤️ Guardar receta</button><button class="ghost" onclick="rejectAiRecipe(${i})">👎 No me apetece</button></div></div>`}).join("")}</div><button class="ghost" style="margin-top:10px" onclick="generatePantryMenu()">🔄 Dame otras ideas</button>`;aiSetOutput(html)}
+async function addAiRecipe(i){let r=aiLastRecipes[i];if(!r)return;let d=get(),meal=new Date().getHours()>=17?"Cena":"Comida",added=0,miss=[];(r.ingredientes||[]).forEach(x=>{let f=aiIngredientFood(x),g=aiIngredientGrams(x);if(f&&g>0){d.items.push({...calcItem(f,g),meal});added++}else miss.push(x.nombre)});if(!added)return alert("Todavía no puedo relacionar los ingredientes de esta receta con la biblioteca.");save(d);aiTrack("cooked",r.nombre);alert(`Añadidos ${added} ingredientes al diario.${miss.length?" No reconocidos: "+miss.join(", "):""}`)}
+function saveAiRecipe(i){let r=aiLastRecipes[i];if(!r)return;let ing=[];(r.ingredientes||[]).forEach(x=>{let f=aiIngredientFood(x),g=aiIngredientGrams(x);if(f&&g>0)ing.push({name:f.name,grams:g})});if(!ing.length)return alert("No puedo guardar esta receta porque no reconozco sus ingredientes en la biblioteca.");let rs=familyRecipes();rs.push({name:r.nombre,servings:1,ingredients:ing});saveRecipes(rs,r.nombre);renderRecipes();aiTrack("saved",r.nombre);alert("Receta guardada.")}
+function rejectAiRecipe(i){let r=aiLastRecipes[i];if(!r)return;aiTrack("rejected",r.nombre);document.querySelectorAll(`#aiRecipe${i}`).forEach(el=>{el.innerHTML='<div class="ai-mode">DESCARTADA</div><p class="muted">No te apetece esta propuesta. Queda anotado para mejorar la variedad.</p>'})}
+async function generatePantryMenu(){
+ if(!cloud.ready||!cloud.user){aiSetOutput('<p class="over">Inicia sesión para usar el Cocinero IA.</p>');return}
+ let t=totals(),goal=+$(`goal`).value||profiles[profile],meal=new Date().getHours()>=17?"cena":"comida",request=($("aiCookRequest")?.value||"").trim();
+ aiSetOutput('<div class="ai-loading">👨‍🍳 Pensando tres platos distintos…</div>');
+ try{const {data:{session}}=await sb.auth.getSession();if(!session?.access_token)throw new Error("La sesión ha caducado. Vuelve a iniciar sesión.");let d=get();let res=await fetch(AI_COOK_URL,{method:"POST",headers:{"Authorization":"Bearer "+session.access_token,"Content-Type":"application/json"},body:JSON.stringify({perfil:profile,comida:meal+(request?`. Petición del usuario: ${request}`:""),kcalRestantes:Math.max(0,Math.round(goal-t.kcal)),proteinaRestante:Math.max(0,Math.round((proteinGoals[profile]||0)-t.p)),despensa:pantryNames(),comidoHoy:[...new Set((d.items||[]).map(x=>x.name))],comidoReciente:aiRecentMeals()})});let data=await res.json();if(!res.ok)throw new Error(data?.message||data?.error||`Error ${res.status}`);renderAiRecipes(data.recetas||[])}catch(e){console.error(e);aiSetOutput(`<p class="over"><b>No he podido consultar al Cocinero IA.</b><br><span class="small">${e.message||e}</span></p><button class="ghost" onclick="generatePantryMenu()">Reintentar</button>`)}
 }
-if($("pantrySearch")){$("pantrySearch").oninput=e=>renderPantry(e.target.value);$("clearPantrySearch").onclick=()=>{$("pantrySearch").value="";renderPantry()};$("pantryMenuBtn").onclick=generatePantryMenu};
+if($("pantrySearch")){$("pantrySearch").oninput=e=>renderPantry(e.target.value);$("clearPantrySearch").onclick=()=>{$("pantrySearch").value="";renderPantry()};$("pantryMenuBtn").onclick=generatePantryMenu};if($("aiCookBtn"))$("aiCookBtn").onclick=generatePantryMenu;
+if($("aiCookRequest"))$("aiCookRequest").onkeydown=e=>{if(e.key==="Enter")generatePantryMenu()};document.querySelectorAll("[data-ai-prompt]").forEach(b=>b.onclick=()=>{if($("aiCookRequest"))$("aiCookRequest").value=b.dataset.aiPrompt||""});
 if($("smartLunchBtn"))$("smartLunchBtn").onclick=()=>{renderSmartMenu("Comida",true,"smartMenuOut")};
 if($("smartDinnerBtn"))$("smartDinnerBtn").onclick=()=>{renderSmartMenu("Cena",true,"smartMenuOut")}
 if($("saveRecipe"))$("saveRecipe").onclick=saveRecipeFromForm;
@@ -501,6 +537,7 @@ function wowGo(tab){
   const nb=document.querySelector(`.nav button[data-tab="${tab}"]`); if(nb)nb.classList.add("active");
   if(tab==="pantry")renderPantry($("pantrySearch")?.value||"");
   if(tab==="familyRecipesTab")renderRecipes();
+  if(tab==="aiCook"&&aiLastRecipes.length)renderAiRecipes(aiLastRecipes);
   render(); window.scrollTo({top:0,behavior:"smooth"});
 }
 if($("moreNav"))$("moreNav").onclick=wowOpenMore;
