@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0f766e"><title>Mi Dieta · V5.6 Cocina</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--bg:#f4f6f2;--card:#fff;--ink:#18211b;--muted:#69736c;--green:#286749;--green2:#dcece2;--line:#e1e6e1;--red:#b42318;--amber:#a05a00}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+.app{max-width:1050px;margin:auto;padding:18px}.head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+h1{margin:0;font-size:27px}.muted{color:var(--muted)}.small{font-size:12px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:14px;box-shadow:0 4px 18px #00000008}
+.tabs,.nav{display:flex;gap:7px;flex-wrap:wrap}.nav{margin-top:15px}.pill,.nav button{width:auto;border:0;border-radius:99px;padding:9px 14px;background:#e9eeea;color:var(--ink);font-weight:700}.active{background:var(--green)!important;color:#fff!important}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px;background:var(--green);color:#fff;font-weight:700}input,select{width:100%;padding:10px;border:1px solid #ccd5ce;border-radius:10px;background:#fff;font:inherit}
+.row{display:flex;gap:9px;align-items:end;flex-wrap:wrap}.field{flex:1;min-width:120px}label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}
+.hero{display:grid;grid-template-columns:220px 1fr;gap:18px;align-items:center}.ring{width:190px;height:190px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--green) 0deg,#e4e9e4 0);position:relative;margin:auto}
+.ring:after{content:"";position:absolute;width:145px;height:145px;background:#fff;border-radius:50%}.ringtext{z-index:1;text-align:center}.ringtext b{font-size:31px}.ringtext span{display:block;color:var(--muted);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stat{background:#f1f5f1;padding:13px;border-radius:14px}.stat b{display:block;font-size:21px}.stat span{font-size:11px;color:var(--muted)}
+.section{display:none}.section.show{display:block}.meal{border-top:1px solid var(--line);padding:12px 0}.meal:first-child{border:0}.mealhead{display:flex;justify-content:space-between;font-weight:800}
+.item{display:grid;grid-template-columns:1fr 70px 150px 38px;gap:7px;align-items:center;padding:8px 0;font-size:14px}.item-macros{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}.macro-chip{padding:4px 7px;border-radius:999px;background:#f0f7f4;font-size:12px;font-weight:750;color:#245b49}.macro-chip.prot{background:#eef2ff;color:#3949ab}.x{background:#fff0ee;color:var(--red);padding:7px}
+.suggestions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.suggest{border:1px solid var(--line);border-radius:15px;padding:14px}.suggest h3{margin:0 0 5px}.suggest button{margin-top:8px}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}.day{background:#f1f5f1;border-radius:13px;padding:10px 5px;text-align:center;font-size:12px}.day b{display:block;font-size:15px}.ok{color:var(--green)}.over{color:var(--red)}
+.chart{height:220px;display:flex;align-items:end;gap:8px;border-bottom:1px solid var(--line);padding-top:20px}.col{flex:1;text-align:center}.bar{background:var(--green);border-radius:6px 6px 0 0;min-height:2px}.col span{font-size:10px;color:var(--muted)}
+.recipegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.recipe{background:#f5f7f4;border-radius:14px;padding:12px}.recipe b{display:block}.recipe button{margin-top:8px;width:100%}
+@media(max-width:720px){.hero{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.suggestions,.recipegrid{grid-template-columns:1fr}.week{grid-template-columns:repeat(4,1fr)}.item{grid-template-columns:1fr auto 38px}.item>span:nth-child(2){display:none}.item-macros{justify-content:flex-start}.chef-grid{grid-template-columns:1fr!important}}
+
+.food-picker{position:relative}
+.food-results{position:absolute;z-index:30;left:0;right:0;top:100%;max-height:280px;overflow:auto;background:#fff;border:1px solid #d7ddd8;border-radius:10px;box-shadow:0 10px 25px rgba(0,0,0,.12);display:none}
+.food-results.open{display:block}
+.food-option{padding:10px 12px;border-bottom:1px solid #edf0ed;cursor:pointer}
+.food-option:hover{background:#f2f6f3}
+.food-option b{display:block}.food-option span{font-size:12px;color:#667}
+
+.home-hero{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.home-action{padding:15px;border:1px solid #dfe7e1;border-radius:14px;background:#fff;cursor:pointer;text-align:left}
+.home-action b{display:block;font-size:16px;margin-bottom:4px}.home-action span{font-size:12px;color:#667}
+.pantry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.pantry-item{border:1px solid #e0e6e1;border-radius:12px;padding:10px;background:#fff}
+.pantry-item.have{border-width:2px}.pantry-item button{margin-top:6px}
+.badge-have{display:inline-block;font-size:11px;padding:3px 7px;border-radius:99px;background:#edf5ef;margin-left:5px}
+.recipe-card{border:1px solid #dfe7e1;border-radius:14px;padding:12px;margin:8px 0;background:#fff}
+.recipe-card .ingredients{font-size:12px;color:#667;margin-top:5px}
+@media(max-width:650px){.home-hero{grid-template-columns:1fr}}
+
+.have-check{display:flex;align-items:flex-start;gap:9px}
+.have-check input{width:18px;height:18px;margin-top:2px;accent-color:#2f6d4f;cursor:pointer}
+.have-check label{cursor:pointer;flex:1}
+.pantry-note{font-size:11px;color:#667;margin-top:4px}
+
+.smart-menu-grid{display:grid;gap:10px;margin-top:10px}
+.smart-dish{border:1px solid #dfe5df;border-radius:14px;padding:12px;background:#fff}
+.smart-dish h4{margin:0 0 5px}
+.chef-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.chef-card{position:relative;overflow:hidden;border:1px solid #e4ece8;border-radius:22px;padding:16px;background:linear-gradient(145deg,#fff,#f8fcfa);box-shadow:0 10px 30px rgba(16,35,30,.055)}.chef-card.best{border-color:#b8dfd1;background:linear-gradient(145deg,#fff,#effaf6)}.chef-badge{display:inline-flex;padding:5px 9px;border-radius:999px;background:#e7f6f0;color:#17654f;font-size:11px;font-weight:850;margin-bottom:8px}.chef-card h4{font-size:17px;margin:0 0 7px;letter-spacing:-.25px}.chef-macros{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}.chef-macro{background:#eef4f1;border-radius:999px;padding:5px 8px;font-size:12px;font-weight:800}.chef-ingredients{font-size:12px;line-height:1.55;color:#596760}.chef-how{margin-top:10px;padding-top:10px;border-top:1px dashed #dce6e1;font-size:12px;line-height:1.5}.shop-zone{margin-top:18px;padding:16px;border-radius:20px;background:linear-gradient(135deg,#fff8e8,#fff);border:1px solid #f1dfb7}.shop-title{font-weight:900;font-size:16px}.shop-card{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:9px;padding:11px 12px;background:#fff;border:1px solid #eee3c9;border-radius:15px}.shop-pill{display:inline-block;background:#fff1c7;color:#765300;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:850}.context-strip{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}.context-chip{font-size:12px;background:#f0f4f2;border-radius:999px;padding:6px 9px;color:#526159}.chef-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.chef-actions button{width:auto}
+.smart-tags{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0}
+.smart-tag{font-size:11px;padding:3px 7px;border-radius:999px;background:#eef3ef}
+.family-portions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.family-portions>div{background:#f6f8f6;border-radius:9px;padding:7px;font-size:11px}
+@media(max-width:700px){.family-portions{grid-template-columns:1fr}}
+
+/* ===== V5.5 modern UI ===== */
+:root{--bg:#f7f8fa;--card:#fff;--ink:#17211d;--muted:#6d7772;--green:#0f766e;--green2:#dff4f1;--line:#e7ebe9;--red:#c0392b;--amber:#b76e00}
+body{background:linear-gradient(180deg,#f2f8f6 0,#f7f8fa 260px);padding-bottom:88px}
+.app{max-width:1120px;padding:24px}.head{background:rgba(255,255,255,.82);backdrop-filter:blur(12px);border:1px solid #e8efec;border-radius:22px;padding:16px 18px;box-shadow:0 10px 35px #183f2d0d;position:sticky;top:10px;z-index:20}
+h1{font-size:29px;letter-spacing:-.7px}.card{border:1px solid #e8ecea;border-radius:22px;box-shadow:0 10px 30px #16251f0a;padding:18px}.nav{position:sticky;top:92px;z-index:18;background:rgba(247,248,250,.9);backdrop-filter:blur(10px);padding:10px 0}.nav button{background:#fff;border:1px solid #e4e9e6;box-shadow:0 3px 12px #00000008}.nav button.active{box-shadow:0 7px 18px #0f766e28}.ring{box-shadow:inset 0 0 0 1px #edf1ef}.stat{background:#f6f9f7;border:1px solid #edf1ef}.recipe,.suggest,.smart-dish,.recipe-card,.pantry-item{box-shadow:0 4px 16px #00000008}
+.cloudbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.cloudstatus{font-size:12px;font-weight:800;padding:7px 10px;border-radius:999px;background:#eef2f0;color:#5c6862}.cloudstatus.ok{background:#e3f5ee;color:#176844}.cloudstatus.busy{background:#fff4dc;color:#8a5a00}.cloudstatus.err{background:#ffebe8;color:#a62b1f}.ghost{background:#eef3f1;color:#23443a}.danger{background:#fff0ee;color:#a62b1f}.auth-overlay{position:fixed;inset:0;z-index:999;background:radial-gradient(circle at 20% 0,#d8f2eb,transparent 40%),#f6f8f7;display:grid;place-items:center;padding:20px}.auth-overlay.hidden{display:none}.auth-card{width:min(440px,100%);background:#fff;border:1px solid #e4ebe7;border-radius:28px;padding:28px;box-shadow:0 24px 70px #183f2d24}.auth-logo{width:52px;height:52px;border-radius:16px;background:#0f766e;color:#fff;display:grid;place-items:center;font-size:26px;margin-bottom:16px}.auth-card h2{font-size:28px;margin:0 0 6px}.auth-card input{margin:7px 0 12px}.auth-card button{width:100%;padding:12px}.cloud-panel{border:1px solid #cfe6df;background:linear-gradient(135deg,#f4fbf8,#fff);}.cloud-panel .row{align-items:center}.cloud-user{font-weight:800}.cloud-actions{display:flex;gap:8px;flex-wrap:wrap}.cloud-actions button{width:auto}.sync-note{font-size:12px;color:#64716b;margin-top:8px}
+@media(max-width:720px){.app{padding:12px}.head{top:6px;border-radius:18px}.nav{position:fixed;left:0;right:0;bottom:0;top:auto;background:rgba(255,255,255,.96);padding:8px 8px max(8px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:5px;border-top:1px solid #e3e8e5;z-index:50}.nav button{font-size:10px;padding:9px 3px;border:0;box-shadow:none;background:transparent}.nav button:nth-child(n+6){display:none}.head .tabs{display:none}.hero{gap:10px}.card{border-radius:18px;padding:14px}.cloudbar{width:100%;justify-content:space-between}}
+
+/* ===== V5.5.2 WOW visual system ===== */
+:root{--accent:#13a38f;--accent2:#7de2c9;--night:#10231e;--soft:#effaf6;--shadow:0 24px 70px rgba(16,35,30,.10)}
+body{background:radial-gradient(circle at 82% -5%,rgba(125,226,201,.22),transparent 27%),radial-gradient(circle at 8% 15%,rgba(19,163,143,.10),transparent 25%),#f5f7f6;color:#13231e}
+.app{max-width:1240px;padding:24px 24px 110px}.head{position:relative;top:auto;background:transparent;border:0;box-shadow:none;padding:8px 4px 18px;border-radius:0}.brand{display:flex;align-items:center;gap:12px}.brandmark{width:46px;height:46px;border-radius:15px;background:linear-gradient(145deg,#0b6f65,#18aa94);display:grid;place-items:center;color:#fff;font-weight:900;font-size:22px;box-shadow:0 12px 28px rgba(15,118,110,.28)}.brand h1{font-size:26px}.legacy-profiles{display:none!important}.cloudbar{margin-left:auto}.cloud-user{font-size:14px}.cloudstatus{background:#fff;border:1px solid #dfe9e5;box-shadow:0 5px 18px rgba(16,35,30,.06)}
+.nav{position:fixed;left:50%;bottom:22px;top:auto;transform:translateX(-50%);z-index:90;width:min(620px,calc(100% - 28px));display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:rgba(16,35,30,.94);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(22px);padding:8px;border-radius:24px;box-shadow:0 24px 65px rgba(10,31,25,.30)}.nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:54px;background:transparent!important;border:0;color:#aebdb7!important;box-shadow:none!important;padding:6px 8px;border-radius:17px;font-size:11px}.nav button.active{background:rgba(255,255,255,.12)!important;color:#fff!important}.navico{font-size:18px;line-height:1}.nav-add{position:relative;color:#fff!important}.nav-add .plus{display:grid;place-items:center;width:43px;height:43px;margin-top:-27px;margin-bottom:1px;border-radius:15px;background:linear-gradient(145deg,#20c8ad,#0f8d7b);font-size:28px;line-height:1;box-shadow:0 10px 25px rgba(19,163,143,.45);border:3px solid #10231e}
+.today-welcome{display:flex;align-items:end;justify-content:space-between;gap:20px;padding:34px 4px 10px}.today-welcome h2{font-size:clamp(34px,5vw,58px);line-height:.98;letter-spacing:-2.2px;margin:7px 0 12px;max-width:700px}.today-welcome p{font-size:16px;color:#64736d;margin:0}.eyebrow,.section-kicker{font-size:11px;font-weight:900;letter-spacing:1.6px;color:#0e8f7e}.date-chip{font-size:10px;font-weight:900;letter-spacing:1px;padding:9px 12px;border-radius:999px;background:#e4f8f2;color:#087666;white-space:nowrap}
+.card{border:1px solid rgba(18,60,49,.07);border-radius:26px;box-shadow:0 16px 50px rgba(16,35,30,.065);padding:22px;margin-top:16px}.cloud-panel{background:linear-gradient(120deg,#10231e,#173d33);color:#fff;border:0}.cloud-panel .muted,.cloud-panel .sync-note{color:#b8cdc6}.cloud-panel button{background:#fff;color:#12362d}.cloud-panel .ghost{background:rgba(255,255,255,.10);color:#fff}.hero{grid-template-columns:250px 1fr;background:linear-gradient(135deg,#fff 55%,#f0fbf7);min-height:270px}.ring{width:205px;height:205px;background:conic-gradient(var(--accent) 0deg,#e7efec 0);box-shadow:0 18px 45px rgba(19,163,143,.12)}.ring:after{width:158px;height:158px}.ringtext b{font-size:40px;letter-spacing:-1.5px}.stats{gap:12px}.stat{background:#fff;border:1px solid #e8efec;border-radius:18px;padding:17px}.stat b{font-size:24px;letter-spacing:-.6px}.add-food-card{background:linear-gradient(145deg,#ffffff,#f8fcfa)}.section-kicker{margin-bottom:5px}.card h2{letter-spacing:-.7px;margin-top:4px}.day-log-card{min-height:160px}.recipegrid,.suggestions{gap:14px}.recipe,.suggest,.smart-dish,.recipe-card,.pantry-item{border:1px solid #e5ece9;border-radius:20px;background:#fff;box-shadow:0 10px 30px rgba(16,35,30,.055);transition:.18s transform,.18s box-shadow}.recipe:hover,.suggest:hover,.smart-dish:hover,.recipe-card:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(16,35,30,.09)}
+.more-drawer{position:fixed;z-index:120;left:50%;bottom:100px;transform:translate(-50%,24px);width:min(560px,calc(100% - 28px));background:#fff;border:1px solid #e4ebe8;border-radius:26px;padding:18px;box-shadow:0 30px 90px rgba(10,31,25,.28);opacity:0;pointer-events:none;transition:.2s}.more-drawer.open{opacity:1;pointer-events:auto;transform:translate(-50%,0)}.drawer-shade{position:fixed;inset:0;background:rgba(9,25,21,.26);backdrop-filter:blur(2px);z-index:110;opacity:0;pointer-events:none;transition:.2s}.drawer-shade.open{opacity:1;pointer-events:auto}.drawer-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.drawer-head b{display:block;font-size:20px}.drawer-head span{display:block;color:#74817c;font-size:12px;margin-top:3px}.drawer-head button{font-size:24px;padding:5px 11px}.drawer-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.drawer-grid button{background:#f3f8f6;color:#17342c;min-height:88px;border-radius:18px;font-size:23px}.drawer-grid button span{display:block;font-size:10px;margin-top:6px}
+.auth-overlay{background:radial-gradient(circle at 75% 10%,rgba(125,226,201,.35),transparent 30%),radial-gradient(circle at 10% 90%,rgba(19,163,143,.18),transparent 35%),#f2f7f5}.auth-card{position:relative;overflow:hidden;border-radius:34px;padding:34px;box-shadow:0 35px 100px rgba(16,35,30,.18)}.auth-card:before{content:"";position:absolute;right:-70px;top:-80px;width:190px;height:190px;border-radius:50%;background:linear-gradient(145deg,#7de2c9,#0f8d7b);opacity:.16}.auth-logo{width:60px;height:60px;border-radius:19px;background:linear-gradient(145deg,#0c6e64,#1db49d);box-shadow:0 14px 30px rgba(15,118,110,.25)}.auth-card h2{font-size:36px;letter-spacing:-1.5px}.auth-card button{background:linear-gradient(135deg,#0f766e,#13a38f);padding:14px;border-radius:14px}
+@media(min-width:1000px){.app{padding-bottom:130px}.section.show{animation:fadeUp .28s ease}.today-welcome{padding-top:24px}}@keyframes fadeUp{from{opacity:.25;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(max-width:720px){body{padding-bottom:92px}.app{padding:12px 12px 105px}.head{padding:6px 2px 10px}.brandmark{width:40px;height:40px;border-radius:13px}.brand h1{font-size:22px}.brand .muted{font-size:11px}.cloudstatus{font-size:0;padding:8px}.cloudstatus:before{content:"☁";font-size:14px}.cloud-user{font-size:12px}.iconbtn{padding:8px;font-size:11px}.nav{bottom:max(10px,env(safe-area-inset-bottom));padding:7px;width:calc(100% - 20px);border-radius:22px}.nav button{font-size:10px;min-height:51px}.today-welcome{padding:25px 4px 6px;align-items:flex-start}.today-welcome h2{font-size:39px;letter-spacing:-1.7px}.today-welcome p{font-size:13px;max-width:260px}.date-chip{display:none}.card{border-radius:22px;padding:16px}.hero{grid-template-columns:1fr;min-height:auto}.ring{width:180px;height:180px}.ring:after{width:139px;height:139px}.stats{grid-template-columns:1fr 1fr}.drawer-grid{grid-template-columns:repeat(3,1fr)}.more-drawer{bottom:86px}.cloud-panel .row{display:block}.cloud-actions{margin-top:14px}.cloud-actions button{width:100%}.row .field{min-width:145px}}
+</style></head><body><div id="authOverlay" class="auth-overlay"><div class="auth-card"><div class="auth-logo">☁</div><h2>Mi Dieta</h2><p class="muted">Familia Adrada · acceso seguro</p><label>Email</label><input id="authEmail" type="email" autocomplete="username" placeholder="tu@email.com"><label>Contraseña</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="••••••••"><button id="loginBtn">Entrar</button><div id="authMsg" class="small muted" style="margin-top:12px"></div></div></div><div class="app">
+<header class="head"><div class="brand"><div class="brandmark">M</div><div><h1>Mi Dieta</h1><div class="muted">Familia Adrada · Cloud</div></div></div><div class="cloudbar"><span id="cloudStatus" class="cloudstatus">☁ Conectando…</span><span id="cloudUser" class="cloud-user"></span><button id="logoutBtn" class="ghost iconbtn" style="display:none">Salir</button></div><div class="tabs legacy-profiles" aria-hidden="true"><button class="pill" id="bn">Nacho</button><button class="pill" id="bl">Lucía</button><button class="pill" id="bj">Javi</button></div></header>
+<nav class="nav" aria-label="Navegación principal"><button data-tab="today" class="active"><span class="navico">◉</span><span>Hoy</span></button><button data-tab="menu"><span class="navico">✦</span><span>Plan</span></button><button id="quickAddNav" type="button" class="nav-add"><span class="plus">＋</span><span>Añadir</span></button><button data-tab="familyRecipesTab"><span class="navico">♨</span><span>Recetas</span></button><button id="moreNav" type="button"><span class="navico">•••</span><span>Más</span></button></nav>
+<div id="moreDrawer" class="more-drawer" aria-hidden="true"><div class="drawer-head"><div><b>Más herramientas</b><span>Todo lo demás, sin llenar tu pantalla</span></div><button id="closeMore" class="ghost">×</button></div><div class="drawer-grid"><button data-go="ideas">💡<span>Qué puedo comer</span></button><button data-go="pantry">🏠<span>En casa</span></button><button data-go="week">📅<span>Semana</span></button><button data-go="progress">📈<span>Progreso</span></button><button data-go="foods">🥗<span>Alimentos</span></button></div></div><div id="drawerShade" class="drawer-shade"></div>
+
+<section id="today" class="section show"><div class="today-welcome"><div><span class="eyebrow">TU DÍA</span><h2>Come bien. Sin complicarte.</h2><p>Calorías, proteína y tus comidas de hoy en un solo vistazo.</p></div><div class="date-chip">● EN DIRECTO</div></div><div id="cloudPanel" class="card cloud-panel" style="display:none"><div class="row"><div class="field" style="flex:2"><b>☁️ Nube familiar</b><div id="migrationSummary" class="muted small">Tus datos locales siguen intactos.</div></div><div class="cloud-actions"><button id="scanLocalBtn" class="ghost">Analizar datos locales</button><button id="backupLocalBtn" class="ghost">Descargar copia local</button><button id="migrateBtn" disabled>Copiar mis datos locales a la nube</button><button id="pullBtn" class="ghost">Actualizar desde la nube</button></div></div><div class="sync-note">La migración copia y fusiona. Nunca borra el localStorage.</div></div>
+<div class="card row"><div class="field"><label>Fecha</label><input id="date" type="date"></div><div class="field"><label>Objetivo kcal</label><input id="goal" type="number"></div><div class="field"><label>Peso kg</label><input id="weight" type="number" step=".1"></div><div class="field"><label>Cintura cm</label><input id="waist" type="number" step=".1"></div></div>
+<div class="card hero"><div class="ring" id="ring"><div class="ringtext"><b id="used">0</b><span>de <i id="goalText">1100</i> kcal</span></div></div>
+<div class="stats"><div class="stat"><b id="left">0</b><span>kcal restantes</span></div><div class="stat"><b id="prot">0 g</b><span id="protLabel">proteína</span></div><div class="stat"><b id="carbs">0 g</b><span>hidratos</span></div><div class="stat"><b id="fat">0 g</b><span>grasas</span></div></div></div>
+<div class="card add-food-card" id="addFoodCard"><div class="section-kicker">REGISTRO RÁPIDO</div><h2>Añadir comida</h2><div class="row"><div class="field"><label>Momento</label><select id="meal"><option>Desayuno</option><option>Media mañana</option><option>Comida</option><option>Merienda</option><option>Cena</option><option>Extra</option></select></div><div class="field food-picker" style="flex:2"><label>Alimento</label><input id="food" autocomplete="off" placeholder="Pulsa o escribe: mer, sal, pollo…"><div id="foodResults" class="food-results"></div></div><div class="field"><label>Gramos</label><input id="grams" type="number" value="100"></div><div class="field"><button id="add">Añadir</button></div><div class="field"><label>Receta familiar</label><select id="dayFamilyRecipe"><option value="">— Elegir —</option></select></div><div class="field"><label>Raciones</label><input id="dayRecipePortions" type="number" min=".25" step=".25" value="1"></div><div class="field"><button id="addDayFamilyRecipe">🍲 Añadir receta</button></div></div></div>
+<div class="card day-log-card"><div class="section-kicker">HOY</div><h2>Registro del día</h2><div id="log"></div></div>
+<div class="card"><h2>Recetas rápidas</h2><div class="recipegrid" id="recipes"></div></div>
+</section>
+
+<section id="menu" class="section">
+<div class="card">
+<div class="section-kicker">COCINERO INTELIGENTE</div><h2>✨ Ideas que encajan con tu día</h2>
+<p class="muted">Tiene en cuenta tu despensa, kcal/proteína restantes y lo que ya has comido para evitar repeticiones.</p>
+<div class="row"><div class="field"><button id="smartLunchBtn">🍽️ Sugerir comida</button></div><div class="field"><button id="smartDinnerBtn">🌙 Sugerir cena</button></div></div>
+<div id="smartMenuOut" style="margin-top:12px"></div>
+</div>
+<div class="card"><h2>Ideas de menú diario</h2><p class="muted" id="menuIntro">Genera un día completo adaptado al perfil seleccionado.</p>
+<div class="row"><div class="field"><button id="genMenu">🎲 Generar otro menú</button></div><div class="field"><button id="addMenu">＋ Añadir menú completo al día</button></div></div>
+<div id="dailyMenu" style="margin-top:12px"></div></div></section>
+
+<section id="ideas" class="section"><div class="card"><h2>¿Qué puedo comer?</h2><p class="muted" id="ideasIntro">Propuestas que caben aproximadamente en las calorías que te quedan hoy.</p><div id="javiStatus"></div><div class="suggestions" id="suggestions"></div></div>
+<div class="card"><h2>Completar con un alimento</h2><div class="row"><div class="field food-picker"><label>Alimento</label><input id="fillFood" autocomplete="off" placeholder="Pulsa o escribe…"><div id="fillFoodResults" class="food-results"></div></div><div class="field"><label>Máximo que cabe hoy</label><input id="maxGrams" readonly></div></div><p class="small muted">Cálculo matemático según las kcal/100 g del alimento; no es una recomendación de ración.</p></div></section>
+
+<section id="week" class="section"><div class="card"><h2>Últimos 7 días</h2><div class="week" id="weekGrid"></div><p id="weekAvg"></p></div></section>
+<section id="progress" class="section"><div class="card"><h2>Peso · últimos registros</h2><div class="chart" id="weightChart"></div></div><div class="card"><h2>Cintura · últimos registros</h2><div class="chart" id="waistChart"></div></div></section>
+<section id="foods" class="section"><div class="card"><h2>🔎 Buscador único de alimentos</h2>
+<p class="muted">Escribe las primeras letras. La biblioteca está ordenada alfabéticamente; para productos comerciales puedes ampliar la búsqueda online en español.</p>
+<div class="row"><div class="field" style="flex:2"><label>¿Qué alimento buscas?</label><input id="libSearch" placeholder="Ej. merluza, solomillo de cerdo, salmón, Skyr..."></div>
+<div class="field"><label>&nbsp;</label><button id="onlineSearch">🌐 Buscar productos online</button></div>
+<div class="field"><label>&nbsp;</label><button id="clearSearch">Limpiar</button></div></div>
+<h3 style="margin-top:16px">Nuestra biblioteca</h3><div id="libraryResults" class="recipegrid" style="margin-top:10px"></div>
+<div id="onlineResults" style="margin-top:16px"></div></div>
+<div class="card"><h2>Añadir alimento manualmente</h2><div class="row"><div class="field"><label>Nombre</label><input id="fn"></div><div class="field"><label>kcal / 100 g</label><input id="fk" type="number"></div><div class="field"><label>Proteína</label><input id="fp" type="number" step=".1"></div><div class="field"><label>Hidratos</label><input id="fc" type="number" step=".1"></div><div class="field"><label>Grasas</label><input id="ff" type="number" step=".1"></div><div class="field"><button id="saveFood">Guardar</button></div></div></div>
+<div class="card"><h2>Copia de seguridad</h2><div class="row"><div class="field"><button id="export">Exportar copia completa</button></div><div class="field"><label>Importar JSON</label><input id="import" type="file" accept=".json"></div></div></div></section>
+</div>
+
+<section id="pantry" class="tab" style="display:none">
+  <div class="card">
+    <h2>🏠 Tengo en casa</h2>
+    <p class="muted">Los alimentos se marcan directamente con una casilla en la biblioteca. Aquí puedes ver y filtrar la misma despensa familiar.</p>
+    <div class="row">
+      <div class="field" style="flex:2"><label>Buscar alimento</label><input id="pantrySearch" placeholder="Ej. merluza, aguacate, pollo…"></div>
+      <div class="field"><label>&nbsp;</label><button id="clearPantrySearch">Ver todos</button></div>
+    </div>
+    <div id="pantryGrid" class="pantry-grid"></div>
+  </div>
+  <div class="card">
+    <div class="section-kicker">COCINERO INTELIGENTE</div><h2>🍽️ ¿Qué cocino con lo que tengo?</h2>
+    <p class="muted">Recetas cocinables según tu despensa, lo que ya has comido y lo que te queda hoy. Además te dice qué podrías hacer comprando solo 1–2 cosas.</p>
+    <button id="pantryMenuBtn">✨ Buscar ideas para cocinar</button>
+    <div id="pantryMenuOut" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<section id="familyRecipesTab" class="tab" style="display:none">
+  <div class="card">
+    <h2>🍳 Recetas familiares</h2>
+    <p class="muted">Construye la receta eligiendo alimentos de tu biblioteca. Las calorías y macros se calculan automáticamente.</p>
+    <div class="row">
+      <div class="field" style="flex:2"><label>Nombre</label><input id="recipeName" placeholder="Ej. Merluza con quinoa"></div>
+      <div class="field"><label>Raciones</label><input id="recipeServings" type="number" min="1" step="1" value="2"></div>
+    </div>
+    <div class="row">
+      <div class="field food-picker" style="flex:2"><label>Ingrediente</label><input id="recipeFood" autocomplete="off" placeholder="Pulsa o escribe: mer, pat, hue…"><div id="recipeFoodResults" class="food-results"></div></div>
+      <div class="field"><label>Gramos</label><input id="recipeFoodGrams" type="number" min="1" value="100"></div>
+      <div class="field"><label>&nbsp;</label><button id="addRecipeIngredient">＋ Añadir ingrediente</button></div>
+    </div>
+    <div id="recipeBuilderList"></div>
+    <div id="recipeBuilderTotals" class="stats" style="margin:12px 0"></div>
+    <button id="saveRecipe">💾 Guardar receta</button>
+    <button class="ghost" id="clearRecipeBuilder">Limpiar</button>
+    <div id="recipeList" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const base=[
+["Huevo",143,12.6,.7,9.5],["Claras",48,10.5,.7,.2],["Pollo",120,23,0,2.6],["Pavo",115,24,0,1.5],["Ternera magra",150,22,0,6],
+["Solomillo cerdo",135,22,0,5],["Merluza",86,18,0,1.8],["Rape",76,17,0,1],["Dorada/Lubina",110,20,0,3],["Gambones",95,20,.5,1.2],
+["Jamón serrano",240,31,.5,12],["Yogur proteico",65,10,4,1],["Patata",77,2,17,.1],["Arroz cocido",130,2.7,28,.3],["Pan",250,8.5,49,2],
+["Avena",370,13,60,7],["Aguacate",160,2,8.5,14.7],["AOVE",884,0,0,100],["Tomate",18,.9,3.9,.2],["Ensalada/hojas",18,1.5,3,.2],
+["Alcachofa",47,3.3,10,.2],["Plátano",89,1.1,23,.3],["Naranja/Mandarina",47,.9,12,.1],["Fresas",32,.7,7.7,.3],["Almendras",579,21,22,50],
+["Salmón fresco",208,20,0,13],["Salmón ahumado",117,18,0,4],["Atún fresco",132,29,0,1],["Atún al natural",116,26,0,1],["Bacalao",82,18,0,.7],
+["Sardinas",208,25,0,11],["Pulpo",82,15,2.2,1],["Calamar",92,16,3.1,1.4],["Sepia",79,16,1,1],["Mejillones",86,12,3.7,2.2],
+["Conejo",136,21,0,5],["Lomo de cerdo",143,22,0,6],["Secreto ibérico",280,19,0,23],["Entrecot ternera",210,25,0,12],["Carne picada 5% grasa",137,21,0,5],
+["Jamón cocido",110,19,2,3],["Pechuga pavo lonchas",105,20,2,2],["Queso fresco",170,12,3,12],["Queso cottage",98,11,3.4,4.3],["Skyr natural",63,11,4,.2],
+["Yogur natural",63,3.5,4.7,3.3],["Leche semidesnatada",46,3.2,4.8,1.6],["Mozzarella",250,18,2,19],["Parmesano",431,38,4,29],["Manchego",410,25,1,34],
+["Pasta cocida",157,5.8,31,.9],["Cuscús cocido",112,3.8,23,.2],["Quinoa cocida",120,4.4,21,1.9],["Tortilla trigo",312,8,52,8],["Pan integral",247,9,41,4],
+["Boniato",86,1.6,20,.1],["Calabacín",17,1.2,3.1,.3],["Berenjena",25,1,6,.2],["Pimiento",31,1,6,.3],["Cebolla",40,1.1,9.3,.1],
+["Pepino",15,.7,3.6,.1],["Brócoli",34,2.8,7,.4],["Espárragos",20,2.2,3.9,.1],["Judías verdes",31,1.8,7,.2],["Champiñón",22,3.1,3.3,.3],
+["Manzana",52,.3,14,.2],["Pera",57,.4,15,.1],["Kiwi",61,1.1,15,.5],["Uvas",69,.7,18,.2],["Piña",50,.5,13,.1],
+["Melón",34,.8,8.2,.2],["Sandía",30,.6,7.6,.2],["Arándanos",57,.7,14,.3],["Nueces",654,15,14,65],["Pistachos",562,20,28,45]
+,
+["Caballa",205,19,0,14],["Boquerón",131,20,0,5],["Lenguado",83,17,0,1.4],["Gallo",88,18,0,1.6],["Pez espada",172,24,0,8],["Trucha",148,21,0,6.5],["Corvina",96,20,0,1.5],["Rodaballo",122,20,0,4.7],["Vieiras",88,17,3.2,.8],["Almejas",74,13,2.6,1],["Berberechos",79,14,3,1],["Navajas",86,15,3.5,1.2],
+["Muslo pollo sin piel",135,20,0,6],["Contramuslo pollo sin piel",150,19,0,8],["Pechuga pollo cocida",165,31,0,3.6],["Pechuga pavo",114,24,0,1.2],["Chuleta cerdo",211,24,0,12],["Solomillo ternera",180,25,0,8],["Filete ternera",170,25,0,7],["Cordero pierna",190,25,0,10],["Jamón ibérico",335,31,0,23],["Lomo embuchado",290,50,1,9],["Cecina",250,40,1,10],["Fiambre pollo",105,20,2,2],
+["Huevo cocido",155,13,1.1,11],["Leche desnatada",35,3.4,5,.1],["Leche entera",61,3.2,4.8,3.3],["Kéfir natural",64,3.5,4.5,3.5],["Yogur griego 0%",59,10,3.6,.4],["Yogur griego natural",97,9,3.9,5],["Requesón",98,11,3.4,4.3],["Ricotta",174,11,3,13],["Feta",264,14,4,21],["Gouda",356,25,2,27],["Queso de cabra",364,22,2,30],
+["Arroz integral cocido",123,2.7,25.6,1],["Arroz basmati cocido",121,3.5,25.2,.4],["Pasta integral cocida",149,6,30,1.7],["Fideos cocidos",138,4.5,25,2.1],["Pan de centeno",259,8.5,48,3.3],["Pan pita",275,9,55,1.2],["Tostada crujiente",350,11,70,4],["Tortita de arroz",387,8,81,3],["Maíz dulce",86,3.2,19,1.2],
+["Noodles de arroz cocidos",109,1.8,24.9,.2],["Noodles de arroz secos",364,6,80,.6],
+["Frutos rojos",45,1,10,.4],["Mejillones sin concha",86,12,3.7,2.2],["Garbanzos de lata",135,7.2,20.8,2.4],
+["Quinoa",120,4.4,21,1.9],["Garbanzos cocidos",164,8.9,27,2.6],["Lentejas cocidas",116,9,20,.4],["Alubias cocidas",127,8.7,23,.5],["Guisantes",81,5.4,14,.4],["Edamame",121,12,9,5],["Coliflor",25,1.9,5,.3],["Repollo",25,1.3,5.8,.1],["Espinacas",23,2.9,3.6,.4],["Acelgas",19,1.8,3.7,.2],["Zanahoria",41,.9,9.6,.2],["Puerro",61,1.5,14,.3],["Apio",16,.7,3,.2],["Rúcula",25,2.6,3.7,.7],["Canónigos",21,2,3.6,.4],["Lechuga romana",17,1.2,3.3,.3],["Cogollos",16,1.4,2.9,.2],["Remolacha",43,1.6,10,.2],["Calabaza",26,1,6.5,.1],["Menestra de verduras",55,3,9,.5],["Tomate cherry",18,.9,3.9,.2],["Tomate triturado",32,1.6,5.5,.3],["Setas",28,3,4,.4],
+["Melocotón",39,.9,9.5,.3],["Nectarina",44,1.1,10.6,.3],["Ciruela",46,.7,11,.3],["Mango",60,.8,15,.4],["Papaya",43,.5,11,.3],["Frambuesas",52,1.2,12,.7],["Moras",43,1.4,10,.5],["Granada",83,1.7,19,1.2],["Pomelo",42,.8,11,.1],["Dátiles",282,2.5,75,.4],["Avellanas",628,15,17,61],["Anacardos",553,18,30,44],["Cacahuetes",567,26,16,49],["Semillas chía",486,17,42,31],
+["Hummus",166,8,14,10],["Guacamole",150,2,8,13],["Aceitunas verdes",145,1,4,15],["Pepinillos",12,.5,2.4,.2],["Caldo de pollo",12,1.2,1,.3]
+
+].map(x=>({name:x[0],kcal:x[1],p:x[2],c:x[3],f:x[4]}));
+const recipes=[
+{name:"Tortilla con tomate",meal:"Cena",items:[["Huevo",120],["Claras",120],["Tomate",200],["AOVE",5]]},
+{name:"Merluza con patata",meal:"Cena",items:[["Merluza",200],["Patata",150],["Ensalada/hojas",100],["AOVE",5]]},
+{name:"Gambones y aguacate",meal:"Cena",items:[["Gambones",200],["Tomate",200],["Aguacate",40],["AOVE",5]]},
+{name:"Pollo con patata",meal:"Comida",items:[["Pollo",180],["Patata",180],["Ensalada/hojas",120],["AOVE",10]]},
+{name:"Rape con arroz",meal:"Comida",items:[["Rape",200],["Arroz cocido",130],["Ensalada/hojas",120],["AOVE",10]]},
+{name:"Pavo y patata",meal:"Comida",items:[["Pavo",180],["Patata",200],["Tomate",150],["AOVE",10]]},{name:"Ensalada de atún, huevo y aguacate",meal:"Cena",items:[["Atún al natural",100],["Huevo",60],["Tomate",180],["Aguacate",40],["Ensalada/hojas",120],["AOVE",5]]},
+{name:"Merluza con quinoa y menestra",meal:"Comida",items:[["Merluza",200],["Quinoa",130],["Menestra de verduras",200],["AOVE",5]]},
+{name:"Tortilla de guisantes",meal:"Cena",items:[["Huevo",120],["Claras",100],["Guisantes",100],["Tomate",150],["AOVE",5]]},
+{name:"Noodles con mejillones y guisantes",meal:"Comida",items:[["Noodles de arroz cocidos",150],["Mejillones",180],["Guisantes",100],["AOVE",5]]},
+{name:"Garbanzos con atún y tomate",meal:"Comida",items:[["Garbanzos cocidos",130],["Atún al natural",100],["Tomate",180],["Ensalada/hojas",100],["AOVE",5]]},
+{name:"Dorada con patata y tomate",meal:"Comida",items:[["Dorada/Lubina",200],["Patata",180],["Tomate",180],["AOVE",5]]},
+{name:"Rape con quinoa y verduras",meal:"Comida",items:[["Rape",200],["Quinoa",130],["Menestra de verduras",180],["AOVE",5]]},
+{name:"Mejillones con patata y ensalada",meal:"Cena",items:[["Mejillones",200],["Patata",160],["Ensalada/hojas",150],["AOVE",5]]},
+{name:"Skyr con frutos rojos y plátano",meal:"Desayuno",items:[["Skyr natural",150],["Frutos rojos",100],["Plátano",60]]},
+{name:"Huevo con tostada y tomate",meal:"Desayuno",items:[["Huevo",60],["Pan",30],["Tomate",100]]},
+{name:"Atún con patata y tomate",meal:"Cena",items:[["Atún al natural",120],["Patata",180],["Tomate",180],["AOVE",5]]},
+{name:"Merluza con guisantes y patata",meal:"Cena",items:[["Merluza",200],["Guisantes",100],["Patata",150],["AOVE",5]]},
+{name:"Rape con garbanzos y tomate",meal:"Comida",items:[["Rape",180],["Garbanzos de lata",100],["Tomate triturado",120],["AOVE",5]]},
+{name:"Mejillones con garbanzos marineros",meal:"Comida",items:[["Mejillones sin concha",180],["Garbanzos de lata",100],["Tomate triturado",120],["AOVE",5]]},
+{name:"Pez espada con pimiento y patata",meal:"Comida",items:[["Pez espada",170],["Pimiento",160],["Patata",160],["AOVE",5]]},
+{name:"Trucha con calabacín y patata",meal:"Cena",items:[["Trucha",180],["Calabacín",220],["Patata",120],["AOVE",5]]},
+{name:"Corvina con tomate y arroz",meal:"Comida",items:[["Corvina",200],["Tomate",160],["Arroz basmati cocido",120],["AOVE",5]]},
+{name:"Gallo con menestra",meal:"Cena",items:[["Gallo",220],["Menestra de verduras",220],["AOVE",5]]},
+{name:"Pavo salteado con pimiento y arroz",meal:"Comida",items:[["Pechuga pavo",180],["Pimiento",180],["Arroz integral cocido",120],["AOVE",5]]},
+{name:"Solomillo de ternera con champiñón",meal:"Cena",items:[["Solomillo ternera",160],["Champiñón",200],["Tomate",120],["AOVE",5]]},
+{name:"Pollo con calabaza y arroz",meal:"Comida",items:[["Pechuga pollo cocida",160],["Calabaza",220],["Arroz basmati cocido",110],["AOVE",5]]},
+{name:"Ensalada templada de garbanzos y huevo",meal:"Comida",items:[["Garbanzos de lata",120],["Huevo cocido",100],["Tomate cherry",150],["Rúcula",70],["AOVE",5]]},
+{name:"Revuelto de setas y espinacas",meal:"Cena",items:[["Huevo",120],["Claras",100],["Setas",180],["Espinacas",120],["AOVE",5]]},
+{name:"Atún con alubias y tomate",meal:"Comida",items:[["Atún al natural",100],["Alubias cocidas",120],["Tomate cherry",160],["Canónigos",80],["AOVE",5]]},
+{name:"Skyr con mango y chía",meal:"Desayuno",items:[["Skyr natural",170],["Mango",100],["Semillas chía",8]]},
+{name:"Yogur griego con arándanos",meal:"Desayuno",items:[["Yogur griego 0%",170],["Arándanos",100]]},
+{name:"Requesón con frutos rojos",meal:"Desayuno",items:[["Requesón",120],["Frutos rojos",120]]},
+{name:"Hummus con huevo y tomate",meal:"Cena",items:[["Hummus",70],["Huevo cocido",100],["Tomate",180],["Cogollos",120]]},
+{name:"Edamame con atún y tomate",meal:"Cena",items:[["Edamame",120],["Atún al natural",100],["Tomate cherry",160],["Canónigos",80]]},
+{name:"Vieiras con calabacín y arroz",meal:"Comida",items:[["Vieiras",180],["Calabacín",200],["Arroz basmati cocido",120],["AOVE",5]]}
+];
+const profiles={Nacho:1100,Lucía:1300,Javi:2150}; const proteinGoals={Nacho:100,Lucía:80,Javi:100}; const profileModes={Nacho:"Pérdida de grasa",Lucía:"Mantenimiento",Javi:"Ganancia muscular"}; let profile=localStorage.profile||"Nacho";
+const SUPABASE_URL="https://cezgbeposlcphperkngk.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_pbBeQxtg2PsGmjNP3FCqEA_zedrcewj";
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+let cloud={ready:false,user:null,profileRow:null,familyId:null,syncing:false,timer:null,pending:new Set(),dirtyDiaryDates:new Set(),diaryDeletes:new Set(),pantryDirty:new Set(),foodsDirty:new Set(),recipeDirty:new Set(),recipeDeletes:new Set()};
+const V5_PANTRY_KEY="miDietaFamilyPantryV5";
+const V5_RECIPES_KEY="miDietaFamilyRecipesV5";
+if(!localStorage.familyFoods && localStorage.customFoods) localStorage.familyFoods=localStorage.customFoods;
+let custom=JSON.parse(localStorage.familyFoods||"[]"), currentMenu=[];
+const $=x=>document.getElementById(x), foods=()=>[...base,...custom], iso=d=>d.toISOString().slice(0,10), k=()=>`diet:${profile}:${$("date").value}`;
+function get(){return JSON.parse(localStorage.getItem(k())||'{"items":[],"weight":"","waist":""}')}
+function cloudNewKey(date){try{return "v554:"+crypto.randomUUID()}catch(e){return "v554:"+date+":"+Date.now()+":"+Math.random().toString(36).slice(2)}}
+function save(d){const date=$("date").value;(d.items||[]).forEach(x=>{if(!x.migration_key)x.migration_key=cloudNewKey(date)});localStorage.setItem(`diet:${profile}:${date}`,JSON.stringify(d));render();cloudSchedule("diary",date)}
+function food(n){return foods().find(x=>x.name===n)}
+function calcItem(f,g){return {name:f.name,grams:g,kcal:f.kcal*g/100,p:f.p*g/100,c:f.c*g/100,f:f.f*g/100}}
+function recipeData(r){let a=r.items.map(([n,g])=>calcItem(food(n),g));return {kcal:a.reduce((s,x)=>s+x.kcal,0),p:a.reduce((s,x)=>s+x.p,0),items:a}}
+function sortedFoods(){return foods().slice().sort((a,b)=>a.name.localeCompare(b.name,"es",{sensitivity:"base"}))}
+function populate(){renderFoodPicker("food","foodResults");renderFoodPicker("fillFood","fillFoodResults")}
+function pickerMatches(q){let t=(q||"").trim().toLocaleLowerCase("es"),arr=sortedFoods();if(!t)return arr.slice(0,60);return arr.filter(f=>f.name.toLocaleLowerCase("es").includes(t)).sort((a,b)=>{let al=a.name.toLocaleLowerCase("es"),bl=b.name.toLocaleLowerCase("es");return (al.startsWith(t)?0:1)-(bl.startsWith(t)?0:1)||a.name.localeCompare(b.name,"es")}).slice(0,60)}
+function renderFoodPicker(inputId,resultId){let input=$(inputId),box=$(resultId);if(!input||!box)return;let arr=pickerMatches(input.value);box.innerHTML=arr.map((f,i)=>`<div class="food-option" data-name="${f.name.replace(/"/g,"&quot;")}"><b>${f.name}</b><span>${f.kcal} kcal · ${f.p} g proteína /100 g</span></div>`).join("");box.querySelectorAll(".food-option").forEach(el=>el.onclick=()=>{input.value=el.dataset.name;box.classList.remove("open");if(inputId==="fillFood")updateFill()})}
+function setupFoodPicker(inputId,resultId){let input=$(inputId),box=$(resultId);input.addEventListener("focus",()=>{renderFoodPicker(inputId,resultId);box.classList.add("open")});input.addEventListener("input",()=>{renderFoodPicker(inputId,resultId);box.classList.add("open");if(inputId==="fillFood")updateFill()});document.addEventListener("click",e=>{if(!input.closest(".food-picker").contains(e.target))box.classList.remove("open")})}
+function findFoodByInput(id){let q=$(id).value.trim().toLocaleLowerCase("es");return foods().find(f=>f.name.toLocaleLowerCase("es")===q)}
+function totals(){let a=get().items;return ["kcal","p","c","f"].reduce((o,q)=>(o[q]=a.reduce((s,x)=>s+(x[q]||0),0),o),{})}
+let quickOffset=0;
+function quickRecipeOrder(){let seed=Array.from(($('date')?.value||'')+profile).reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,2166136261),a=recipes.map((_,i)=>i);for(let i=a.length-1;i>0;i--){seed=(seed*1664525+1013904223)>>>0;let j=seed%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+function rotateQuickRecipes(){quickOffset=(quickOffset+6)%recipes.length;render()}
+function render(){
+ let d=get(),t=totals(),g=+$("goal").value||profiles[profile],left=g-t.kcal,pct=t.kcal/g;
+ $("used").textContent=Math.round(t.kcal);$("goalText").textContent=g;$("left").textContent=Math.round(left);$("left").className=left<0?"over":"ok";
+ $("prot").textContent=Math.round(t.p)+" / "+proteinGoals[profile]+" g";$("protLabel").textContent="proteína · "+profileModes[profile];$("carbs").textContent=Math.round(t.c)+" g";$("fat").textContent=Math.round(t.f)+" g";
+ $("ring").style.background=`conic-gradient(${pct>1?"#b42318":"#286749"} ${Math.min(pct,1)*360}deg,#e4e9e4 0)`;
+ const ord=["Desayuno","Media mañana","Comida","Merienda","Cena","Extra"];
+ $("log").innerHTML=ord.map(m=>{let a=d.items.map((x,i)=>({...x,i})).filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span class="item-macros"><span class="macro-chip">${Math.round(x.kcal)} kcal</span><span class="macro-chip prot">${Math.round(x.p||0)} g prot.</span></span><button class="x" onclick="del(${x.i})">×</button></div>`).join("")}</div>`}).join("")||'<p class="muted">Aún no has registrado nada.</p>';
+ let qo=quickRecipeOrder(),qidx=[];for(let z=0;z<Math.min(6,recipes.length);z++)qidx.push(qo[(quickOffset+z)%qo.length]);
+ $("recipes").innerHTML=qidx.map(i=>{let r=recipes[i],q=recipeData(r);return `<div class="recipe"><b>${r.name}</b><span class="small muted">${Math.round(q.kcal)} kcal · ${Math.round(q.p)} g proteína</span><button onclick="addRecipe(${i})">Añadir</button></div>`}).join("")+`<button class="ghost" onclick="rotateQuickRecipes()">🔄 Otras recetas</button>`;
+ renderIdeas();renderWeek();renderCharts();updateFill();if($("menu").classList.contains("show"))renderMenu()
+}
+function del(i){let d=get(),x=d.items[i];if(x?.migration_key)cloud.diaryDeletes.add(x.migration_key);d.items.splice(i,1);save(d)}
+function addRecipe(i){let r=recipes[i],d=get();recipeData(r).items.forEach(x=>d.items.push({...x,meal:r.meal}));save(d)}
+let ideasOffset=0;
+function renderIdeas(){
+ let t=totals(),goal=+$("goal").value||profiles[profile],left=goal-t.kcal,proteinLeft=Math.max(0,proteinGoals[profile]-t.p),recent=recentFoodNames();
+ if(left<=0){$("suggestions").innerHTML='<p>Ya has alcanzado el objetivo de hoy.</p>';return}
+ let cs=recipes.map((r,i)=>({...recipeData(r),name:r.name,items:r.items,action:`addRecipe(${i})`,kind:"Rápida"}));
+ familyRecipes().forEach((r,i)=>{let z=recipeCalc(r),sv=Math.max(1,+r.servings||1);cs.push({kcal:z.kcal/sv,p:z.p/sv,name:r.name,items:(r.ingredients||[]).map(x=>[x.name,x.grams/sv]),action:`addFamilyRecipePortion(${i},1)`,kind:"Familiar"})});
+ cs=cs.filter(x=>x.kcal>0&&x.kcal<=left+50);cs.forEach(x=>{let rep=(x.items||[]).filter(y=>recent.has(y[0])).length;x.score=Math.abs(left*.55-x.kcal)+Math.max(0,Math.min(proteinLeft,30)-x.p)*5+rep*40});cs.sort((a,b)=>a.score-b.score);
+ if(cs.length>4){let sh=(ideasOffset*4)%cs.length;cs=cs.slice(sh).concat(cs.slice(0,sh))}ideasOffset++;let pick=cs.slice(0,4);
+ $("ideasIntro").textContent="Opciones variadas según las kcal y proteína que te quedan. También incluye tus recetas familiares.";$("javiStatus").innerHTML="";
+ $("suggestions").innerHTML=pick.length?pick.map((x,pos)=>`<div class="suggest">${pos===0?'<div class="small ok"><b>Mejor ajuste ahora</b></div>':''}<h3>${x.name}</h3><div>${Math.round(x.kcal)} kcal · ${Math.round(x.p)} g proteína</div><div class="small muted">${x.kind} · ${(x.items||[]).map(y=>Math.round(y[1])+" g "+y[0]).join(" · ")}</div><button onclick="${x.action}">Añadir esta opción</button></div>`).join("")+'<button class="ghost" onclick="renderIdeas()">🔄 Otras opciones</button>':'<p>No encuentro una receta que encaje ahora.</p>'
+}
+
+// ---------- V5.2: biblioteca culinaria y motor de sugerencias ----------
+const smartDishes=[
+ {n:"Merluza con quinoa y menestra",type:"Comida",tags:["pescado","quinoa","verdura"],i:[["Merluza",200],["Quinoa cocida",130],["Menestra de verduras",200],["AOVE",5]]},
+ {n:"Merluza con patata y ensalada",type:"Comida",tags:["pescado","patata","ensalada"],i:[["Merluza",200],["Patata",180],["Ensalada / hojas",120],["AOVE",5]]},
+ {n:"Merluza con arroz integral y verduras",type:"Comida",tags:["pescado","arroz","verdura"],i:[["Merluza",200],["Arroz integral cocido",130],["Menestra de verduras",180],["AOVE",5]]},
+ {n:"Dorada con patata y tomate",type:"Comida",tags:["pescado","patata"],i:[["Dorada / lubina",200],["Patata",180],["Tomate",180],["AOVE",5]]},
+ {n:"Rape con quinoa y verduras",type:"Comida",tags:["pescado","quinoa"],i:[["Rape",200],["Quinoa cocida",130],["Menestra de verduras",180],["AOVE",5]]},
+ {n:"Ensalada de atún, patata y aguacate",type:"Comida",tags:["atún","patata","ensalada"],i:[["Atún al natural",120],["Patata",180],["Aguacate",40],["Ensalada / hojas",150],["Tomate",150],["AOVE",5]]},
+ {n:"Ensalada de garbanzos y atún",type:"Comida",tags:["legumbre","atún","ensalada"],i:[["Garbanzos cocidos",130],["Atún al natural",100],["Tomate",150],["Ensalada / hojas",100],["AOVE",5]]},
+ {n:"Garbanzos con huevo y tomate",type:"Comida",tags:["legumbre","huevo"],i:[["Garbanzos cocidos",140],["Huevo",120],["Tomate",180],["Ensalada / hojas",100],["AOVE",5]]},
+ {n:"Noodles de arroz con mejillones y guisantes",type:"Comida",tags:["noodles","marisco","guisantes"],i:[["Noodles de arroz cocidos",150],["Mejillones",180],["Guisantes",100],["AOVE",5]]},
+ {n:"Noodles con huevo, atún y verduras",type:"Comida",tags:["noodles","huevo","atún"],i:[["Noodles de arroz cocidos",140],["Huevo",120],["Atún al natural",80],["Menestra de verduras",150],["AOVE",5]]},
+ {n:"Mejillones con patata y ensalada",type:"Cena",tags:["marisco","patata"],i:[["Mejillones",200],["Patata",160],["Ensalada / hojas",150],["AOVE",5]]},
+ {n:"Tortilla con ensalada y aguacate",type:"Cena",tags:["huevo","ensalada"],i:[["Huevo",120],["Claras",120],["Ensalada / hojas",150],["Tomate",150],["Aguacate",40],["AOVE",5]]},
+ {n:"Tortilla de guisantes con tomate",type:"Cena",tags:["huevo","guisantes"],i:[["Huevo",120],["Claras",100],["Guisantes",100],["Tomate",180],["AOVE",5]]},
+ {n:"Merluza con verduras",type:"Cena",tags:["pescado","verdura"],i:[["Merluza",220],["Menestra de verduras",250],["AOVE",5]]},
+ {n:"Rape con ensalada y patata",type:"Cena",tags:["pescado","patata"],i:[["Rape",200],["Patata",150],["Ensalada / hojas",150],["AOVE",5]]},
+ {n:"Atún con tomate, huevo y aguacate",type:"Cena",tags:["atún","huevo","ensalada"],i:[["Atún al natural",100],["Huevo",120],["Tomate",200],["Aguacate",40],["Ensalada / hojas",100]]},
+ {n:"Mejillones con quinoa y tomate",type:"Cena",tags:["marisco","quinoa"],i:[["Mejillones",200],["Quinoa cocida",110],["Tomate",180],["AOVE",5]]},
+ {n:"Skyr con frutos rojos y plátano",type:"Desayuno",tags:["lácteo","fruta"],i:[["Skyr natural",150],["Frutos rojos",100],["Plátano",60]]},
+ {n:"Tostada con pavo y tomate",type:"Desayuno",tags:["pan","pavo"],i:[["Pan",35],["Pavo",60],["Tomate",100]]},
+ {n:"Huevo con tostada y tomate",type:"Desayuno",tags:["huevo","pan"],i:[["Huevo",60],["Pan",30],["Tomate",100]]},
+ {n:"Queso fresco con frutos rojos",type:"Desayuno",tags:["lácteo","fruta"],i:[["Queso fresco",100],["Frutos rojos",120]]}
+];
+
+function normFoodName(v){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("es").replace(/[^a-z0-9]+/g," ").trim()}
+const smartAliases={
+"ensalada hojas":["Ensalada/hojas","Ensalada / hojas","Cogollos","Lechuga romana"],
+"dorada lubina":["Dorada/Lubina","Dorada / lubina"],"atun al natural":["Atún al natural","Atún claro al natural"],
+"skyr natural":["Skyr natural","Danone natural Skyr"],"frutos rojos":["Frutos rojos","Fresas","Arándanos"],
+"quinoa cocida":["Quinoa cocida","Quinoa"],"arroz integral cocido":["Arroz integral cocido","Arroz integral"],
+"garbanzos cocidos":["Garbanzos cocidos","Garbanzos de lata","Garbanzos"],
+"noodles de arroz cocidos":["Noodles de arroz cocidos","Noodles de arroz","Fideos de arroz"],
+"mejillones":["Mejillones","Mejillones sin concha"],"guisantes":["Guisantes","Guisantes cocidos"]};
+function smartFood(name){let all=foods(),key=normFoodName(name),f=all.find(x=>normFoodName(x.name)===key);if(f)return f;for(let a of (smartAliases[key]||[])){f=all.find(x=>normFoodName(x.name)===normFoodName(a));if(f)return f}return null}
+function pantryHas(name){if(name==="AOVE")return true;let p=pantry(),f=smartFood(name);if(f&&p[f.name])return true;let key=normFoodName(name),aa=smartAliases[key]||[];return Object.keys(p).some(k=>p[k]&&(normFoodName(k)===key||aa.some(a=>normFoodName(a)===normFoodName(k))))}
+function smartStats(d,scale=1){
+ let items=d.i.map(([n,g])=>{let f=smartFood(n);if(!f)return null;let z=calcItem(f,Math.round(g*scale));z.name=n;return z}).filter(Boolean);
+ return {items,kcal:items.reduce((a,x)=>a+x.kcal,0),p:items.reduce((a,x)=>a+x.p,0)};
+}
+function recentFoodNames(days=3){
+ let out=new Set(),now=new Date($("date").value+"T12:00:00");
+ (get().items||[]).forEach(x=>out.add(x.name));
+ for(let j=1;j<=days;j++){
+   let d=new Date(now);d.setDate(d.getDate()-j);
+   let ds=d.toISOString().slice(0,10),rec;
+   try{rec=JSON.parse(localStorage.getItem(`diet:${profile}:${ds}`)||'{"items":[]}')}catch(e){rec={items:[]}}
+   (rec.items||[]).forEach(x=>out.add(x.name));
+ }
+ return out;
+}
+function dishAvailable(d){
+ return d.i.every(([n])=>pantryHas(n));
+}
+function dishScore(d,type){
+ let st=smartStats(d), left=(+$("goal").value||profiles[profile])-totals().kcal, pg=Math.max(0,(proteinGoals[profile]||90)-totals().p);
+ let recent=recentFoodNames(), repetition=d.i.filter(([n])=>recent.has(n)).length;
+ let availability=dishAvailable(d)?0:250;
+ let target=type==="Cena"?Math.min(450,Math.max(250,left*.55)):Math.min(550,Math.max(300,left*.60));
+ let kcalPenalty=Math.abs(st.kcal-target);
+ let proteinPenalty=Math.max(0,Math.min(pg,35)-st.p)*6;
+ return kcalPenalty+proteinPenalty+repetition*55+availability;
+}
+function smartSuggestions(type="Comida",onlyHome=false){
+ let arr=smartDishes.filter(d=>d.type===type && (!onlyHome||dishAvailable(d)));
+ return arr.map(d=>({d,score:dishScore(d,type),...smartStats(d)})).sort((a,b)=>a.score-b.score);
+}
+function familyScale(name){
+ if(name==="Nacho")return 1;
+ if(name==="Lucía")return .82;
+ if(name==="Javi")return 1.35;
+ return 1;
+}
+function familyPortionHTML(d){
+ return `<div class="family-portions">${["Nacho","Lucía","Javi"].map(n=>{let st=smartStats(d,familyScale(n));return `<div><b>${n}</b><br>${st.items.map(x=>`${x.name} ${x.grams}g`).join(" · ")}<br><b>${Math.round(st.kcal)} kcal · ${Math.round(st.p)}g prot.</b></div>`}).join("")}</div>`;
+}
+const smartMenuOffsets={};
+const chefHow={
+"Merluza con quinoa y menestra":"Dora ligeramente la merluza. Saltea la menestra, incorpora la quinoa y termina el pescado encima con limón o perejil.",
+"Merluza con patata y ensalada":"Cuece o asa la patata. Haz la merluza a la plancha y sirve con ensalada aliñada al final.",
+"Merluza con arroz integral y verduras":"Saltea las verduras, añade el arroz ya cocido y termina con la merluza marcada a la plancha.",
+"Dorada con patata y tomate":"Hornea o cocina la dorada a la plancha; acompaña con patata y tomate aliñado.",
+"Rape con quinoa y verduras":"Marca el rape fuerte y corto. Saltea verduras con quinoa y devuelve el rape al final para que quede jugoso.",
+"Ensalada de atún, patata y aguacate":"Patata templada, tomate y hojas; añade atún y aguacate al final y aliña justo antes de comer.",
+"Ensalada de garbanzos y atún":"Lava los garbanzos, mezcla con tomate y hojas, añade el atún y aliña con aceite, limón y sal.",
+"Garbanzos con huevo y tomate":"Saltea tomate, incorpora garbanzos y termina con huevo cocido o a la plancha.",
+"Noodles de arroz con mejillones y guisantes":"Saltea guisantes, añade noodles y mejillones al final; termina con limón, soja ligera o perejil.",
+"Noodles con huevo, atún y verduras":"Saltea las verduras, incorpora noodles y huevo; añade el atún fuera del fuego.",
+"Mejillones con patata y ensalada":"Sirve los mejillones calientes con patata cocida y una ensalada fresca; pimentón y limón le van muy bien.",
+"Tortilla con ensalada y aguacate":"Cuaja huevo y claras jugosos; acompaña con tomate, hojas y aguacate aliñados.",
+"Tortilla de guisantes con tomate":"Saltea los guisantes, añade huevo y claras y cuaja la tortilla; tomate aliñado al lado.",
+"Merluza con verduras":"Plancha fuerte para la merluza y verduras salteadas aparte; junta solo al servir.",
+"Rape con ensalada y patata":"Marca el rape 2–3 min por lado y acompaña con patata templada y ensalada.",
+"Atún con tomate, huevo y aguacate":"Monta una ensalada completa con tomate y hojas; añade huevo, atún y aguacate al final.",
+"Mejillones con quinoa y tomate":"Templa quinoa y tomate en sartén y añade los mejillones al final solo para calentarlos."
+};
+function chefInstruction(d){return chefHow[d.n]||`Cocina ${d.i[0][0].toLowerCase()} como ingrediente principal y combina el resto en una guarnición sencilla. Ajusta sal y especias al final.`}
+function missingForDish(d){return d.i.filter(([n])=>!pantryHas(n)&&n!=="AOVE").map(([n])=>n)}
+function addSmartDishByName(name){let d=smartDishes.find(x=>x.n===name);if(!d)return;let rec=get();smartStats(d).items.forEach(x=>rec.items.push({...x,meal:d.type}));save(rec)}
+function renderSmartMenu(type="Comida",onlyHome=true,targetId="pantryMenuOut",advance=false){
+ let all=smartSuggestions(type,true),out=$(targetId);if(!out)return;
+ let key=targetId+"|"+type,off=smartMenuOffsets[key]||0;if(advance&&all.length)off=(off+3)%all.length;smartMenuOffsets[key]=off;
+ let t=totals(),goal=+$('goal').value||profiles[profile],left=Math.round(goal-t.kcal),pLeft=Math.max(0,Math.round(proteinGoals[profile]-t.p));
+ let arr=[];for(let i=0;i<Math.min(3,all.length);i++)arr.push(all[(off+i)%all.length]);
+ let buy=smartSuggestions(type,false).filter(x=>{let m=missingForDish(x.d);return m.length>=1&&m.length<=2&&!arr.some(a=>a.d.n===x.d.n)}).slice(0,3);
+ let context=`<div class="context-strip"><span class="context-chip">🔥 ${left} kcal disponibles</span><span class="context-chip">💪 ${pLeft} g proteína por completar</span><span class="context-chip">↻ evita lo comido hoy y últimos días</span></div>`;
+ let home=arr.length?`<div class="chef-grid">${arr.map((x,k)=>`<div class="chef-card ${k===0?'best':''}"><span class="chef-badge">${k===0?'★ MEJOR AJUSTE':'✓ TODO EN CASA'}</span><h4>${x.d.n}</h4><div class="chef-macros"><span class="chef-macro">${Math.round(x.kcal)} kcal</span><span class="chef-macro">💪 ${Math.round(x.p)} g proteína</span></div><div class="chef-ingredients">${x.items.map(i=>`<b>${i.name}</b> ${i.grams} g`).join(' · ')}</div><div class="chef-how"><b>Cómo hacerlo</b><br>${chefInstruction(x.d)}</div><div class="chef-actions"><button onclick='addSmartDishByName(${JSON.stringify(x.d.n)})'>＋ Añadir al diario</button></div></div>`).join('')}</div>`:`<p class="muted">No encuentro todavía una receta completa con todo lo marcado en casa.</p>`;
+ let shopping=buy.length?`<div class="shop-zone"><div class="shop-title">🛒 Comprando esto, puedes hacer…</div><div class="small muted">Ideas que aprovechan tu despensa y solo necesitan 1–2 cosas más.</div>${buy.map(x=>{let miss=missingForDish(x.d);return `<div class="shop-card"><div><span class="shop-pill">COMPRA ${miss.join(' + ')}</span><div style="margin-top:6px"><b>${x.d.n}</b></div><div class="small muted">${Math.round(x.kcal)} kcal · ${Math.round(x.p)} g proteína</div><div class="small" style="margin-top:4px">${chefInstruction(x.d)}</div></div><div>→</div></div>`}).join('')}</div>`:'';
+ out.innerHTML=context+home+`<div class="chef-actions"><button class="ghost" onclick='renderSmartMenu(${JSON.stringify(type)},true,${JSON.stringify(targetId)},true)'>🔄 Dame otras 3</button></div>`+shopping;
+}
+const menuPools={
+Nacho:{
+"Desayuno":[[["Skyr natural",150],["Fresas",100]],[["Huevo cocido",60],["Tomate",120]],[["Yogur proteico",150]],[["Pan integral",30],["Pechuga pavo lonchas",35],["Tomate",80]],[["Queso fresco",70],["Fresas",100]],[["Plátano",80],["Skyr natural",100]]],
+"Media mañana":[[["Manzana",120]],[["Naranja/Mandarina",150]],[["Pechuga pavo lonchas",50]],[["Huevo cocido",60]],[["Yogur proteico",125]],[["Pan integral",25],["Jamón serrano",25]]],
+"Comida":[[["Pollo",180],["Patata",180],["Ensalada/hojas",150],["AOVE",8]],[["Pavo",180],["Arroz integral cocido",130],["Pimiento",150],["AOVE",8]],[["Ternera magra",160],["Arroz cocido",120],["Ensalada/hojas",150],["AOVE",7]],[["Solomillo cerdo",170],["Patata",200],["Cogollos",150],["AOVE",8]],[["Rape",220],["Arroz basmati cocido",130],["Calabacín",200],["AOVE",8]],[["Merluza",220],["Patata",220],["Menestra de verduras",180],["AOVE",7]],[["Gambones",220],["Arroz cocido",120],["Tomate",180],["AOVE",8]],[["Conejo",170],["Patata",180],["Pimiento",150],["AOVE",7]]],
+"Merienda":[[["Yogur proteico",125]],[["Skyr natural",150]],[["Fresas",200]],[["Kiwi",120]],[["Ciruela",150]],[["Pechuga pavo lonchas",50]]],
+"Cena":[[["Merluza",220],["Alcachofa",200],["AOVE",5]],[["Gambones",200],["Tomate",200],["Aguacate",40],["AOVE",5]],[["Huevo",120],["Claras",150],["Ensalada/hojas",180],["AOVE",5]],[["Dorada/Lubina",200],["Cogollos",180],["Aguacate",40],["AOVE",5]],[["Rape",220],["Calabacín",220],["AOVE",5]],[["Atún al natural",140],["Tomate",200],["Patata",120],["AOVE",5]],[["Mejillones",220],["Gambones",120],["Cogollos",180],["AOVE",5]],[["Pollo",160],["Alcachofa",180],["Tomate",150],["AOVE",5]]]
+},
+Lucía:{
+"Desayuno":[[["Skyr natural",170],["Fresas",120]],[["Yogur natural",150],["Plátano",80]],[["Huevo cocido",60],["Pan integral",35],["Tomate",100]],[["Queso fresco",90],["Manzana",100]],[["Yogur proteico",150],["Arándanos",80]]],
+"Media mañana":[[["Manzana",150]],[["Naranja/Mandarina",180]],[["Yogur proteico",125]],[["Pechuga pavo lonchas",50],["Pan integral",25]],[["Kiwi",130],["Almendras",10]]],
+"Comida":[[["Salmón fresco",150],["Patata",220],["Ensalada/hojas",150],["AOVE",8]],[["Pollo",150],["Arroz integral cocido",160],["Pimiento",150],["AOVE",8]],[["Ternera magra",150],["Arroz cocido",150],["Ensalada/hojas",150],["AOVE",8]],[["Pavo",150],["Patata",250],["Menestra de verduras",180],["AOVE",8]],[["Merluza",200],["Arroz basmati cocido",150],["Calabacín",200],["AOVE",8]],[["Solomillo cerdo",150],["Patata",230],["Cogollos",160],["AOVE",8]]],
+"Merienda":[[["Skyr natural",150]],[["Yogur proteico",125]],[["Fresas",200]],[["Pera",150]],[["Ciruela",150],["Almendras",8]]],
+"Cena":[[["Dorada/Lubina",180],["Patata",140],["Ensalada/hojas",150],["AOVE",6]],[["Gambones",170],["Tomate",200],["Aguacate",60],["Pan integral",40]],[["Huevo",120],["Claras",100],["Ensalada/hojas",180],["Pan integral",40],["AOVE",5]],[["Merluza",200],["Alcachofa",220],["Pan integral",45],["AOVE",6]],[["Atún al natural",130],["Tomate",200],["Aguacate",50],["Patata",150],["AOVE",5]]]
+},
+Javi:{
+"Desayuno":[[["Avena",70],["Skyr natural",200],["Plátano",120]],[["Huevo",120],["Pan integral",100],["Aguacate",50]],[["Yogur griego 0%",250],["Avena",70],["Arándanos",100]],[["Pan integral",120],["Pechuga pavo lonchas",100],["Huevo",60]]],
+"Media mañana":[[["Skyr natural",200],["Plátano",120]],[["Pan integral",80],["Pechuga pavo lonchas",90]],[["Yogur proteico",200],["Almendras",25]],[["Queso cottage",200],["Manzana",180]]],
+"Comida":[[["Pollo",230],["Arroz cocido",280],["AOVE",12],["Pimiento",150]],[["Ternera magra",220],["Pasta cocida",280],["AOVE",12],["Tomate",180]],[["Salmón fresco",220],["Patata",350],["AOVE",8],["Ensalada/hojas",180]],[["Pavo",230],["Arroz integral cocido",280],["AOVE",12],["Calabacín",200]],[["Solomillo cerdo",230],["Cuscús cocido",300],["AOVE",12],["Pimiento",180]]],
+"Merienda":[[["Yogur proteico",200],["Plátano",120]],[["Skyr natural",200],["Avena",40],["Fresas",150]],[["Pan integral",80],["Pechuga pavo lonchas",80]],[["Queso cottage",180],["Almendras",25]]],
+"Cena":[[["Merluza",260],["Arroz cocido",220],["AOVE",10],["Ensalada/hojas",180]],[["Salmón fresco",200],["Patata",300],["AOVE",8],["Cogollos",180]],[["Pollo",220],["Pasta cocida",220],["AOVE",10],["Tomate",200]],[["Huevo",180],["Claras",200],["Pan integral",100],["Aguacate",60],["Tomate",150]],[["Atún fresco",220],["Arroz basmati cocido",230],["AOVE",10],["Calabacín",200]]]
+}};
+function menuStats(arr){let items=arr.map(([meal,n,g])=>({...calcItem(food(n),g),meal}));return {items,kcal:items.reduce((s,x)=>s+x.kcal,0),p:items.reduce((s,x)=>s+x.p,0)}}
+function buildRandomMenu(){let pools=menuPools[profile],out=[];["Desayuno","Media mañana","Comida","Merienda","Cena"].forEach(meal=>{let opts=pools[meal],choice=opts[Math.floor(Math.random()*opts.length)];choice.forEach(([n,g])=>out.push([meal,n,g]))});return out}
+function generateMenu(){let goal=profiles[profile],best=null,bestScore=1e9;for(let i=0;i<200;i++){let st=menuStats(buildRandomMenu()),kcalErr=Math.abs(st.kcal-goal)/goal,pGoal=proteinGoals[profile],proteinPenalty=st.p<pGoal?((pGoal-st.p)/pGoal)*.7:0,score=kcalErr+proteinPenalty;if(score<bestScore){bestScore=score;best=st.items}}currentMenu=best||[];renderMenu()}
+function renderMenu(){if(!currentMenu.length)generateMenu();let kcal=currentMenu.reduce((s,x)=>s+x.kcal,0),p=currentMenu.reduce((s,x)=>s+x.p,0),goal=profiles[profile];$("menuIntro").textContent=profile==="Javi"?"Cada tirada crea una combinación distinta y busca aproximarse a kcal y proteína para ganancia muscular.":"Cada tirada combina opciones distintas de las cinco comidas para aproximarse al objetivo de "+profile+".";let ord=["Desayuno","Media mañana","Comida","Merienda","Cena"];$("dailyMenu").innerHTML=`<div class="stats" style="margin-bottom:12px"><div class="stat"><b>${Math.round(kcal)}</b><span>kcal del menú</span></div><div class="stat"><b>${Math.round(p)} g</b><span>proteína</span></div><div class="stat"><b>${goal}</b><span>objetivo kcal</span></div><div class="stat"><b>${proteinGoals[profile]} g</b><span>objetivo proteína</span></div></div>`+ord.map(m=>{let a=currentMenu.filter(x=>x.meal===m);if(!a.length)return"";return `<div class="meal"><div class="mealhead"><span>${m}</span><span>${Math.round(a.reduce((s,x)=>s+x.kcal,0))} kcal</span></div>${a.map(x=>`<div class="item"><span>${x.name}</span><span class="muted">${x.grams} g</span><span>${Math.round(x.kcal)} kcal</span><span></span></div>`).join("")}</div>`}).join("")}
+function addCurrentMenu(){if(!currentMenu.length)return;let d=get();currentMenu.forEach(x=>d.items.push({...x}));save(d);alert("Menú añadido al día de "+profile)}
+function renderLibrary(q=""){
+ let term=q.trim().toLocaleLowerCase("es"),p=pantry(),arr=sortedFoods().filter(x=>x.name.toLocaleLowerCase("es").includes(term));
+ if(term)arr.sort((a,b)=>(a.name.toLocaleLowerCase("es").startsWith(term)?0:1)-(b.name.toLocaleLowerCase("es").startsWith(term)?0:1)||a.name.localeCompare(b.name,"es"));
+ arr=arr.slice(0,120);
+ $("libraryResults").innerHTML=arr.map(x=>`<div class="recipe"><div class="have-check"><input type="checkbox" ${p[x.name]?"checked":""} onchange='setPantry(${JSON.stringify(x.name)},this.checked)'><label><b>${x.name}</b><span class="small muted">${x.kcal} kcal · ${x.p} g proteína · ${x.c} g HC · ${x.f} g grasa /100 g</span><div class="pantry-note">${p[x.name]?"✓ En casa":"No marcado en casa"}</div></label></div></div>`).join("")||'<p class="muted">No está todavía en vuestra biblioteca. Pulsa “Buscar productos online”.</p>'
+}
+function saveFoundFood(name,kcal,p,c,f,source){
+ let item={name,kcal:+kcal||0,p:+p||0,c:+c||0,f:+f||0};
+ if(!item.kcal){alert("Ese resultado no tiene kcal/100 g suficientes.");return}
+ if(!custom.some(x=>x.name.toLowerCase()===name.toLowerCase())) custom.push(item);
+ localStorage.familyFoods=JSON.stringify(custom);cloud.foodsDirty.add(name);populate();renderLibrary($("libSearch").value);cloudSchedule("foods");
+ alert(name+" guardado en la biblioteca familiar ("+source+")");
+}
+const esToEn={
+ "merluza":"hake","rape":"monkfish","salmón":"salmon","salmon":"salmon","bacalao":"cod","atún":"tuna","atun":"tuna",
+ "sardina":"sardine","sardinas":"sardines","gambón":"shrimp","gambones":"shrimp","langostino":"shrimp","langostinos":"shrimp",
+ "pulpo":"octopus","calamar":"squid","sepia":"cuttlefish","mejillón":"mussel","mejillones":"mussels",
+ "pollo":"chicken","pavo":"turkey","ternera":"beef","cerdo":"pork","conejo":"rabbit","solomillo de cerdo":"pork tenderloin",
+ "solomillo":"tenderloin","entrecot":"beef steak","carne picada":"ground beef","jamón":"ham","jamon":"ham",
+ "huevo":"egg","huevos":"eggs","claras":"egg white","leche":"milk","queso":"cheese","yogur":"yogurt",
+ "patata":"potato","arroz":"rice","pasta":"pasta","pan":"bread","avena":"oats","quinoa":"quinoa","cuscús":"couscous",
+ "tomate":"tomato","aguacate":"avocado","alcachofa":"artichoke","lechuga":"lettuce","pepino":"cucumber","pimiento":"pepper",
+ "cebolla":"onion","calabacín":"zucchini","calabacin":"zucchini","berenjena":"eggplant","brócoli":"broccoli","brocoli":"broccoli",
+ "espinaca":"spinach","zanahoria":"carrot","plátano":"banana","platano":"banana","manzana":"apple","naranja":"orange",
+ "mandarina":"tangerine","fresas":"strawberries","fresa":"strawberry","pera":"pear","kiwi":"kiwi","uva":"grapes",
+ "almendras":"almonds","nueces":"walnuts","aceite de oliva":"olive oil"
+};
+function translateFood(q){
+ let low=q.toLowerCase().trim();
+ if(esToEn[low]) return esToEn[low];
+ let out=low;
+ Object.keys(esToEn).sort((a,b)=>b.length-a.length).forEach(k=>{out=out.replace(new RegExp("\\b"+k+"\\b","g"),esToEn[k])});
+ return out;
+}
+function nutrientUSDA(food,id){
+ let n=(food.foodNutrients||[]).find(x=>x.nutrientId===id || x.nutrientNumber===String(id));
+ return n?+n.value||0:0;
+}
+async function searchOnline(){let q=$("libSearch").value.trim();if(!q)return;renderLibrary(q);$("onlineResults").innerHTML='<p class="muted">Buscando productos en español…</p>';let off=[];try{let u="https://es.openfoodfacts.org/cgi/search.pl?search_terms="+encodeURIComponent(q)+"&search_simple=1&action=process&json=1&page_size=20&fields=product_name,product_name_es,brands,nutriments";let r=await fetch(u),j=await r.json();off=(j.products||[]).filter(x=>(x.product_name_es||x.product_name)&&x.nutriments&&x.nutriments["energy-kcal_100g"]).slice(0,12).map(x=>({name:(x.product_name_es||x.product_name)+(x.brands?" · "+x.brands:""),kcal:+x.nutriments["energy-kcal_100g"]||0,p:+x.nutriments.proteins_100g||0,c:+x.nutriments.carbohydrates_100g||0,f:+x.nutriments.fat_100g||0}))}catch(e){}let card=x=>`<div class="suggest" style="margin-bottom:8px"><b>${x.name}</b><div class="small muted">${Math.round(x.kcal)} kcal · ${Math.round(x.p*10)/10} g proteína · ${Math.round(x.c*10)/10} g HC · ${Math.round(x.f*10)/10} g grasa /100 g</div><div class="small muted">Fuente: Open Food Facts España</div><button onclick='saveFoundFood(${JSON.stringify(x.name)},${x.kcal},${x.p},${x.c},${x.f},"Open Food Facts España")'>Guardar en biblioteca</button></div>`;$("onlineResults").innerHTML=off.length?`<h3>🛒 Resultados online en español</h3>${off.map(card).join("")}`:'<p class="over">No he encontrado un producto útil en español. Para alimentos generales usa la biblioteca interna.</p>'}
+
+function updateFill(){let f=findFoodByInput("fillFood"),left=(+$("goal").value||profiles[profile])-totals().kcal;if(!f){$("maxGrams").value="Selecciona un alimento";return}$("maxGrams").value=left>0?Math.floor(left*100/f.kcal)+" g":"0 g"}
+function renderWeek(){let baseD=new Date($("date").value+"T12:00:00"),sum=0,n=0,h="";for(let i=6;i>=0;i--){let dt=new Date(baseD);dt.setDate(dt.getDate()-i);let ds=iso(dt),d=JSON.parse(localStorage.getItem(`diet:${profile}:${ds}`)||'{"items":[]}'),q=Math.round(d.items.reduce((s,x)=>s+x.kcal,0));if(q){sum+=q;n++}h+=`<div class="day"><span>${dt.toLocaleDateString("es",{weekday:"short"})}</span><b class="${q>profiles[profile]?"over":"ok"}">${q||"—"}</b><span>kcal</span></div>`}$("weekGrid").innerHTML=h;$("weekAvg").textContent=n?`Media de los ${n} días registrados: ${Math.round(sum/n)} kcal/día`:"Sin datos todavía."}
+function records(field){let a=[];for(let i=0;i<localStorage.length;i++){let key=localStorage.key(i);if(key.startsWith("diet:"+profile+":")){let d=JSON.parse(localStorage.getItem(key));if(d[field])a.push({date:key.split(":")[2],v:+d[field]})}}return a.sort((a,b)=>a.date.localeCompare(b.date)).slice(-10)}
+function chart(id,field){let a=records(field),el=$(id);if(!a.length){el.innerHTML='<p class="muted">Añade registros para ver la gráfica.</p>';return}let min=Math.min(...a.map(x=>x.v)),max=Math.max(...a.map(x=>x.v));el.innerHTML=a.map(x=>{let h=35+(x.v-min)/(max-min||1)*145;return `<div class="col"><b class="small">${x.v}</b><div class="bar" style="height:${h}px"></div><span>${x.date.slice(5)}</span></div>`}).join("")}
+function renderCharts(){chart("weightChart","weight");chart("waistChart","waist")}
+function setP(p){if(cloud.ready&&cloud.profileRow&&p!==cloud.profileRow.name)return;profile=p;currentMenu=[];localStorage.profile=p;$("goal").value=profiles[p];$("bn").classList.toggle("active",p==="Nacho");$("bl").classList.toggle("active",p==="Lucía");$("bj").classList.toggle("active",p==="Javi");load()}
+function load(){let d=get();$("weight").value=d.weight||"";$("waist").value=d.waist||"";render()}
+$("add").onclick=()=>{let f=findFoodByInput("food"),g=+$("grams").value;if(!f){alert("Selecciona un alimento de la lista.");return}if(g<=0)return;let d=get();d.items.push({...calcItem(f,g),meal:$("meal").value});save(d);$("food").value=""}
+$("bn").onclick=()=>setP("Nacho");$("bl").onclick=()=>setP("Lucía");$("bj").onclick=()=>setP("Javi");$("date").onchange=load;$("goal").onchange=()=>{profiles[profile]=+$("goal").value||profiles[profile];render();cloudSchedule("profile")};$("fillFood").oninput=updateFill;
+["weight","waist"].forEach(id=>$(id).onchange=()=>{let d=get();d[id]=$(id).value;save(d)})
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".section").forEach(x=>x.classList.remove("show"));$(b.dataset.tab).classList.add("show");render()})
+$("saveFood").onclick=()=>{let n=$("fn").value.trim(),kk=+$("fk").value;if(!n||!kk)return;custom.push({name:n,kcal:kk,p:+$("fp").value||0,c:+$("fc").value||0,f:+$("ff").value||0});localStorage.familyFoods=JSON.stringify(custom);cloud.foodsDirty.add(n);populate();renderLibrary();render();cloudSchedule("foods");["fn","fk","fp","fc","ff"].forEach(x=>$(x).value="")}
+$("export").onclick=()=>{let o={};for(let i=0;i<localStorage.length;i++){let q=localStorage.key(i);if(q.startsWith("diet:")||["customFoods","familyFoods","miDietaFamilyPantryV5","miDietaFamilyRecipesV5","profile"].includes(q))o[q]=localStorage.getItem(q)}let b=new Blob([JSON.stringify(o,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="mi-dieta-backup.json";a.click()}
+$("import").onchange=e=>{let r=new FileReader();r.onload=()=>{try{Object.entries(JSON.parse(r.result)).forEach(([a,b])=>localStorage.setItem(a,b));custom=JSON.parse(localStorage.familyFoods||localStorage.customFoods||"[]");populate();load();alert("Datos importados")}catch{alert("Archivo no válido")}};r.readAsText(e.target.files[0])}
+
+$("genMenu").onclick=generateMenu;$("addMenu").onclick=addCurrentMenu;
+$("libSearch").oninput=e=>renderLibrary(e.target.value);$("clearSearch").onclick=()=>{$("libSearch").value="";$("onlineResults").innerHTML="";renderLibrary()};
+$("onlineSearch").onclick=searchOnline;$("libSearch").onkeydown=e=>{if(e.key==="Enter")searchOnline()};
+$("date").value=iso(new Date());populate();renderLibrary();setP(profile);
+setupFoodPicker("food","foodResults");setupFoodPicker("fillFood","fillFoodResults");
+
+// ===== V5.0 additions: NON-DESTRUCTIVE storage =====
+function pantry(){try{return JSON.parse(localStorage.getItem(V5_PANTRY_KEY)||"{}")}catch(e){return {}}}
+function savePantry(x,name=null){localStorage.setItem(V5_PANTRY_KEY,JSON.stringify(x));if(name)cloud.pantryDirty.add(name);cloudSchedule("pantry")}
+function pantryNames(){let p=pantry();return Object.keys(p).filter(k=>p[k])}
+function setPantry(name,value){let p=pantry();p[name]=!!value;savePantry(p,name);renderPantry($("pantrySearch")?.value||"");if($("libSearch"))renderLibrary($("libSearch").value)}
+function togglePantry(name){let p=pantry();setPantry(name,!p[name])}
+function renderPantry(q=""){
+ if(!$("pantryGrid"))return;
+ let t=q.trim().toLocaleLowerCase("es"),p=pantry(),arr=sortedFoods().filter(f=>!t||f.name.toLocaleLowerCase("es").includes(t));
+ arr.sort((a,b)=>(p[b.name]?1:0)-(p[a.name]?1:0)||a.name.localeCompare(b.name,"es"));
+ $("pantryGrid").innerHTML=arr.slice(0,160).map(f=>`<div class="pantry-item ${p[f.name]?"have":""}"><div class="have-check"><input type="checkbox" ${p[f.name]?"checked":""} onchange='setPantry(${JSON.stringify(f.name)},this.checked)'><label><b>${f.name}</b><div class="small muted">${f.kcal} kcal · ${f.p} g proteína /100 g</div></label></div></div>`).join("")
+}
+function familyRecipes(){try{return JSON.parse(localStorage.getItem(V5_RECIPES_KEY)||"[]")}catch(e){return []}}
+function saveRecipes(x,name=null){localStorage.setItem(V5_RECIPES_KEY,JSON.stringify(x));if(name)cloud.recipeDirty.add(name);cloudSchedule("recipes")}
+function recipeCalc(r){let out={kcal:0,p:0,c:0,f:0},valid=[];r.ingredients.forEach(i=>{let f=food(i.name);if(f){let z=calcItem(f,i.grams);out.kcal+=z.kcal;out.p+=z.p;out.c+=z.c;out.f+=z.f;valid.push(i)}});return {...out,valid}}
+function refreshDayFamilyRecipes(){let el=$("dayFamilyRecipe");if(!el)return;let rs=familyRecipes();el.innerHTML='<option value="">— Elegir —</option>'+rs.map((r,i)=>`<option value="${i}">${r.name}</option>`).join("")}
+function addFamilyRecipePortion(i,portion=1){let r=familyRecipes()[i];if(!r)return;let sv=Math.max(1,+r.servings||1),d=get(),added=0;(r.ingredients||[]).forEach(x=>{let f=food(x.name);if(f){d.items.push({...calcItem(f,x.grams/sv*portion),meal:"Comida"});added++}});if(!added)return alert("No he podido reconocer los ingredientes.");save(d)}
+function renderRecipes(){refreshDayFamilyRecipes();if(!$("recipeList"))return;let rs=familyRecipes();$("recipeList").innerHTML=rs.length?rs.map((r,i)=>{let z=recipeCalc(r),sv=r.servings||1;return `<div class="recipe-card"><b>${r.name}</b><div class="small">${Math.round(z.kcal/sv)} kcal · ${Math.round(z.p/sv)} g proteína por ración</div><div class="ingredients">${r.ingredients.map(x=>`${x.name} ${x.grams} g`).join(" · ")}</div><button onclick="addRecipeServing(${i})">Añadir 1 ración al diario</button> <button onclick="deleteRecipe(${i})">Eliminar</button></div>`}).join(""):'<p class="muted">Todavía no hay recetas guardadas.</p>'}
+function deleteRecipe(i){let r=familyRecipes(),gone=r[i];if(gone?.name)cloud.recipeDeletes.add(gone.name);r.splice(i,1);saveRecipes(r);renderRecipes()}
+function addRecipeServing(i){addFamilyRecipePortion(i,1)}
+let recipeBuilder=[];
+function renderRecipeBuilder(){
+ let sv=Math.max(1,+$("recipeServings").value||1),kcal=0,p=0,c=0,fat=0;
+ $("recipeBuilderList").innerHTML=recipeBuilder.length?recipeBuilder.map((x,i)=>{let fd=food(x.name),z=fd?calcItem(fd,x.grams):{kcal:0,p:0,c:0,f:0};kcal+=z.kcal;p+=z.p;c+=z.c;fat+=z.f;return `<div class="item"><span><b>${x.name}</b></span><span>${x.grams} g</span><span>${Math.round(z.kcal)} kcal</span><button class="x" onclick="removeRecipeIngredient(${i})">×</button></div>`}).join(""):'<p class="muted">Añade el primer ingrediente.</p>';
+ $("recipeBuilderTotals").innerHTML=`<div class="stat"><b>${Math.round(kcal)}</b><span>kcal receta</span></div><div class="stat"><b>${Math.round(p)} g</b><span>proteína</span></div><div class="stat"><b>${Math.round(kcal/sv)}</b><span>kcal/ración</span></div><div class="stat"><b>${Math.round(p/sv)} g</b><span>proteína/ración</span></div>`;
+}
+function addRecipeIngredient(){let f=findFoodByInput("recipeFood"),g=+$("recipeFoodGrams").value;if(!f)return alert("Elige un alimento de la lista.");if(!(g>0))return alert("Indica una cantidad válida.");let ex=recipeBuilder.find(x=>x.name===f.name);if(ex)ex.grams+=g;else recipeBuilder.push({name:f.name,grams:g});$("recipeFood").value="";$("recipeFoodGrams").value=100;renderRecipeBuilder()}
+function removeRecipeIngredient(i){recipeBuilder.splice(i,1);renderRecipeBuilder()}
+function clearRecipeBuilder(){recipeBuilder=[];$("recipeName").value="";renderRecipeBuilder()}
+function saveRecipeFromForm(){let name=$("recipeName").value.trim(),sv=Math.max(1,+$("recipeServings").value||1);if(!name||!recipeBuilder.length)return alert("Pon un nombre y añade al menos un ingrediente.");let r=familyRecipes();r.push({name,servings:sv,ingredients:recipeBuilder.map(x=>({...x}))});saveRecipes(r,name);recipeBuilder=[];$("recipeName").value="";renderRecipeBuilder();renderRecipes()}
+function pantryMealOptions(meal){return smartSuggestions(meal,true).map(x=>x.d.i)}
+function pantryOptionStats(opt){let d={i:opt};return smartStats(d)}
+function generatePantryMenu(){
+ let hour=new Date().getHours(),type=hour>=17?"Cena":"Comida";
+ renderSmartMenu(type,true,"pantryMenuOut");
+}
+if($("pantrySearch")){$("pantrySearch").oninput=e=>renderPantry(e.target.value);$("clearPantrySearch").onclick=()=>{$("pantrySearch").value="";renderPantry()};$("pantryMenuBtn").onclick=generatePantryMenu};
+if($("smartLunchBtn"))$("smartLunchBtn").onclick=()=>{renderSmartMenu("Comida",true,"smartMenuOut")};
+if($("smartDinnerBtn"))$("smartDinnerBtn").onclick=()=>{renderSmartMenu("Cena",true,"smartMenuOut")}
+if($("saveRecipe"))$("saveRecipe").onclick=saveRecipeFromForm;
+if($("addRecipeIngredient"))$("addRecipeIngredient").onclick=addRecipeIngredient;
+if($("clearRecipeBuilder"))$("clearRecipeBuilder").onclick=clearRecipeBuilder;
+if($("recipeServings"))$("recipeServings").oninput=renderRecipeBuilder;
+setupFoodPicker("recipeFood","recipeFoodResults");
+renderRecipeBuilder();
+if($("addDayFamilyRecipe"))$("addDayFamilyRecipe").onclick=()=>{let v=$("dayFamilyRecipe").value;if(v==="")return alert("Elige una receta familiar.");addFamilyRecipePortion(+v,Math.max(.25,+$("dayRecipePortions").value||1))};
+renderPantry();renderRecipes();
+
+
+// V5.0.2: navegación de las dos pestañas nuevas.
+// Se añade de forma independiente para no alterar el controlador V4 existente.
+document.querySelectorAll('button[data-tab="pantry"],button[data-tab="familyRecipesTab"]').forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.style.display="none");
+    document.querySelectorAll("button[data-tab]").forEach(x=>x.classList.remove("active"));
+    const target=document.getElementById(btn.dataset.tab);
+    if(target) target.style.display="";
+    btn.classList.add("active");
+    if(btn.dataset.tab==="pantry") renderPantry($("pantrySearch")?.value||"");
+    if(btn.dataset.tab==="familyRecipesTab") renderRecipes();
+  });
+});
+
+
+
+// ===== V5.5.2 WOW navigation =====
+function wowCloseMore(){const d=$("moreDrawer"),sh=$("drawerShade");if(d)d.classList.remove("open");if(sh)sh.classList.remove("open")}
+function wowOpenMore(){const d=$("moreDrawer"),sh=$("drawerShade");if(d)d.classList.add("open");if(sh)sh.classList.add("open")}
+function wowGo(tab){
+  wowCloseMore();
+  document.querySelectorAll(".section").forEach(x=>x.classList.remove("show"));
+  document.querySelectorAll(".tab").forEach(x=>x.style.display="none");
+  const t=$(tab); if(!t)return; if(t.classList.contains("section"))t.classList.add("show");else t.style.display="";
+  document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));
+  const nb=document.querySelector(`.nav button[data-tab="${tab}"]`); if(nb)nb.classList.add("active");
+  if(tab==="pantry")renderPantry($("pantrySearch")?.value||"");
+  if(tab==="familyRecipesTab")renderRecipes();
+  render(); window.scrollTo({top:0,behavior:"smooth"});
+}
+if($("moreNav"))$("moreNav").onclick=wowOpenMore;
+if($("closeMore"))$("closeMore").onclick=wowCloseMore;
+if($("drawerShade"))$("drawerShade").onclick=wowCloseMore;
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>wowGo(b.dataset.go));
+if($("quickAddNav"))$("quickAddNav").onclick=()=>{wowGo("today");setTimeout(()=>$("addFoodCard")?.scrollIntoView({behavior:"smooth",block:"center"}),120)};
+
+// ===== V5.5 CLOUD: login, non-destructive migration and automatic sync =====
+function cloudSetStatus(text,state=""){
+ const el=$("cloudStatus"); if(!el)return; el.textContent=text; el.className="cloudstatus "+state;
+}
+function cloudNorm(v){return String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toLocaleLowerCase("es")}
+function cloudDietKeysFor(name=profile){
+ const wanted=cloudNorm(name), out=[];
+ for(let i=0;i<localStorage.length;i++){
+  const q=localStorage.key(i); if(!q||!q.startsWith("diet:"))continue;
+  const parts=q.split(":"); if(parts.length<3)continue;
+  if(cloudNorm(parts[1])===wanted)out.push(q);
+ }
+ return out.sort();
+}
+function cloudInspectLocal(){
+ const allDiet=[];let totalItems=0;const profilesFound={};
+ for(let i=0;i<localStorage.length;i++){const q=localStorage.key(i);if(!q||!q.startsWith("diet:"))continue;allDiet.push(q);const parts=q.split(":");const pn=parts[1]||"?";profilesFound[pn]=(profilesFound[pn]||0)+1;try{totalItems+=(JSON.parse(localStorage.getItem(q)||"{}").items||[]).length}catch(e){}}
+ const own=cloudDietKeysFor(profile);let ownItems=0;for(const q of own){try{ownItems+=(JSON.parse(localStorage.getItem(q)||"{}").items||[]).length}catch(e){}}
+ return {ownDays:own.length,ownItems,allDays:allDiet.length,totalItems,profilesFound,storageKeys:localStorage.length,foods:custom.length,recipes:familyRecipes().length,pantry:Object.keys(pantry()).length};
+}
+function cloudLocalSummary(){
+ const x=cloudInspectLocal();
+ const extra=x.allDays!==x.ownDays?` · ${x.allDays} días totales en este navegador`:"";
+ return `${x.ownDays} días de ${profile} · ${x.ownItems} registros · ${x.foods} alimentos · ${x.recipes} recetas${extra}`;
+}
+function cloudBackupPayload(){
+ const o={_meta:{app:"Mi Dieta",created_at:new Date().toISOString(),profile,origin:location.origin}};
+ for(let i=0;i<localStorage.length;i++){const q=localStorage.key(i);if(q&&(q.startsWith("diet:")||["customFoods","familyFoods","miDietaFamilyPantryV5","miDietaFamilyRecipesV5","profile"].includes(q)))o[q]=localStorage.getItem(q)}
+ return o;
+}
+function cloudDownloadBackup(){
+ const b=new Blob([JSON.stringify(cloudBackupPayload(),null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=`mi-dieta-antes-nube-${profile}-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);localStorage.setItem(`miDietaBackupReady:${cloud.user?.id||profile}`,new Date().toISOString());$("migrateBtn").disabled=cloudDietKeysFor(profile).length===0;return true;
+}
+function cloudScanLocal(show=true){
+ const x=cloudInspectLocal();$("migrationSummary").textContent=cloudLocalSummary();
+ const ready=!!localStorage.getItem(`miDietaBackupReady:${cloud.user?.id||profile}`);$("migrateBtn").disabled=!(x.ownDays>0&&ready);
+ if(show){const pf=Object.entries(x.profilesFound).map(([n,c])=>`${n}: ${c} días`).join(" · ")||"ningún perfil";alert(`He encontrado en ESTE navegador:
+
+${x.ownDays} días de ${profile} (${x.ownItems} registros)
+${x.foods} alimentos familiares
+${x.recipes} recetas
+${x.pantry} entradas de despensa
+${x.storageKeys} claves localStorage en total
+
+Perfiles detectados: ${pf}
+
+${x.allDays===0?"Si la app antigua sí muestra datos, Safari y la app/página nueva están usando almacenes distintos. En ese caso migraremos mediante una copia JSON, sin borrar nada.":"Antes de migrar descarga la copia local."}`)}
+ return x;
+}
+function cloudFingerprint(date,item,index){
+ const raw=[profile,date,item.meal||"",item.name||"",Number(item.grams||0).toFixed(2),Number(item.kcal||0).toFixed(2),index].join("|");
+ let h=2166136261;for(let i=0;i<raw.length;i++){h^=raw.charCodeAt(i);h=Math.imul(h,16777619)}return `local-${profile}-${date}-${(h>>>0).toString(16)}`;
+}
+async function cloudLogin(){
+ const email=$("authEmail").value.trim(),password=$("authPassword").value;$("authMsg").textContent="Entrando…";
+ const {error}=await sb.auth.signInWithPassword({email,password}); if(error){$("authMsg").textContent="No se ha podido entrar: "+error.message;return} await cloudBootstrap();
+}
+async function cloudLogout(){await sb.auth.signOut();cloud.ready=false;cloud.user=null;cloud.profileRow=null;cloud.familyId=null;$("authOverlay").classList.remove("hidden");$("logoutBtn").style.display="none";cloudSetStatus("☁ Sin sesión","")}
+async function cloudBootstrap(){
+ try{
+  cloudSetStatus("⏳ Conectando…","busy");
+  const {data:{session}}=await sb.auth.getSession(); if(!session){$("authOverlay").classList.remove("hidden");cloudSetStatus("☁ Inicia sesión","");return}
+  cloud.user=session.user;
+  const {data:pr,error:pe}=await sb.from("profiles").select("id,family_id,user_id,name,calorie_goal,protein_goal,mode").single(); if(pe)throw pe;
+  cloud.profileRow=pr;cloud.familyId=pr.family_id;profile=pr.name;localStorage.profile=profile;profiles[profile]=pr.calorie_goal||profiles[profile];proteinGoals[profile]=Number(pr.protein_goal)||proteinGoals[profile];profileModes[profile]=pr.mode||profileModes[profile];
+  cloud.ready=true;$("authOverlay").classList.add("hidden");$("cloudUser").textContent=profile;$("logoutBtn").style.display="";$("cloudPanel").style.display="";$("migrationSummary").textContent=cloudLocalSummary();$("migrateBtn").disabled=true;
+  setP(profile); await cloudPull(false); cloudSetStatus("☁ Guardado","ok");
+ }catch(e){console.error(e);cloudSetStatus("⚠ Error nube","err");$("authMsg").textContent="Error de conexión: "+(e.message||e)}
+}
+function cloudSchedule(kind,payload=null){
+ if(!cloud.ready)return;
+ if(kind==="diary")cloud.dirtyDiaryDates.add(payload||$("date").value);
+ cloud.pending.add(kind);clearTimeout(cloud.timer);cloudSetStatus("⏳ Guardando…","busy");
+ cloud.timer=setTimeout(()=>cloudFlush().catch(e=>{console.error(e);cloudSetStatus("⚠ Sin guardar","err")}),500);
+}
+async function cloudFlush(){
+ if(!cloud.ready)return;
+ // Si una lectura/migración está usando la nube, NO perder el guardado pendiente.
+ // Reintentarlo cuando quede libre en vez de devolver sin más.
+ if(cloud.syncing){
+  clearTimeout(cloud.timer);
+  cloud.timer=setTimeout(()=>cloudFlush().catch(e=>{console.error(e);cloudSetStatus("⚠ Sin guardar","err")}),350);
+  return;
+ }
+ cloud.syncing=true;
+ try{
+  while(cloud.pending.size){
+   const kinds=[...cloud.pending];cloud.pending.clear();
+   for(const kind of kinds)await cloudPushKind(kind,true);
+  }
+  cloudSetStatus("☁ Guardado","ok");
+ }catch(e){cloudSetStatus("⚠ Sin guardar","err");throw e}finally{cloud.syncing=false;if(cloud.pending.size)cloudSchedule([...cloud.pending][0])}
+}
+async function cloudPushKind(kind,fromFlush=false){
+ if(!cloud.ready)return;
+ if(kind==="diary")await cloudUploadDirtyDiary();
+ else if(kind==="foods")await cloudUploadFoods();
+ else if(kind==="pantry")await cloudUploadPantry();
+ else if(kind==="recipes")await cloudUploadRecipes();
+ else if(kind==="profile"){const r=await sb.from("profiles").update({calorie_goal:+$("goal").value||profiles[profile],protein_goal:proteinGoals[profile],updated_at:new Date().toISOString()}).eq("id",cloud.profileRow.id);if(r.error)throw r.error}
+ if(!fromFlush)cloudSetStatus("☁ Guardado","ok");
+}
+async function cloudUploadDirtyDiary(){
+ // Delta sync: nunca reconstruye/borrar un día entero. Solo borra entradas que el usuario borró
+ // explícitamente y hace upsert de los días realmente modificados en este dispositivo.
+ const deletes=[...cloud.diaryDeletes];
+ for(const key of deletes){const r=await sb.from("diary_entries").delete().eq("user_id",cloud.user.id).eq("migration_key",key).select("id");if(r.error)throw r.error;if(!r.data||r.data.length!==1)throw new Error(`DELETE diario no confirmado por Supabase (${key}): ${r.data?.length||0} filas borradas`);cloud.diaryDeletes.delete(key)}
+ const dates=[...cloud.dirtyDiaryDates];
+ for(const date of dates){
+  const key=`diet:${profile}:${date}`,d=JSON.parse(localStorage.getItem(key)||'{"items":[],"weight":"","waist":""}');
+  (d.items||[]).forEach(x=>{if(!x.migration_key)x.migration_key=cloudNewKey(date)});localStorage.setItem(key,JSON.stringify(d));
+  for(const x of (d.items||[])){const row={family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,entry_date:date,meal:x.meal||"Extra",food_name:x.name,grams:+x.grams||0,kcal:+x.kcal||0,protein:+x.p||0,carbs:+x.c||0,fat:+x.f||0,migration_key:x.migration_key};const z=await sb.from("diary_entries").upsert(row,{onConflict:"user_id,migration_key"});if(z.error)throw z.error}
+  const meas={family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,measured_on:date,weight_kg:d.weight!==""&&d.weight!=null?+d.weight:null,waist_cm:d.waist!==""&&d.waist!=null?+d.waist:null,updated_at:new Date().toISOString()};
+  if(meas.weight_kg!=null||meas.waist_cm!=null){const {error}=await sb.from("measurements").upsert(meas,{onConflict:"profile_id,measured_on"});if(error)throw error}else{const {error}=await sb.from("measurements").delete().eq("profile_id",cloud.profileRow.id).eq("measured_on",date);if(error)throw error}
+  cloud.dirtyDiaryDates.delete(date)
+ }
+}
+async function cloudUploadFoods(full=false){
+ const names=full?custom.map(f=>f.name):[...cloud.foodsDirty];
+ for(const name of names){const f=custom.find(x=>x.name===name);if(!f)continue;let {data,error}=await sb.from("foods").select("id").eq("family_id",cloud.familyId).eq("name",f.name).maybeSingle();if(error)throw error;let row={family_id:cloud.familyId,name:f.name,kcal_100:+f.kcal||0,protein_100:+f.p||0,carbs_100:+f.c||0,fat_100:+f.f||0,source:"Mi Dieta",created_by:cloud.user.id,updated_at:new Date().toISOString()};let r=data?await sb.from("foods").update(row).eq("id",data.id):await sb.from("foods").insert(row);if(r.error)throw r.error;cloud.foodsDirty.delete(name)}
+}
+async function cloudUploadPantry(full=false){
+ const p=pantry(),names=full?Object.keys(p):[...cloud.pantryDirty];
+ for(const name of names){let val=!!p[name],{data,error}=await sb.from("pantry_items").select("id").eq("family_id",cloud.familyId).eq("food_name",name).maybeSingle();if(error)throw error;let row={family_id:cloud.familyId,food_name:name,in_stock:val,updated_by:cloud.user.id,updated_at:new Date().toISOString()};let r=data?await sb.from("pantry_items").update(row).eq("id",data.id):await sb.from("pantry_items").insert(row);if(r.error)throw r.error;cloud.pantryDirty.delete(name)}
+}
+async function cloudUploadRecipes(full=false){
+ const local=familyRecipes(),names=new Set(local.map(r=>cloudNorm(r.name)));
+ for(const name of [...cloud.recipeDeletes]){let z=await sb.from("recipes").delete().eq("family_id",cloud.familyId).eq("name",name);if(z.error)throw z.error;cloud.recipeDeletes.delete(name)}
+ const all=await sb.from("recipes").select("id,name").eq("family_id",cloud.familyId);if(all.error)throw all.error;
+ const work=full?local:local.filter(r=>cloud.recipeDirty.has(r.name));
+ for(const r of work){
+  let existing=(all.data||[]).find(x=>cloudNorm(x.name)===cloudNorm(r.name)),rid=existing?.id;
+  if(!rid){let ins=await sb.from("recipes").insert({family_id:cloud.familyId,name:r.name,servings:+r.servings||1,created_by:cloud.user.id}).select("id").single();if(ins.error)throw ins.error;rid=ins.data.id}else{let up=await sb.from("recipes").update({servings:+r.servings||1,updated_at:new Date().toISOString()}).eq("id",rid);if(up.error)throw up.error;let del=await sb.from("recipe_ingredients").delete().eq("recipe_id",rid);if(del.error)throw del.error}
+  let ingredients=(r.ingredients||[]).map(x=>{let f=food(x.name)||{kcal:0,p:0,c:0,f:0};return {recipe_id:rid,food_name:x.name,grams:+x.grams||0,kcal_100:+f.kcal||0,protein_100:+f.p||0,carbs_100:+f.c||0,fat_100:+f.f||0}});if(ingredients.length){let z=await sb.from("recipe_ingredients").insert(ingredients);if(z.error)throw z.error}cloud.recipeDirty.delete(r.name)
+ }
+}
+async function cloudMigrate(){
+ const pre=cloudInspectLocal();if(!pre.ownDays){alert("No hay días locales del usuario autenticado en este navegador. No se enviará nada.");return}if(!localStorage.getItem(`miDietaBackupReady:${cloud.user?.id||profile}`)){alert("Primero descarga la copia local de seguridad.");return}if(!confirm(`Voy a copiar ${pre.ownDays} días y ${pre.ownItems} registros de ${profile} a la nube. El localStorage NO se borrará. ¿Continuar?`))return;
+ cloud.syncing=true;cloudSetStatus("⏳ Migrando…","busy");$("migrateBtn").disabled=true;
+ try{
+  await cloudUploadFoods(true);await cloudUploadPantry(true);await cloudUploadRecipes(true);
+  let keys=cloudDietKeysFor(profile)
+  for(const key of keys){let date=key.split(":")[2],d=JSON.parse(localStorage.getItem(key)||'{"items":[]}');(d.items||[]).forEach((x,i)=>{if(!x.migration_key)x.migration_key=cloudFingerprint(date,x,i)});localStorage.setItem(key,JSON.stringify(d));let rows=(d.items||[]).map((x)=>({family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,entry_date:date,meal:x.meal||"Extra",food_name:x.name,grams:+x.grams||0,kcal:+x.kcal||0,protein:+x.p||0,carbs:+x.c||0,fat:+x.f||0,migration_key:x.migration_key}));for(const row of rows){let z=await sb.from("diary_entries").upsert(row,{onConflict:"user_id,migration_key"});if(z.error)throw z.error}if(d.weight||d.waist){let z=await sb.from("measurements").upsert({family_id:cloud.familyId,profile_id:cloud.profileRow.id,user_id:cloud.user.id,measured_on:date,weight_kg:d.weight?+d.weight:null,waist_cm:d.waist?+d.waist:null,updated_at:new Date().toISOString()},{onConflict:"profile_id,measured_on"});if(z.error)throw z.error}}
+  localStorage.setItem(`miDietaCloudMigrated:${cloud.user.id}`,new Date().toISOString());await cloudPull(false);cloudSetStatus("☁ Migración verificada","ok");alert("Copia a la nube completada. Los datos locales siguen en este navegador.");
+ }catch(e){console.error(e);cloudSetStatus("⚠ Migración incompleta","err");alert("No se ha borrado nada. La migración se detuvo por este error: "+(e.message||e))}finally{cloud.syncing=false;$("migrateBtn").disabled=false;$("migrationSummary").textContent=cloudLocalSummary()}
+}
+async function cloudPull(showAlert=true){
+ if(!cloud.ready)return;cloud.syncing=true;cloudSetStatus("⏳ Actualizando…","busy");
+ try{
+  const [fr,rr,pr,dr,mr]=await Promise.all([
+   sb.from("foods").select("name,kcal_100,protein_100,carbs_100,fat_100").eq("family_id",cloud.familyId),
+   sb.from("recipes").select("id,name,servings,recipe_ingredients(food_name,grams)").eq("family_id",cloud.familyId),
+   sb.from("pantry_items").select("food_name,in_stock").eq("family_id",cloud.familyId),
+   sb.from("diary_entries").select("entry_date,meal,food_name,grams,kcal,protein,carbs,fat,migration_key").eq("user_id",cloud.user.id),
+   sb.from("measurements").select("measured_on,weight_kg,waist_cm").eq("user_id",cloud.user.id)
+  ]);for(const r of [fr,rr,pr,dr,mr])if(r.error)throw r.error;
+  // Un dispositivo queda "vinculado" a la nube solo cuando sabemos que ya trabaja con datos cloud.
+  // Esto evita que un navegador antiguo sin migrar pierda datos locales, pero permite que un
+  // portátil ya sincronizado elimine correctamente copias locales de filas borradas en otro dispositivo.
+  const cloudBoundKey=`miDietaCloudBound:${cloud.user.id}`;
+  const ownBefore=cloudDietKeysFor(profile);
+  const hasCloudEraLocal=ownBefore.some(key=>{try{return (JSON.parse(localStorage.getItem(key)||'{"items":[]}').items||[]).some(x=>/^v554:/.test(x.migration_key||""))}catch(e){return false}});
+  const authoritative=!!localStorage.getItem(`miDietaCloudMigrated:${cloud.user.id}`)||!!localStorage.getItem(cloudBoundKey)||ownBefore.length===0||hasCloudEraLocal;
+  const sharedAuthoritative=authoritative||(custom.length===0&&familyRecipes().length===0);
+  if(sharedAuthoritative)custom=(fr.data||[]).map(x=>({name:x.name,kcal:+x.kcal_100||0,p:+x.protein_100||0,c:+x.carbs_100||0,f:+x.fat_100||0}));else{let known=new Set(custom.map(x=>cloudNorm(x.name)));for(const x of fr.data||[]){if(!known.has(cloudNorm(x.name))){custom.push({name:x.name,kcal:+x.kcal_100||0,p:+x.protein_100||0,c:+x.carbs_100||0,f:+x.fat_100||0});known.add(cloudNorm(x.name))}}}localStorage.familyFoods=JSON.stringify(custom);
+  let localR=sharedAuthoritative?(rr.data||[]).map(r=>({name:r.name,servings:+r.servings||1,ingredients:(r.recipe_ingredients||[]).map(x=>({name:x.food_name,grams:+x.grams||0}))})):familyRecipes();if(!sharedAuthoritative){let rnames=new Set(localR.map(x=>cloudNorm(x.name)));for(const r of rr.data||[]){if(!rnames.has(cloudNorm(r.name)))localR.push({name:r.name,servings:+r.servings||1,ingredients:(r.recipe_ingredients||[]).map(x=>({name:x.food_name,grams:+x.grams||0}))})}}localStorage.setItem(V5_RECIPES_KEY,JSON.stringify(localR));
+  let lp=pantry();for(const x of pr.data||[]){if(sharedAuthoritative||!(x.food_name in lp))lp[x.food_name]=!!x.in_stock}localStorage.setItem(V5_PANTRY_KEY,JSON.stringify(lp));
+  let byDate={};for(const x of dr.data||[]){let date=x.entry_date;(byDate[date]??=[]).push(x)}
+  if(authoritative){
+   const dates=new Set([...Object.keys(byDate),(mr.data||[]).map(x=>x.measured_on)]);
+   for(const date of dates){let key=`diet:${profile}:${date}`,old=localStorage.getItem(key);if(old&&!localStorage.getItem(`miDietaFallback:${key}`))localStorage.setItem(`miDietaFallback:${key}`,old);let prior=JSON.parse(old||'{"items":[],"weight":"","waist":""}');prior.items=(byDate[date]||[]).map(x=>({name:x.food_name,grams:+x.grams||0,kcal:+x.kcal||0,p:+x.protein||0,c:+x.carbs||0,f:+x.fat||0,meal:x.meal||"Extra",migration_key:x.migration_key}));localStorage.setItem(key,JSON.stringify(prior))}
+   for(const key of ownBefore){let date=key.split(":")[2];if(!dates.has(date)){let old=localStorage.getItem(key);if(old&&!localStorage.getItem(`miDietaFallback:${key}`))localStorage.setItem(`miDietaFallback:${key}`,old);let d=JSON.parse(old||'{"items":[],"weight":"","waist":""}');d.items=[];localStorage.setItem(key,JSON.stringify(d))}}
+  }else for(const [date,rows] of Object.entries(byDate)){let key=`diet:${profile}:${date}`,d=JSON.parse(localStorage.getItem(key)||'{"items":[],"weight":"","waist":""}');let existing=new Set((d.items||[]).map(x=>x.migration_key).filter(Boolean));for(const x of rows){if(x.migration_key&&existing.has(x.migration_key))continue;d.items.push({name:x.food_name,grams:+x.grams||0,kcal:+x.kcal||0,p:+x.protein||0,c:+x.carbs||0,f:+x.fat||0,meal:x.meal||"Extra",migration_key:x.migration_key});if(x.migration_key)existing.add(x.migration_key)}localStorage.setItem(key,JSON.stringify(d))}
+  // En modo Cloud, Supabase manda para peso/cintura: sobrescribir el valor local, no solo rellenar huecos.
+  // Así un cambio hecho en otro dispositivo sustituye correctamente el dato antiguo.
+  const measurementDates=new Set();
+  for(const x of mr.data||[]){measurementDates.add(x.measured_on);let key=`diet:${profile}:${x.measured_on}`,d=JSON.parse(localStorage.getItem(key)||'{"items":[],"weight":"","waist":""}');d.weight=x.weight_kg==null?"":String(x.weight_kg);d.waist=x.waist_cm==null?"":String(x.waist_cm);localStorage.setItem(key,JSON.stringify(d))}
+  // En modo autoritativo, una medición borrada en otro dispositivo también debe desaparecer aquí.
+  if(authoritative)for(const key of cloudDietKeysFor(profile)){let date=key.split(":")[2];if(!measurementDates.has(date)){let d=JSON.parse(localStorage.getItem(key)||'{"items":[],"weight":"","waist":""}');d.weight="";d.waist="";localStorage.setItem(key,JSON.stringify(d))}}
+  if(authoritative)localStorage.setItem(cloudBoundKey,new Date().toISOString());
+  populate();renderLibrary($("libSearch")?.value||"");renderPantry($("pantrySearch")?.value||"");renderRecipes();load();cloudSetStatus("☁ Guardado","ok");if(showAlert)alert("Datos de la nube fusionados con este dispositivo. No se ha borrado ningún dato local.");
+ }catch(e){console.error(e);cloudSetStatus("⚠ Error al actualizar","err");if(showAlert)alert("No se ha borrado nada. Error al actualizar: "+(e.message||e))}finally{cloud.syncing=false}
+}
+$("scanLocalBtn").onclick=()=>cloudScanLocal(true);$("backupLocalBtn").onclick=()=>{cloudDownloadBackup();cloudScanLocal(false);alert("Copia local descargada. Ya puedes migrar cuando los números sean correctos.")};$("loginBtn").onclick=cloudLogin;$("authPassword").addEventListener("keydown",e=>{if(e.key==="Enter")cloudLogin()});$("logoutBtn").onclick=cloudLogout;$("migrateBtn").onclick=cloudMigrate;$("pullBtn").onclick=()=>cloudPull(true);
+sb.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_OUT"){$("authOverlay").classList.remove("hidden")} });
+setTimeout(cloudBootstrap,0);
+
+</script></body></html>
